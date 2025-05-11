@@ -24,15 +24,3 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
-
-categories = [
-    "Electronics",
-    "Furniture",
-    "Clothing",
-    "Books",
-    "Sports Equipment",
-    "Home & Garden",
-    "Toys & Games",
-    "Collectibles",
-    "Other",
-]
