@@ -1,7 +1,8 @@
 import uuid
-from typing import List, Tuple, Dict, Any
-from google.cloud import vision, storage, aiplatform
-from google.protobuf.json_format import MessageToDict
+import vertexai
+from typing import List, Tuple
+from google.cloud import vision, storage
+from vertexai.generative_models import GenerativeModel
 from app.core.config import settings
 
 # Initialize Google Cloud clients
@@ -18,8 +19,8 @@ try:
     gcp_project_id = (
         settings.FIREBASE_PROJECT_ID
     )  # Assuming Firebase project ID is also GCP project ID
-    gcp_location = "us-central1"  # Choose a region for Vertex AI, e.g., us-central1
-    aiplatform.init(project=gcp_project_id, location=gcp_location)
+    gcp_location = "europe-north1"
+    vertexai.init(project=gcp_project_id, location=gcp_location)
     print(
         f"GCP Clients (Storage, Vision, Vertex AI for project {gcp_project_id} in {gcp_location}) initialized."
     )
@@ -47,10 +48,6 @@ async def upload_image_to_gcs(file, filename: str) -> str | None:
         blob = bucket.blob(unique_filename)
 
         blob.upload_from_file(file.file, content_type=file.content_type)
-
-        # Make the blob publicly readable (for PoC simplicity)
-        # For production, consider using signed URLs.
-        blob.make_public()
 
         return blob.public_url
     except Exception as e:
@@ -99,18 +96,14 @@ async def analyze_image_with_vision_ai(image_uri: str) -> Tuple[List[str], List[
 
 
 async def generate_text_with_gemini(
-    prompt: str, model_name: str = "gemini-1.0-pro-001"
+    prompt: str, model_name: str = "gemini-2.0-flash-001"
 ) -> str:
     """
     Generates text using a Google Vertex AI Gemini model.
     """
     try:
-        # Ensure aiplatform is initialized (done globally, but good to be aware)
-        # model_name for Gemini 1.0 Pro. Check for latest recommended model versions.
-        model = aiplatform.GenerativeModel(model_name)
-        response = await model.generate_content_async(
-            prompt
-        )  # Use async version if available and suitable
+        model = GenerativeModel(model_name)
+        response = await model.generate_content_async(prompt)
 
         # Accessing the text response - this might vary slightly based on SDK version and model
         # Check the structure of `response.candidates[0].content.parts[0].text`
