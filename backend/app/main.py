@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from firebase_admin import auth, exceptions
@@ -11,6 +12,18 @@ from app.security import firebase_auth  # This import will trigger the initializ
 
 app = FastAPI(
     title="AidSell API", openapi_url=f"/api/v1/openapi.json"  # Or adjust path as needed
+)
+
+origins = [
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
