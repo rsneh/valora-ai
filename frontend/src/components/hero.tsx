@@ -8,10 +8,10 @@ export function Hero() {
       <div className="relative mx-auto max-w-5xl px-6 py-24 sm:py-32 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-            Your AI Co-Pilot for Selling Pre-Loved Treasures.
+            The Smartest, Simplest Way to Sell Your Used Goods.
           </h1>
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            Effortless listings, smart descriptions, and faster sales - all powered by AI.
+            Effortless AI listings and buyer negotiations – selling made truly simple and intelligent.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link href="/sell">
