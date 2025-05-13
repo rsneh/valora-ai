@@ -15,9 +15,10 @@ import { useAuth } from "@/contexts/AuthContext";
 interface RegisterDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  openSignInDialog: (open: boolean) => void;
 }
 
-export const RegisterDialog = ({ open, onOpenChange }: RegisterDialogProps) => {
+export const RegisterDialog = ({ open, onOpenChange, openSignInDialog }: RegisterDialogProps) => {
   const router = useRouter();
   const { signInWithGoogle, signInWithFacebook, signInWithTwitter } = useAuth();
   const [email, setEmail] = useState<string>('');
@@ -132,7 +133,7 @@ export const RegisterDialog = ({ open, onOpenChange }: RegisterDialogProps) => {
           </div>
         </form>
         <div className="flex flex-col items-center">
-          <Button variant="ghost" className="text-sm">
+          <Button variant="ghost" className="text-sm" onClick={() => openSignInDialog(true)}>
             Already have an account? Sign in.
           </Button>
         </div>

@@ -6,18 +6,17 @@ import facebookIcon from "@/assets/icons/facebook.svg"
 import xSocialIcon from "@/assets/icons/x-social.svg"
 import Image from "next/image";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog"
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Separator } from "../ui/separator";
-import { auth } from "@/services/firebase";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface LoginDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  openSignUpDialog: (open: boolean) => void;
 }
 
-export const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
+export const LoginDialog = ({ open, onOpenChange, openSignUpDialog }: LoginDialogProps) => {
   const router = useRouter();
   const { signInWithGoogle, signInWithFacebook, signInWithTwitter, signInEmailAndPassword } = useAuth();
   const [email, setEmail] = useState<string>('');
@@ -57,6 +56,10 @@ export const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
           <DialogTitle className="text-center text-lg md:text-2xl">
             Welcome back!
           </DialogTitle>
+          <DialogDescription className="text-center text-sm md:text-base">
+            {`Please sign in to your account.`}
+          </DialogDescription>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
         </DialogHeader>
         <div className="flex items-center justify-center space-x-3">
           <Button variant="outline" className="w-12 h-12 py-2 px-2" onClick={signInWithGoogle}>
@@ -115,8 +118,8 @@ export const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
           </div>
         </form>
         <div className="flex flex-col items-center">
-          <Button variant="ghost" className="text-sm">
-            Don't have an account? Sign up.
+          <Button variant="ghost" className="text-sm" onClick={() => openSignUpDialog(true)}>
+            {`Don't have an account? Sign up.`}
           </Button>
         </div>
       </DialogContent>

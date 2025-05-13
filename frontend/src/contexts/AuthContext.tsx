@@ -35,17 +35,6 @@ export function useAuth(): AuthContextType {
   return context;
 }
 
-export const handleAuthError = (error: any): string | null => {
-  switch (error.code) {
-    case 'auth/invalid-email':
-      return 'Invalid email address. Please check and try again.';
-    case 'auth/email-already-in-use':
-      return 'Email already in use';
-    default:
-      return null;
-  }
-};
-
 interface AuthProviderProps {
   children: ReactNode;
 }

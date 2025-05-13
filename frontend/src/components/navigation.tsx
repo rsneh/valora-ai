@@ -5,14 +5,14 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu, LogOutIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import logoImage from "@/assets/logo.svg"
 import { useAuth } from "@/contexts/AuthContext"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { RegisterDialog } from "./dialogs/register-dialog"
 import { LoginDialog } from "./dialogs/login-dialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Separator } from "./ui/separator"
+import { Logo } from "./ui/logo"
 
 
 const categories = [
@@ -36,13 +36,7 @@ export function Navigation() {
         <div className="px-4 flex h-16 items-center">
           <div className="mr-4 hidden md:flex md:flex-1">
             <Link href="/" className="mr-6 flex items-center space-x-2">
-              <Image
-                priority
-                src={logoImage}
-                alt="AidSell Logo"
-                className="w-6"
-              />
-              <span className="hidden font-bold text-lg sm:inline-block">AIDSELL</span>
+              <Logo />
             </Link>
           </div>
           <nav className="flex items-center space-x-6 text-sm font-medium">
@@ -134,8 +128,22 @@ export function Navigation() {
           </div>
         </div >
       </header >
-      <RegisterDialog open={openRegisterDialog} onOpenChange={setOpenRegisterDialog} />
-      <LoginDialog open={openLoginDialog} onOpenChange={setOpenLoginDialog} />
+      <RegisterDialog
+        open={openRegisterDialog}
+        onOpenChange={setOpenRegisterDialog}
+        openSignInDialog={(open) => {
+          setOpenRegisterDialog(false);
+          setOpenLoginDialog(open);
+        }}
+      />
+      <LoginDialog
+        open={openLoginDialog}
+        onOpenChange={setOpenLoginDialog}
+        openSignUpDialog={(open) => {
+          setOpenLoginDialog(false);
+          setOpenRegisterDialog(open);
+        }}
+      />
     </>
   )
 }
