@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import googleIcon from "@/assets/icons/google.svg"
@@ -12,11 +12,12 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface LoginDialogProps {
   open: boolean;
+  closeDialog: () => void;
   onOpenChange: (open: boolean) => void;
   openSignUpDialog: (open: boolean) => void;
 }
 
-export const LoginDialog = ({ open, onOpenChange, openSignUpDialog }: LoginDialogProps) => {
+export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog }: LoginDialogProps) => {
   const router = useRouter();
   const { signInWithGoogle, signInWithFacebook, signInWithTwitter, signInEmailAndPassword } = useAuth();
   const [email, setEmail] = useState<string>('');
@@ -36,13 +37,38 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog }: LoginDialo
     setLoading(true);
     try {
       await signInEmailAndPassword(email, password);
-      router.push('/'); // Redirect to home page after registration
+      setEmail('');
+      setPassword('');
+      closeDialog();
+      router.push('/');
     } catch (err: any) {
       if (err.code === 'auth/email-already-in-use') {
         setError('This email address is already registered.');
+      } else if (err.code === 'auth/invalid-credential') {
+        setError('Invalid Email or Password.');
       } else {
-        setError(err.message || "Failed to register. Please try again.");
+        setError(err.message || "Failed to login. Please try again.");
       }
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSocialSignIn = async (provider: string) => {
+    setLoading(true);
+    try {
+      if (provider === 'google') {
+        await signInWithGoogle();
+      } else if (provider === 'facebook') {
+        await signInWithFacebook();
+      }
+      else if (provider === 'twitter') {
+        await signInWithTwitter();
+      }
+      router.push('/');
+    } catch (err: any) {
+      setError(err.message || "Failed to register. Please try again.");
       console.error("Registration error:", err);
     } finally {
       setLoading(false);
@@ -59,23 +85,22 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog }: LoginDialo
           <DialogDescription className="text-center text-sm md:text-base">
             {`Please sign in to your account.`}
           </DialogDescription>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
         </DialogHeader>
         <div className="flex items-center justify-center space-x-3">
-          <Button variant="outline" className="w-12 h-12 py-2 px-2" onClick={signInWithGoogle}>
+          <Button variant="outline" className="w-12 h-12 py-2 px-2" onClick={() => handleSocialSignIn('google')}>
             <Image
               src={googleIcon}
               alt="Google Icon"
             />
           </Button>
-          <Button variant="outline" className="w-12 h-12 py-2 px-2 bg-[#3a5998]" onClick={signInWithFacebook}>
+          <Button variant="outline" className="w-12 h-12 py-2 px-2 bg-[#3a5998]" onClick={() => handleSocialSignIn('facebook')}>
             <Image
               src={facebookIcon}
               alt="Facebook Icon"
               className="fill-blue-500"
             />
           </Button>
-          <Button variant="outline" className="w-12 h-12 py-2 px-2 bg-black" onClick={signInWithTwitter}>
+          <Button variant="outline" className="w-12 h-12 py-2 px-2 bg-black" onClick={() => handleSocialSignIn('twitter')}>
             <Image
               src={xSocialIcon}
               alt="X Social Icon"
@@ -108,6 +133,7 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog }: LoginDialo
               required
             />
           </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex flex-col items-center">
             <Button type="submit" className="w-full" disabled={loading}>
               Submit

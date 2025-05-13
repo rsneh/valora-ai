@@ -14,11 +14,12 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface RegisterDialogProps {
   open: boolean;
+  closeDialog: () => void;
   onOpenChange: (open: boolean) => void;
   openSignInDialog: (open: boolean) => void;
 }
 
-export const RegisterDialog = ({ open, onOpenChange, openSignInDialog }: RegisterDialogProps) => {
+export const RegisterDialog = ({ open, onOpenChange, openSignInDialog, closeDialog }: RegisterDialogProps) => {
   const router = useRouter();
   const { signInWithGoogle, signInWithFacebook, signInWithTwitter } = useAuth();
   const [email, setEmail] = useState<string>('');
@@ -43,10 +44,11 @@ export const RegisterDialog = ({ open, onOpenChange, openSignInDialog }: Registe
     setLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      // Registration successful, redirect to login or home
-      router.push('/'); // Redirect to home page after registration
+      setEmail('');
+      setPassword('');
+      closeDialog();
+      router.push('/');
     } catch (err: any) {
-      // Handle Firebase errors (e.g., email-already-in-use)
       if (err.code === 'auth/email-already-in-use') {
         setError('This email address is already registered.');
       } else {
@@ -126,6 +128,7 @@ export const RegisterDialog = ({ open, onOpenChange, openSignInDialog }: Registe
               required
             />
           </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex flex-col items-center">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Registering..." : "Register"}

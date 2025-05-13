@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, LogOutIcon } from "lucide-react"
+import { Menu, LogOutIcon, UserRound } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useAuth } from "@/contexts/AuthContext"
@@ -13,7 +13,7 @@ import { LoginDialog } from "./dialogs/login-dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Separator } from "./ui/separator"
 import { Logo } from "./ui/logo"
-
+import { useToast } from "@/hooks/use-toast"
 
 const categories = [
   { value: "electronics", label: "Electronics" },
@@ -26,9 +26,20 @@ const categories = [
 
 export function Navigation() {
   const router = useRouter();
+  const { toast } = useToast();
   const { logout, currentUser } = useAuth();
   const [openRegisterDialog, setOpenRegisterDialog] = useState<boolean>(false);
   const [openLoginDialog, setOpenLoginDialog] = useState<boolean>(false);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/");
+      toast({ description: "You've been logged out.", variant: "success", });
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   return (
     <>
@@ -107,20 +118,28 @@ export function Navigation() {
               <>
                 <Separator orientation="vertical" className="h-8" />
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="flex items-center space-x-2">
-                    {currentUser.displayName}
-                    <Image
-                      src={currentUser.photoURL || ""}
-                      alt="User Avatar"
-                      className="ms-3 h-8 w-8 rounded-full ring-2 ring-offset-2 ring-offset-background"
-                      width={32}
-                      height={32}
-                    />
+                  <DropdownMenuTrigger asChild className="flex items-center">
+                    <div className="flex items-center justify-center text-sm font-medium text-foreground hover:ring-foreground/80">
+                      <span>{currentUser.displayName}</span>
+                      {currentUser.photoURL ? (
+                        <Image
+                          src={currentUser.photoURL}
+                          alt="User Avatar"
+                          width={32}
+                          height={32}
+                          className="ms-3 rounded-full ring-2 ring-offset-2 ring-offset-background hover:ring-foreground/80"
+                        />
+                      ) : (
+                        <span className="ms-3 rounded-full ring-2 ring-offset-2 ring-offset-background hover:ring-foreground/80 h-8 w-8 flex items-center justify-center">
+                          <UserRound className="text-gray-400" />
+                        </span>
+                      )}
+                    </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem onSelect={() => router.push("/profile")}>Profile</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={() => logout()}><LogOutIcon />Log out</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={handleLogout}><LogOutIcon />Log out</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </>
@@ -131,6 +150,7 @@ export function Navigation() {
       <RegisterDialog
         open={openRegisterDialog}
         onOpenChange={setOpenRegisterDialog}
+        closeDialog={() => setOpenRegisterDialog(false)}
         openSignInDialog={(open) => {
           setOpenRegisterDialog(false);
           setOpenLoginDialog(open);
@@ -139,6 +159,7 @@ export function Navigation() {
       <LoginDialog
         open={openLoginDialog}
         onOpenChange={setOpenLoginDialog}
+        closeDialog={() => setOpenLoginDialog(false)}
         openSignUpDialog={(open) => {
           setOpenLoginDialog(false);
           setOpenRegisterDialog(open);
