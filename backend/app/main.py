@@ -17,6 +17,7 @@ app = FastAPI(
 
 origins = [
     "http://localhost:3000",  # Local development
+    "https://aidsell-webapp.onrender.com",  # Production URL
 ]
 
 app.add_middleware(
