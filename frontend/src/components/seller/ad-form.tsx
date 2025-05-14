@@ -98,14 +98,13 @@ export function SellerAdForm({ defaultValues, suggestedCategory, onSubmit }: Sel
                   <Input
                     type="number"
                     className="pl-9"
-                    placeholder="e.g., 150.00"
+                    placeholder="Enter your desired price"
                     step="0.01"
                     min="0.01"
                     // react-hook-form manages value as number, input expects string
                     value={field.value === undefined ? '' : String(field.value)}
                     onChange={(e) => {
                       const value = e.target.value;
-                      // Parse string to number, handle empty string or invalid input
                       const numberValue = parseFloat(value);
                       field.onChange(isNaN(numberValue) ? undefined : numberValue);
                     }}
@@ -128,7 +127,6 @@ export function SellerAdForm({ defaultValues, suggestedCategory, onSubmit }: Sel
             <FormItem>
               <FormLabel>Category</FormLabel>
               <FormControl>
-                {/* CategoryGrid needs to accept value and onChange */}
                 <CategoryGrid
                   size="sm"
                   categories={categories}

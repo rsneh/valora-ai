@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '*.googleusercontent.com',
+        hostname: 'storage.googleapis.com',
         port: '',
         pathname: '/**',
         search: '',

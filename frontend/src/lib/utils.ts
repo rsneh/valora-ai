@@ -6,10 +6,52 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const categories = [
-  { value: "electronics", label: "Electronics", isHighlighted: true, description: "Latest gadgets and devices", icon: "monitor-smartphone" },
-  { value: "furniture", label: "Furniture", isHighlighted: true, description: "Stylish and comfortable furniture", icon: "sofa" },
-  { value: "clothing", label: "Clothing", isHighlighted: true, description: "Fashionable clothing for all", icon: "shirt" },
-  { value: "toys", label: "Toys", description: "Fun and interactive toys", icon: "toy-brick" },
-  { value: "books", label: "Books", description: "A wide range of books", icon: "library-big" },
-  { value: "sports", label: "Sports", description: "Sports equipment and gear", icon: "volleyball" },
+  {
+    value: "electronics",
+    label: "Electronics",
+    description: "Gadgets, devices, phones, computers, consoles.",
+    icon: "monitor-smartphone",
+    show: true,
+  },
+  {
+    value: "fashion",
+    label: "Fashion & Apparel",
+    menu: "Fashion",
+    description: "Clothing, shoes, bags, accessories.",
+    icon: "shirt",
+    show: true,
+  },
+  {
+    value: "home-goods",
+    label: "Home Goods & Furniture",
+    menu: "Home",
+    description: "Furniture, decor, kitchen, appliances.",
+    icon: "sofa",
+    show: true,
+  },
+  {
+    value: "collectibles",
+    label: "Collectibles & Hobbies",
+    description: "Collectibles, antiques, hobbies, instruments.",
+    icon: "palette",
+  },
+  {
+    value: "books-media",
+    label: "Books & Media",
+    menu: "Books",
+    description: "Books, comics, music, movies.",
+    icon: "library-big",
+  },
+  {
+    value: "sports-outdoors",
+    label: "Sports & Outdoors",
+    menu: "Sports",
+    description: "Sports gear, fitness, outdoor items.",
+    icon: "volleyball",
+  },
+  {
+    value: "other",
+    label: "Other",
+    description: "For all other items.",
+  },
 ];

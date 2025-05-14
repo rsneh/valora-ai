@@ -47,13 +47,13 @@ export function Navigation() {
             </Link>
           </div>
           <nav className="flex items-center space-x-6 text-sm font-medium">
-            {categories.map((category) => (
+            {categories.filter((category) => category.show).map((category) => (
               <Link
                 key={category.value}
                 href={`/browse/${category.value}`}
                 className="transition-colors hover:text-foreground/80 text-foreground"
               >
-                {category.label}
+                {category.menu || category.label}
               </Link>
             ))}
             <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground">

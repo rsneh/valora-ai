@@ -1,10 +1,13 @@
 "use client"
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { PhotoUploader } from "@/components/ui/photo-uploader"
 import StepContent from '../ui/step-content'
 import { ProductFormData } from '@/types/product'
 import { SellerAdForm } from './ad-form'
+import { Card, CardContent } from '../ui/card'
+import { cn } from '@/lib/utils'
 
 export default function SellerPostWizard() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -72,7 +75,7 @@ export default function SellerPostWizard() {
         {/* Step Content - Defined inline using conditional rendering */}
         <div key={currentStep} className="animate-fadeInSlideUp">
           {currentStep === 0 && (
-            <StepContent className="mt-20 md:mt-32 xl:mt-52">
+            <StepContent className="mt-20 md:mt-32">
               <h1 className="max-w-2xl mx-auto text-center font-bold text-4xl text-gray-900 mb-5 md:text-5xl">
                 Turn Your Photo into a Perfect Offer,
                 <span className="text-indigo-600">{` Instantly`}</span>.
@@ -96,14 +99,38 @@ export default function SellerPostWizard() {
                 Your AI Suggestions Are Ready! Please Verify & Submit
               </h3>
               <div className="w-full container bg-white p-8 rounded-xl shadow-2xl lg:max-w-3xl">
+                {productFormData?.category && (
+                  <div className="flex justify-center my-4">
+                    <Card
+                      className={cn(
+                        "flex flex-col shadow-sm rounded-xl",
+                        "ring-1 ring-primary-100",
+                      )}
+                    >
+                      <CardContent className="p-0">
+                        <div className="relative h-48 w-96">
+                          <Image
+                            src={productFormData.image_url!}
+                            alt="Logo"
+                            layout="fill"
+                            objectFit="fill"
+                            className="rounded-lg aspect-square object-cover"
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
                 <div className="text-card-foreground">
                   <SellerAdForm
                     defaultValues={productFormData}
                     suggestedCategory={suggestedCategory}
                     onSubmit={(data) => {
-                      setProductFormData(data);
+                      setProductFormData({
+                        ...productFormData,
+                        ...data,
+                      });
                       console.log('Form Data:', data);
-
                     }}
                   />
                 </div>
