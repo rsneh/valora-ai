@@ -42,6 +42,7 @@ export default function SellerPostWizard() {
     setSuggestedCategory(imageData.suggested_category);
     setProductFormData({
       ...productFormData,
+      title: imageData.suggested_title,
       image_url: imageData.image_url,
       category: imageData.suggested_category,
       description: imageData.suggested_description,

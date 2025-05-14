@@ -27,17 +27,20 @@ async def upload_image_for_product(
             detail="Invalid file type. Only images are allowed.",
         )
 
-    image_key, image_url = await gcp_services.upload_image_to_gcs_temp(
-        file=image, filename=image.filename
+    image_key, image_url, suggested_title = (
+        await gcp_services.upload_image_to_gcs_temp_and_get_title(
+            file=image, filename=image.filename
+        )
     )
+
     if not image_key or not image_url:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Could not upload image.",
+            detail="Could not upload or process image.",
         )
 
     ai_description, ai_category = await gcp_services.get_ai_assistance(
-        None, image_uri=image_url
+        title=suggested_title, image_uri=image_url
     )
 
     return image_schema.ImageUploadResponse(
@@ -45,6 +48,7 @@ async def upload_image_for_product(
         image_url=image_url,
         suggested_category=ai_category,
         suggested_description=ai_description,
+        suggested_title=suggested_title,
     )
 
 

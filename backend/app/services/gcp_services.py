@@ -41,17 +41,15 @@ except Exception as e:
     vision_client = None
 
 
-async def upload_image_to_gcs_temp(
+async def upload_image_to_gcs_temp_and_get_title(
     file: UploadFile, filename: str
-) -> Tuple[str | None, str | None]:
+) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     """
-    Uploads an image file to a temporary location in Google Cloud Storage.
-    Returns (gcs_object_name_key, public_url) or (None, None) on failure.
-    The gcs_object_name_key includes the TEMP_UPLOAD_PREFIX.
+    Uploads an image, analyzes it, suggests a title, and returns (key, url, title).
     """
-    if not storage_client:
-        print("Storage client not initialized.")
-        return None, None
+    if not storage_client or not vision_client:
+        print("GCP clients not initialized.")
+        return None, None, None
     try:
         bucket_name = settings.GCS_BUCKET_NAME
         bucket = storage_client.bucket(bucket_name)
@@ -65,10 +63,28 @@ async def upload_image_to_gcs_temp(
         print(
             f"Image uploaded to GCS temp: {gcs_object_name_key}, URL: {blob.public_url}"
         )
-        return gcs_object_name_key, blob.public_url
+        # Analyze image to get features for title generation
+        labels, objects, web_entities = await analyze_image_with_vision_ai(
+            blob.public_url
+        )
+
+        # Generate AI title
+        suggested_title = ""
+        if labels or objects or web_entities:
+            all_features = list(set(labels + objects))
+            suggested_title = await get_ai_title(all_features, web_entities)
+
+        return gcs_object_name_key, blob.public_url, suggested_title
+
     except Exception as e:
-        print(f"Error uploading image to GCS temp: {e}")
-        return None, None
+        print(f"Error in upload_image_to_gcs_temp_and_get_title: {e}")
+        if "blob" in locals() and blob.exists():
+            try:
+                blob.delete()
+                print(f"Cleaned up GCS blob {gcs_object_name_key} due to error.")
+            except Exception as cleanup_e:
+                print(f"Error during GCS blob cleanup: {cleanup_e}")
+        return None, None, None
 
 
 async def move_gcs_image_to_permanent(
@@ -158,7 +174,9 @@ async def delete_gcs_temp_image(temp_image_key: str, current_user_id: str) -> bo
         return False
 
 
-async def analyze_image_with_vision_ai(image_uri: str) -> Tuple[List[str], List[str]]:
+async def analyze_image_with_vision_ai(
+    image_uri: str,
+) -> Tuple[List[str], List[str], List[str]]:
     """
     Analyzes an image using Google Cloud Vision AI for labels and objects.
     image_uri can be a GCS URI (gs://bucket_name/object_name) or a public HTTP(S) URL.
@@ -181,6 +199,7 @@ async def analyze_image_with_vision_ai(image_uri: str) -> Tuple[List[str], List[
             vision.Feature(
                 type_=vision.Feature.Type.OBJECT_LOCALIZATION, max_results=5
             ),
+            vision.Feature(type_=vision.Feature.Type.WEB_DETECTION, max_results=5),
         ]
         request = vision.AnnotateImageRequest(image=image, features=features)
         response = vision_client.annotate_image(request=request)
@@ -191,8 +210,21 @@ async def analyze_image_with_vision_ai(image_uri: str) -> Tuple[List[str], List[
         labels = [label.description for label in response.label_annotations]
         objects = [obj.name for obj in response.localized_object_annotations]
 
-        print(f"Vision AI - Labels: {labels}, Objects: {objects}")
-        return labels, objects
+        # Extract web entities for better title generation
+        web_entities_descriptions = []
+        if response.web_detection and response.web_detection.web_entities:
+            web_entities_descriptions = [
+                entity.description
+                for entity in response.web_detection.web_entities
+                if entity.description
+            ]
+
+        # Combine features - prioritize web entities if available for title context
+        combined_features = list(set(labels + objects + web_entities_descriptions))
+
+        print(f"Vision AI - Combined Features: {combined_features}")
+        # Return all features; the calling function can decide what to use
+        return labels, objects, web_entities_descriptions
     except Exception as e:
         print(f"Error analyzing image with Vision AI: {e}")
         return [], []
@@ -230,13 +262,49 @@ async def generate_text_with_gemini(
         return ""
 
 
+async def get_ai_title(image_features: List[str], web_entities: List[str]) -> str:
+    """
+    Generates a product title using Vertex AI Gemini based on image analysis.
+    Prioritizes web entities for more specific titles if available.
+    """
+    # Combine features, giving preference to web entities if they exist
+    if web_entities:
+        # Use a mix, but web entities are often more specific for titles
+        context_features = list(
+            set(web_entities[:3] + image_features[:5])
+        )  # Limit length
+    else:
+        context_features = list(set(image_features[:7]))  # Limit length
+
+    features_str = ", ".join(filter(None, context_features))  # Filter out empty strings
+    if not features_str:
+        features_str = "the item in the image"
+
+    prompt = f"""Based on the following features observed in an image: '{features_str}'.
+        Suggest a concise, marketable, and descriptive product title (max 7-10 words) for a used item listing.
+        Focus on the primary subject. Avoid phrases like "Image of" or "Photo of".
+        Dont use words like "used", "second hand" or include any condition.
+        The title should be clear and informative, helping potential buyers understand what the item is.
+        The title should be suitable for a marketplace listing and should not exceed 40 characters.
+        Avoid using the word "item" in the title.
+        Examples: "Blue Ceramic Vase", "Sony PlayStation 5 Console (Disc Version)", "Men's Nike Air Max Sneakers Size 10".
+        Title:"""
+
+    generated_title = await generate_text_with_gemini(prompt)
+
+    if generated_title.startswith('"') and generated_title.endswith('"'):
+        generated_title = generated_title[1:-1]
+
+    return generated_title.strip()
+
+
 async def get_ai_description(title: str, image_features: List[str]) -> str:
     """
     Generates a product description using Vertex AI Gemini.
     """
     features_str = ", ".join(list(set(image_features)))  # Unique features
     prompt = f"""You are an expert at writing compelling product descriptions for a used items marketplace.
-      Item Title: '{title if title else 'No title provided'}'
+      Item Title: '{title}'
       Visual Features from Image: {features_str if features_str else 'No specific visual features detected.'}
       Based on this, write a concise and appealing product description (2-3 sentences) suitable for a marketplace listing. Focus on key selling points a buyer would look for.
       If the visual features are not very descriptive, focus more on the item title.
@@ -253,7 +321,7 @@ async def get_ai_category(
     features_str = ", ".join(list(set(image_features)))
     categories_str = ", ".join(predefined_categories)
     prompt = f"""You are an expert product categorizer.
-      Item Title: '{title if title else 'No title provided'}'
+      Item Title: '{title}'
       Visual Features from Image: {features_str if features_str else 'No specific visual features detected.'}
       Predefined Categories: [{categories_str}]
       Based on the title and visual features, select the single most appropriate category from the predefined list.
@@ -278,8 +346,8 @@ async def get_ai_assistance(
     """
     Main function to get AI-assisted product description and category.
     """
-    labels, objects = await analyze_image_with_vision_ai(image_uri)
-    image_features = labels + objects
+    labels, objects, web_entities = await analyze_image_with_vision_ai(image_uri)
+    image_features = labels + objects + web_entities
 
     description = await get_ai_description(title, image_features)
     category = await get_ai_category(title, image_features, predefined_categories)
