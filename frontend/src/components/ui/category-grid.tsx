@@ -1,5 +1,4 @@
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic'
-import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from '@/lib/utils';
 import { Sparkles } from 'lucide-react';

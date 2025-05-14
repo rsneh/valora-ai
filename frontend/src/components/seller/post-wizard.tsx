@@ -1,15 +1,9 @@
 "use client"
 
 import { useState } from 'react'
-import { categories } from "@/lib/utils"
 import { PhotoUploader } from "@/components/ui/photo-uploader"
 import StepContent from '../ui/step-content'
 import { ProductFormData } from '@/types/product'
-import { CategoryGrid } from '../ui/category-grid'
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
-import { DollarSign } from 'lucide-react'
-import { Textarea } from '../ui/textarea'
 import { SellerAdForm } from './ad-form'
 
 export default function SellerPostWizard() {
@@ -44,7 +38,7 @@ export default function SellerPostWizard() {
   // // Calculate progress percentage
   // const progressPercentage = ((currentStep + 1) / totalSteps) * 100;
 
-  function handleUploadComplete(imageData: any): void {
+  function handleUploadComplete(imageData: Error | any): void {
     setSuggestedCategory(imageData.suggested_category);
     setProductFormData({
       ...productFormData,
@@ -83,7 +77,7 @@ export default function SellerPostWizard() {
                 <span className="text-indigo-600">{` Instantly`}</span>.
               </h1>
               <p className="max-w-sm mx-auto text-center font-normal mt-4 text-lg text-gray-500 md:text-xl md:leading-8 md:max-w-2xl">
-                Upload your item's photo, and our intelligent AI will help you create an optimized listing designed to sell quickly and effortlessly.
+                Upload your item&apos;s photo, and our intelligent AI will help you create an optimized listing designed to sell quickly and effortlessly.
               </p>
               <div className="flex flex-col align-center justify-center max-w-lg mx-auto py-6 w-full">
                 <div className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 rounded-4lg">

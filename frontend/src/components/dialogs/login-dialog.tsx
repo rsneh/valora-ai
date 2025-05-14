@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import googleIcon from "@/assets/icons/google.svg"
@@ -41,7 +41,7 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
       setPassword('');
       closeDialog();
       router.push('/');
-    } catch (err: any) {
+    } catch (err: Error | any) {
       if (err.code === 'auth/email-already-in-use') {
         setError('This email address is already registered.');
       } else if (err.code === 'auth/invalid-credential') {
@@ -67,7 +67,7 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
         await signInWithTwitter();
       }
       router.push('/');
-    } catch (err: any) {
+    } catch (err: Error | any) {
       setError(err.message || "Failed to register. Please try again.");
       console.error("Registration error:", err);
     } finally {

@@ -1,17 +1,18 @@
 "use client"
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { CloudUpload } from 'lucide-react';
 import { uploadImage } from '@/services/api/images';
 import { useAuth } from '@/contexts/AuthContext';
 import { SpinnerLoader } from './spinner-loader';
 import { Progress } from './progress';
+import { type Image as ImageData } from '@/types/image';
 
 type UploadStatus = 'idle' | 'uploading' | 'error';
 
 interface PhotoUploaderProps {
-  onUploadComplete?: (imageData: any) => void;
+  onUploadComplete?: (imageData: ImageData) => void;
 }
 
 export function PhotoUploader({ onUploadComplete }: PhotoUploaderProps) {
@@ -22,26 +23,7 @@ export function PhotoUploader({ onUploadComplete }: PhotoUploaderProps) {
   const [dragging, setDragging] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (selectedFiles.length > 0) {
-      uploadImages();
-    } else {
-      setUploadStatus('idle');
-    }
-  }, [selectedFiles]);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files ?? []);
-    setSelectedFiles(files);
-  };
-
-  const handleButtonClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  const uploadImages = async (): Promise<void> => {
+  const uploadImages = useCallback(async (): Promise<void> => {
     if (selectedFiles.length === 0) {
       alert('Please select files first.');
       return;
@@ -64,11 +46,32 @@ export function PhotoUploader({ onUploadComplete }: PhotoUploaderProps) {
           setUploadProgress(currentProgress);
         }
       });
-      onUploadComplete && onUploadComplete(imageData);
+      if (typeof onUploadComplete !== 'undefined') {
+        onUploadComplete(imageData);
+      }
     } catch (error) {
       console.error('Upload failed:', error);
       setUploadStatus('error');
       return;
+    }
+  }, [firebaseIdToken, onUploadComplete, selectedFiles]);
+
+  useEffect(() => {
+    if (selectedFiles.length > 0) {
+      uploadImages();
+    } else {
+      setUploadStatus('idle');
+    }
+  }, [selectedFiles, uploadImages]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    setSelectedFiles(files);
+  };
+
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 

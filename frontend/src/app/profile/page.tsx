@@ -53,14 +53,14 @@ export default function ProfilePage() {
                       {/* Activity Items */}
                       <div className="flex justify-between items-center py-2 border-b">
                         <div>
-                          <p className="font-medium">Purchased "SEO Content Optimizer"</p>
+                          <p className="font-medium">Purchased </p>
                           <p className="text-sm text-muted-foreground">2 days ago</p>
                         </div>
                         <Badge>0.08 ETH</Badge>
                       </div>
                       <div className="flex justify-between items-center py-2 border-b">
                         <div>
-                          <p className="font-medium">Sold "Creative Story Generator"</p>
+                          <p className="font-medium">Sold </p>
                           <p className="text-sm text-muted-foreground">5 days ago</p>
                         </div>
                         <Badge>0.1 ETH</Badge>

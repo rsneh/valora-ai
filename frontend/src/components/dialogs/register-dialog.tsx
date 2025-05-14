@@ -48,7 +48,7 @@ export const RegisterDialog = ({ open, onOpenChange, openSignInDialog, closeDial
       setPassword('');
       closeDialog();
       router.push('/');
-    } catch (err: any) {
+    } catch (err: Error | any) {
       if (err.code === 'auth/email-already-in-use') {
         setError('This email address is already registered.');
       } else {
