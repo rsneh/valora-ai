@@ -1,27 +1,15 @@
 import uuid
-from fastapi import UploadFile
 import vertexai
+from fastapi import UploadFile
 from typing import List, Optional, Tuple
 from google.cloud import vision, storage
 from vertexai.generative_models import GenerativeModel
 from app.core.config import settings
+from app.core.utils import find_category_by_name
+from app.schemas.category import CATEGORIES, Category
 
 TEMP_UPLOAD_PREFIX = "temp-uploads/"
 PRODUCT_IMAGE_PREFIX = "product-images/"
-
-# Predefined categories
-POC_CATEGORIES = [
-    "Electronics",
-    "Furniture",
-    "Clothing",
-    "Books",
-    "Sports Equipment",
-    "Home & Garden",
-    "Toys & Games",
-    "Collectibles",
-    "Other",
-]
-
 
 # Initialize Google Cloud clients
 # These will use the GOOGLE_APPLICATION_CREDENTIALS environment variable
@@ -313,35 +301,41 @@ async def get_ai_description(title: str, image_features: List[str]) -> str:
 
 
 async def get_ai_category(
-    title: str, image_features: List[str], predefined_categories: List[str]
+    title: str, image_features: List[str], predefined_categories: List[Category]
 ) -> str:
     """
     Suggests a product category using Vertex AI Gemini from a predefined list.
     """
+    newline = "\n"
     features_str = ", ".join(list(set(image_features)))
-    categories_str = ", ".join(predefined_categories)
     prompt = f"""You are an expert product categorizer.
       Item Title: '{title}'
-      Visual Features from Image: {features_str if features_str else 'No specific visual features detected.'}
-      Predefined Categories: [{categories_str}]
+      Visual Features from Image: {features_str if features_str else 'No specific visual features detected.'}]
+      Predefined Categories and their descriptions:
+        {newline.join([f"- {cat.label}: [{cat.prompt}]" for cat in predefined_categories])}
       Based on the title and visual features, select the single most appropriate category from the predefined list.
       Respond with ONLY the category name from the list. If unsure, select 'Other'.
       Category:"""
     suggested_category = await generate_text_with_gemini(prompt)
 
     # Validate if the suggested category is in the predefined list
-    if suggested_category in predefined_categories:
+    category = find_category_by_name(predefined_categories, suggested_category)
+
+    # filter(lambda s: value in s, students)
+
+    if category:
         return suggested_category
+
     print(
         f"Gemini suggested category '{suggested_category}' not in predefined list. Defaulting to 'Other'."
     )
-    return "Other"  # Default if Gemini hallucinates or provides an invalid category
+    return "Other"
 
 
 async def get_ai_assistance(
     title: str,
     image_uri: str,
-    predefined_categories: List[str] = POC_CATEGORIES,
+    predefined_categories: List[Category] = CATEGORIES,
 ) -> Tuple[str, str]:
     """
     Main function to get AI-assisted product description and category.
