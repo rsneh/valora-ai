@@ -1,24 +1,34 @@
 import uuid
+from fastapi import UploadFile
 import vertexai
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from google.cloud import vision, storage
 from vertexai.generative_models import GenerativeModel
 from app.core.config import settings
+
+TEMP_UPLOAD_PREFIX = "temp-uploads/"
+PRODUCT_IMAGE_PREFIX = "product-images/"
+
+# Predefined categories
+POC_CATEGORIES = [
+    "Electronics",
+    "Furniture",
+    "Clothing",
+    "Books",
+    "Sports Equipment",
+    "Home & Garden",
+    "Toys & Games",
+    "Collectibles",
+    "Other",
+]
+
 
 # Initialize Google Cloud clients
 # These will use the GOOGLE_APPLICATION_CREDENTIALS environment variable
 try:
     storage_client = storage.Client()
     vision_client = vision.ImageAnnotatorClient()
-    # Initialize Vertex AI (aiplatform) client
-    # You need to specify the project and location for Vertex AI client initialization
-    # The project can be inferred if GOOGLE_CLOUD_PROJECT is set,
-    # or you can get it from settings.FIREBASE_PROJECT_ID if they are linked
-    # and settings.FIREBASE_PROJECT_ID is your GCP project ID.
-    # Location (region) is also important for Vertex AI.
-    gcp_project_id = (
-        settings.FIREBASE_PROJECT_ID
-    )  # Assuming Firebase project ID is also GCP project ID
+    gcp_project_id = settings.FIREBASE_PROJECT_ID
     gcp_location = "europe-north1"
     vertexai.init(project=gcp_project_id, location=gcp_location)
     print(
@@ -31,28 +41,121 @@ except Exception as e:
     vision_client = None
 
 
-async def upload_image_to_gcs(file, filename: str) -> str | None:
+async def upload_image_to_gcs_temp(
+    file: UploadFile, filename: str
+) -> Tuple[str | None, str | None]:
     """
-    Uploads an image file to Google Cloud Storage.
-    Returns the public URL of the uploaded image.
+    Uploads an image file to a temporary location in Google Cloud Storage.
+    Returns (gcs_object_name_key, public_url) or (None, None) on failure.
+    The gcs_object_name_key includes the TEMP_UPLOAD_PREFIX.
     """
     if not storage_client:
         print("Storage client not initialized.")
-        return None
+        return None, None
     try:
         bucket_name = settings.GCS_BUCKET_NAME
         bucket = storage_client.bucket(bucket_name)
 
-        # Generate a unique filename to avoid collisions
-        unique_filename = f"products/{uuid.uuid4()}-{filename}"
-        blob = bucket.blob(unique_filename)
+        unique_suffix = f"{uuid.uuid4()}-{filename}"
+        gcs_object_name_key = f"{TEMP_UPLOAD_PREFIX}{unique_suffix}"
+        blob = bucket.blob(gcs_object_name_key)
 
         blob.upload_from_file(file.file, content_type=file.content_type)
 
-        return blob.public_url
+        print(
+            f"Image uploaded to GCS temp: {gcs_object_name_key}, URL: {blob.public_url}"
+        )
+        return gcs_object_name_key, blob.public_url
     except Exception as e:
-        print(f"Error uploading image to GCS: {e}")
+        print(f"Error uploading image to GCS temp: {e}")
+        return None, None
+
+
+async def move_gcs_image_to_permanent(
+    temp_image_key: str, seller_id: str
+) -> str | None:
+    """
+    Moves an image from a temporary GCS location to a permanent one.
+    Returns the public URL of the image in the permanent location or None on failure.
+    The temp_image_key should include the TEMP_UPLOAD_PREFIX.
+    """
+    if not storage_client:
+        print("Storage client not initialized.")
         return None
+    if not temp_image_key.startswith(TEMP_UPLOAD_PREFIX):
+        print(
+            f"Invalid temp_image_key: {temp_image_key} does not start with {TEMP_UPLOAD_PREFIX}"
+        )
+        return None
+
+    try:
+        bucket_name = settings.GCS_BUCKET_NAME
+        bucket = storage_client.bucket(bucket_name)
+
+        source_blob = bucket.blob(temp_image_key)
+        if not source_blob.exists():
+            print(f"Temporary image not found at {temp_image_key}")
+            return None
+
+        # Construct new destination name
+        filename_only = temp_image_key.split("/")[
+            -1
+        ]  # Get the "uuid-filename.ext" part
+        permanent_object_name = f"{PRODUCT_IMAGE_PREFIX}{seller_id}/{filename_only}"
+
+        destination_blob = bucket.copy_blob(source_blob, bucket, permanent_object_name)
+        source_blob.delete()  # Delete the temporary file
+
+        destination_blob.make_public()  # Ensure permanent one is also public
+        print(
+            f"Image moved to permanent location: {permanent_object_name}, URL: {destination_blob.public_url}"
+        )
+        return destination_blob.public_url
+    except Exception as e:
+        print(f"Error moving GCS image: {e}")
+        return None
+
+
+async def delete_gcs_temp_image(temp_image_key: str, current_user_id: str) -> bool:
+    """
+    Deletes an image from the temporary GCS location.
+    Validates that the key is in the temp prefix.
+    For enhanced security (post-PoC), one might also check if the current_user_id somehow matches
+    an owner of the temp file if such metadata were stored, or if the temp_image_key incorporates user_id.
+    For PoC, simply deleting from temp if key is valid is acceptable if endpoint is protected.
+    """
+    if not storage_client:
+        print("Storage client not initialized.")
+        return False
+    if not temp_image_key.startswith(TEMP_UPLOAD_PREFIX):
+        print(
+            f"Invalid temp_image_key for deletion: {temp_image_key} does not start with {TEMP_UPLOAD_PREFIX}"
+        )
+        # Potentially raise HTTPException here if called from an endpoint
+        return False
+
+    # Optional: Add a check here if temp_image_key was structured to include user_id
+    # e.g., if temp_image_key was "temp-uploads/{user_id}/{uuid}-{filename}"
+    # if not temp_image_key.startswith(f"{TEMP_UPLOAD_PREFIX}{current_user_id}/"):
+    #     print(f"User {current_user_id} not authorized to delete {temp_image_key} or key format mismatch.")
+    #     return False
+    # For this PoC, we assume the endpoint protection is sufficient and any valid temp key can be deleted by an auth user.
+
+    try:
+        bucket_name = settings.GCS_BUCKET_NAME
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(temp_image_key)
+
+        if blob.exists():
+            blob.delete()
+            print(f"Temporary image deleted from GCS: {temp_image_key}")
+            return True
+        else:
+            print(f"Temporary image not found for deletion: {temp_image_key}")
+            return False  # Or True if "not found" is considered a successful deletion state
+    except Exception as e:
+        print(f"Error deleting temporary GCS image {temp_image_key}: {e}")
+        return False
 
 
 async def analyze_image_with_vision_ai(image_uri: str) -> Tuple[List[str], List[str]]:
@@ -133,7 +236,7 @@ async def get_ai_description(title: str, image_features: List[str]) -> str:
     """
     features_str = ", ".join(list(set(image_features)))  # Unique features
     prompt = f"""You are an expert at writing compelling product descriptions for a used items marketplace.
-      Item Title: '{title}'
+      Item Title: '{title if title else 'No title provided'}'
       Visual Features from Image: {features_str if features_str else 'No specific visual features detected.'}
       Based on this, write a concise and appealing product description (2-3 sentences) suitable for a marketplace listing. Focus on key selling points a buyer would look for.
       If the visual features are not very descriptive, focus more on the item title.
@@ -150,7 +253,7 @@ async def get_ai_category(
     features_str = ", ".join(list(set(image_features)))
     categories_str = ", ".join(predefined_categories)
     prompt = f"""You are an expert product categorizer.
-      Item Title: '{title}'
+      Item Title: '{title if title else 'No title provided'}'
       Visual Features from Image: {features_str if features_str else 'No specific visual features detected.'}
       Predefined Categories: [{categories_str}]
       Based on the title and visual features, select the single most appropriate category from the predefined list.
@@ -167,16 +270,18 @@ async def get_ai_category(
     return "Other"  # Default if Gemini hallucinates or provides an invalid category
 
 
-# Predefined categories for the PoC - should match your plan
-# This could also be loaded from config or a database in a real app
-POC_CATEGORIES = [
-    "Electronics",
-    "Furniture",
-    "Clothing",
-    "Books",
-    "Sports Equipment",
-    "Home & Garden",
-    "Toys & Games",
-    "Collectibles",
-    "Other",
-]
+async def get_ai_assistance(
+    title: str,
+    image_uri: str,
+    predefined_categories: List[str] = POC_CATEGORIES,
+) -> Tuple[str, str]:
+    """
+    Main function to get AI-assisted product description and category.
+    """
+    labels, objects = await analyze_image_with_vision_ai(image_uri)
+    image_features = labels + objects
+
+    description = await get_ai_description(title, image_features)
+    category = await get_ai_category(title, image_features, predefined_categories)
+
+    return description, category

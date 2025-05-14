@@ -1,12 +1,11 @@
-# Product related endpoints will go here# backend/app/api/v1/endpoints/products.py
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db import database, models
+from app.db import database
 from app.schemas import product as product_schema
 from app.schemas import user as user_schema
-from app.services import product_service
+from app.services import product_service, gcp_services
 from app.security.firebase_auth import get_current_active_user
 
 router = APIRouter()
@@ -16,32 +15,32 @@ router = APIRouter()
     "/", response_model=product_schema.Product, status_code=status.HTTP_201_CREATED
 )
 async def create_product(
-    *,
+    *,  # Ensures following arguments are keyword-only
     db: Session = Depends(database.get_db),
-    title: str = Form(...),
-    price: float = Form(...),
-    image: UploadFile = File(...),
-    current_user: user_schema.User = Depends(
-        get_current_active_user
-    ),  # Protected route
+    product_data: product_schema.ProductCreate,  # Changed: now expects JSON body
+    current_user: user_schema.User = Depends(get_current_active_user),
 ):
     """
-    Create new product with AI-assisted description and categorization.
-    - **title**: Title of the product.
-    - **price**: Price of the product.
-    - **image**: Image file of the product.
+    Create new product using a pre-uploaded image_key.
+    Expects a JSON body with title, price, and image_key.
     """
-    product_in = product_schema.ProductCreate(title=title, price=price)
     try:
-        created_product = await product_service.create_product_with_ai_assistance(
-            db=db, product_in=product_in, image_file=image, seller_id=current_user.uid
+        created_product = await product_service.create_product(
+            db=db,
+            product_in=product_data,  # Pass the Pydantic model directly
+            seller_id=current_user.uid,
+        )
+        await gcp_services.delete_gcs_temp_image(
+            temp_image_key=product_data.image_key, current_user_id=current_user.uid
         )
         return created_product
-    except HTTPException as e:  # Re-raise HTTPExceptions from services
+    except HTTPException as e:
         raise e
     except Exception as e:
-        # Log the exception e
-        print(f"Unexpected error creating product: {e}")
+        print(f"Unexpected error creating product: {e}")  # Log the full error
+        # Consider logging e with traceback for better debugging
+        # import traceback
+        # print(traceback.format_exc())
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred while creating the product.",

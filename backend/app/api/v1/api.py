@@ -1,9 +1,7 @@
-# backend/app/api/v1/api.py
 from fastapi import APIRouter
-from .endpoints import products
+from .endpoints import products, images  # Import the new images router
 
 router = APIRouter()
 
-# Include your endpoint routers here
 router.include_router(products.router, prefix="/products", tags=["Products"])
-# router.include_router(login.router, prefix="/auth", tags=["Authentication"]) # If you had one
+router.include_router(images.router, prefix="/images", tags=["Images"])

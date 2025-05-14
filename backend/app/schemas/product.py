@@ -22,20 +22,19 @@ class ProductUpdate(BaseModel):
     image_url: Optional[HttpUrl] = None  # In case image needs to be updated
 
 
-# Properties shared by models stored in DB
 class ProductInDBBase(BaseModel):
     id: int
     title: str
     description: Optional[str] = None
     price: float
     category: Optional[str] = None
-    image_url: Optional[HttpUrl] = None
-    seller_id: str  # Firebase UID
+    image_url: Optional[str] = None  # Changed to str to accommodate GCS URLs directly
+    seller_id: str
     time_created: datetime
     time_updated: Optional[datetime] = None
 
     class Config:
-        from_attributes = True  # Replaces orm_mode = True in Pydantic v2
+        from_attributes = True
 
 
 # Properties to return to client

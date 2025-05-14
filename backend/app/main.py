@@ -2,10 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from firebase_admin import auth, exceptions
+from firebase_admin import exceptions
 
 from app.api.v1 import api as api_v1  # Import the v1 API router
-from app.core.config import settings
+
+# from app.core.config import settings
 
 # Ensure Firebase Admin is initialized (idempotent check is in firebase_auth.py)
 from app.security import firebase_auth  # This import will trigger the initialization
@@ -15,7 +16,7 @@ app = FastAPI(
 )
 
 origins = [
-    "http://localhost:5173",
+    "http://localhost:3000",  # Local development
 ]
 
 app.add_middleware(
