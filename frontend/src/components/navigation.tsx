@@ -14,15 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Separator } from "./ui/separator"
 import { Logo } from "./ui/logo"
 import { useToast } from "@/hooks/use-toast"
-
-const categories = [
-  { value: "electronics", label: "Electronics" },
-  { value: "furniture", label: "Furniture" },
-  { value: "clothing", label: "Clothing" },
-  { value: "toys", label: "Toys" },
-  { value: "books", label: "Books" },
-  { value: "sports", label: "Sports" },
-];
+import { categories } from "@/lib/utils"
 
 export function Navigation() {
   const router = useRouter();

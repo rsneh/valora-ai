@@ -9,3 +9,11 @@ export interface Product {
   time_created: string;
   time_updated?: string;
 }
+
+export interface ProductFormData {
+  title?: string;
+  description?: string;
+  price?: number;
+  category?: string;
+  image_url?: string;
+}
