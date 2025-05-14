@@ -6,7 +6,6 @@ import { Menu, LogOutIcon, UserRound } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useAuth } from "@/contexts/AuthContext"
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { RegisterDialog } from "./dialogs/register-dialog"
 import { LoginDialog } from "./dialogs/login-dialog"
@@ -19,9 +18,14 @@ import { categories } from "@/lib/utils"
 export function Navigation() {
   const router = useRouter();
   const { toast } = useToast();
-  const { logout, currentUser } = useAuth();
-  const [openRegisterDialog, setOpenRegisterDialog] = useState<boolean>(false);
-  const [openLoginDialog, setOpenLoginDialog] = useState<boolean>(false);
+  const {
+    logout,
+    currentUser,
+    showRegisterDialog,
+    showLoginDialog,
+    setShowRegisterDialog,
+    setShowLoginDialog,
+  } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -87,7 +91,7 @@ export function Navigation() {
                   size="sm"
                   variant="link"
                   className="ml-auto hidden md:flex text-foreground/80"
-                  onClick={() => setOpenLoginDialog(true)}
+                  onClick={() => setShowLoginDialog(true)}
                 >
                   Log in
                 </Button>
@@ -95,7 +99,7 @@ export function Navigation() {
                   size="sm"
                   variant="secondary"
                   className="ml-auto hidden md:flex"
-                  onClick={() => setOpenRegisterDialog(true)}
+                  onClick={() => setShowRegisterDialog(true)}
                 >
                   Sign Up
                 </Button>
@@ -138,23 +142,23 @@ export function Navigation() {
             )}
           </div>
         </div >
-      </header >
+      </header>
       <RegisterDialog
-        open={openRegisterDialog}
-        onOpenChange={setOpenRegisterDialog}
-        closeDialog={() => setOpenRegisterDialog(false)}
+        open={showRegisterDialog}
+        onOpenChange={setShowRegisterDialog}
+        closeDialog={() => setShowRegisterDialog(false)}
         openSignInDialog={(open) => {
-          setOpenRegisterDialog(false);
-          setOpenLoginDialog(open);
+          setShowRegisterDialog(false);
+          setShowLoginDialog(open);
         }}
       />
       <LoginDialog
-        open={openLoginDialog}
-        onOpenChange={setOpenLoginDialog}
-        closeDialog={() => setOpenLoginDialog(false)}
+        open={showLoginDialog}
+        onOpenChange={setShowLoginDialog}
+        closeDialog={() => setShowLoginDialog(false)}
         openSignUpDialog={(open) => {
-          setOpenLoginDialog(false);
-          setOpenRegisterDialog(open);
+          setShowLoginDialog(false);
+          setShowRegisterDialog(open);
         }}
       />
     </>

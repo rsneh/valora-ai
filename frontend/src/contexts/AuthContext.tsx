@@ -18,6 +18,10 @@ interface AuthContextType {
   currentUser: FirebaseUser | null;
   firebaseIdToken: string | null;
   loadingAuth: boolean;
+  showRegisterDialog: boolean;
+  showLoginDialog: boolean;
+  setShowRegisterDialog: (value: boolean) => void;
+  setShowLoginDialog: (value: boolean) => void;
   signInWithGoogle: () => Promise<UserCredential>;
   signInWithFacebook: () => Promise<UserCredential>;
   signInWithTwitter: () => Promise<UserCredential>;
@@ -43,6 +47,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [firebaseIdToken, setFirebaseIdToken] = useState<string | null>(null);
+  const [showRegisterDialog, setShowRegisterDialog] = useState<boolean>(false);
+  const [showLoginDialog, setShowLoginDialog] = useState<boolean>(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -101,11 +107,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     currentUser,
     firebaseIdToken,
     loadingAuth: loading,
+    showRegisterDialog,
+    showLoginDialog,
     logout,
     signInWithGoogle,
     signInWithFacebook,
     signInWithTwitter,
     signInEmailAndPassword,
+    setShowRegisterDialog,
+    setShowLoginDialog
   };
 
   return (
