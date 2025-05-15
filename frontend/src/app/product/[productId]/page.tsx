@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { getProductById } from '@/services/api/products';
 import { Button } from '@/components/ui/button';
-import { ArrowLeftIcon, HeartIcon, User, UserCircleIcon } from 'lucide-react';
+import { HeartIcon, UserCircleIcon } from 'lucide-react';
 import { ProductProvider } from '@/components/product/product-context';
 import { Gallery } from '@/components/product/gallery';
 
@@ -74,12 +74,12 @@ export default async function ProductPage(props: { params: Promise<{ productId: 
       />
       <div className="container mx-auto px-4">
         <Suspense fallback={<div className="animate-pulse">Loading...</div>}>
-          <div className="bg-white p-6 md:p-8 rounded-xl shadow-xl">
+          <div className="bg-white p-6 md:p-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
               <Gallery product={product} />
 
               {/* Product Info Section */}
-              <div className="flex flex-col justify-between">
+              <div className="flex flex-col justify-between shrink-1">
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">{product.title}</h1>
                   {/* <p className="text-md text-gray-500 mb-4">Special Black Edition</p> // Example Subtitle, not in Valora's model */}
