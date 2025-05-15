@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { PhotoUploader } from "@/components/ui/photo-uploader"
 import StepContent from '../ui/step-content'
-import { ProductFormData } from '@/types/product'
+import { Category, ProductFormData } from '@/types/product'
 import { SellerAdForm } from './ad-form'
 import { Card, CardContent } from '../ui/card'
-import { cn } from '@/lib/utils'
+import { categories, cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
@@ -23,7 +23,7 @@ export default function SellerPostWizard() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [productFormData, setProductFormData] = useState<ProductFormData>();
-  const [suggestedCategory, setSuggestedCategory] = useState<string>();
+  const [suggestedCategory, setSuggestedCategory] = useState<Category>();
 
   const {
     currentUser,
@@ -67,7 +67,12 @@ export default function SellerPostWizard() {
 
   function handleUploadComplete(imageData: ImageData): void {
     console.log("Image upload complete:", imageData);
-    setSuggestedCategory(imageData.suggested_category);
+    if (imageData.suggested_category) {
+      const category = categories.find((cat) => cat.value === imageData.suggested_category);
+      if (category) {
+        setSuggestedCategory(category);
+      }
+    }
     setProductFormData({
       ...productFormData,
       title: imageData.suggested_title,
@@ -159,7 +164,7 @@ export default function SellerPostWizard() {
                           src={productFormData.image_url!}
                           alt="Logo"
                           layout="fill"
-                          objectFit="fill"
+                          objectFit="contain"
                           className="rounded-lg aspect-square object-cover"
                         />
                       </div>

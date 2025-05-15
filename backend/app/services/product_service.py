@@ -1,5 +1,5 @@
 # backend/app/services/product_service.py
-from typing import List
+from typing import List, Optional
 from sqlalchemy.orm import Session
 from fastapi import UploadFile, HTTPException, status
 from app.db import models
@@ -26,13 +26,6 @@ async def create_product(
             detail="Invalid image key or failed to process image.",
         )
 
-    # # 2. Get AI-suggested description and category
-    # ai_description, ai_category = gcp_services.get_ai_assistance(
-    #     title=product_in.title, image_uri=permanent_image_url
-    # )
-    # if not ai_description:
-    #     ai_description = f"A quality used {product_in.title}."
-
     # 2. Create Product DB entry
     db_product = models.Product(
         title=product_in.title,
@@ -48,11 +41,24 @@ async def create_product(
     return db_product
 
 
-def get_products(db: Session, skip: int = 0, limit: int = 100) -> List[models.Product]:
+def get_products(
+    db: Session,
+    skip: int = 0,
+    limit: int = 100,
+    category: Optional[str] = None,  # NEW: Optional category filter
+) -> List[models.Product]:
     """
-    Retrieves a list of products.
+    Retrieves a list of products, with optional category filtering.
     """
-    return db.query(models.Product).offset(skip).limit(limit).all()
+    query = db.query(models.Product)
+
+    if category:
+        query = query.filter(models.Product.category == category)
+
+    # Add ordering, e.g., by most recent
+    query = query.order_by(models.Product.time_created.desc())
+
+    return query.offset(skip).limit(limit).all()
 
 
 def get_product(db: Session, product_id: int) -> models.Product | None:

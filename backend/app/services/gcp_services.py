@@ -5,7 +5,7 @@ from typing import List, Optional, Tuple
 from google.cloud import vision, storage
 from vertexai.generative_models import GenerativeModel
 from app.core.config import settings
-from app.core.utils import find_category_by_name
+from app.core.utils import find_category_by_title
 from app.schemas.category import CATEGORIES, Category
 
 TEMP_UPLOAD_PREFIX = "temp-uploads/"
@@ -318,12 +318,10 @@ async def get_ai_category(
     suggested_category = await generate_text_with_gemini(prompt)
 
     # Validate if the suggested category is in the predefined list
-    category = find_category_by_name(predefined_categories, suggested_category)
-
-    # filter(lambda s: value in s, students)
+    category = find_category_by_title(predefined_categories, suggested_category)
 
     if category:
-        return suggested_category
+        return category.value
 
     print(
         f"Gemini suggested category '{suggested_category}' not in predefined list. Defaulting to 'Other'."

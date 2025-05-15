@@ -1,5 +1,5 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
 from app.db import database
@@ -52,11 +52,18 @@ def read_products(
     db: Session = Depends(database.get_db),
     skip: int = 0,
     limit: int = 100,
+    category: Optional[str] = Query(
+        None, description="Filter products by category name"
+    ),
 ):
     """
-    Retrieve all products.
+    Retrieve products.
+    Supports pagination with skip and limit.
+    Optionally filters by category.
     """
-    products = product_service.get_products(db, skip=skip, limit=limit)
+    products = product_service.get_products(
+        db, skip=skip, limit=limit, category=category
+    )
     return products
 
 

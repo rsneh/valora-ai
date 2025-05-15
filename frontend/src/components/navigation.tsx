@@ -54,7 +54,7 @@ export function Navigation() {
                 href={`/browse/${category.value}`}
                 className="transition-colors hover:text-foreground/80 text-foreground"
               >
-                {category.menu || category.label}
+                {category.menu || category.title}
               </Link>
             ))}
             <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground">

@@ -18,6 +18,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useEffect, useState } from "react";
+import { Category } from "@/types/product";
 
 // Define Zod schema for form validation
 const productFormSchema = z.object({
@@ -31,22 +33,23 @@ type ProductFormData = z.infer<typeof productFormSchema>;
 
 interface SellerAdFormProps {
   defaultValues?: Partial<ProductFormData>;
-  suggestedCategory?: string;
+  suggestedCategory?: Category;
   loading?: boolean;
   onSubmit: (data: ProductFormData) => void;
 }
 
 export function SellerAdForm({ defaultValues, suggestedCategory, loading = false, onSubmit }: SellerAdFormProps) {
-  // Initialize the form with react-hook-form
+  const [category, setCategory] = useState<string>();
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
     defaultValues: defaultValues,
   });
-
-  // Handle form submission
-  function handleFormSubmit(data: ProductFormData) {
-    onSubmit(data);
-  }
+  const handleFormSubmit = (data: ProductFormData) => onSubmit(data);
+  useEffect(() => {
+    if (suggestedCategory) {
+      setCategory(suggestedCategory.value);
+    }
+  }, [suggestedCategory]);
 
   return (
     <Form {...form}>
@@ -60,7 +63,7 @@ export function SellerAdForm({ defaultValues, suggestedCategory, loading = false
               <FormControl>
                 <Input
                   placeholder="e.g., Nintendo Switch"
-                  {...field} // Connects input to react-hook-form
+                  {...field}
                 />
               </FormControl>
               <FormMessage /> {/* Displays validation errors */}
@@ -131,7 +134,7 @@ export function SellerAdForm({ defaultValues, suggestedCategory, loading = false
                 <CategoryGrid
                   size="sm"
                   categories={categories}
-                  suggestedCategory={suggestedCategory}
+                  suggestedCategory={category}
                   selectedCategory={field.value} // Pass field value
                   onCategorySelect={field.onChange} // Pass field onChange
                 />
@@ -141,7 +144,6 @@ export function SellerAdForm({ defaultValues, suggestedCategory, loading = false
           )}
         />
 
-        {/* Submit Button */}
         <Button type="submit" className="w-full" disabled={loading}>{loading ? "Submitting..." : "Submit"}</Button>
       </form>
     </Form>

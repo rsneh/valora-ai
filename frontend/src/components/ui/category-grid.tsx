@@ -3,16 +3,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { cn } from '@/lib/utils';
 import { Sparkles } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
+import { Category } from '@/types/product';
 
 type CategoryGridSize = 'sm' | 'md' | 'lg';
 
 interface CategoryGridProps {
-  categories: {
-    icon?: string;
-    label: string;
-    value: string;
-    description: string;
-  }[];
+  categories: Category[];
   size?: CategoryGridSize;
   selectedCategory?: string;
   suggestedCategory?: string;
@@ -29,12 +25,12 @@ export function CategoryGrid({ selectedCategory, categories, suggestedCategory, 
           key={i}
           size={size}
           icon={category.icon}
-          title={category.label}
+          title={category.title}
           value={category.value}
-          description={category.description}
-          isSelected={selectedCategory === category.label}
-          isSuggested={suggestedCategory === category.label}
-          onClick={() => onCategorySelect(category.label)}
+          description={category.description || ''}
+          isSelected={selectedCategory === category.value}
+          isSuggested={suggestedCategory === category.value}
+          onClick={() => onCategorySelect(category.value)}
         />
       ))}
     </div>

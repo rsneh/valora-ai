@@ -1,21 +1,33 @@
+import { Category } from "@/types/product";
 import { type ClassValue, clsx } from "clsx"
+import { ReadonlyURLSearchParams } from 'next/navigation'
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const categories = [
+export const createUrl = (
+  pathname: string,
+  params: URLSearchParams | ReadonlyURLSearchParams
+) => {
+  const paramsString = params.toString();
+  const queryString = `${paramsString.length ? '?' : ''}${paramsString}`;
+
+  return `${pathname}${queryString}`;
+};
+
+export const categories: Category[] = [
   {
     value: "electronics",
-    label: "Electronics",
+    title: "Electronics",
     description: "Gadgets, devices, phones, computers, consoles.",
     icon: "monitor-smartphone",
     show: true,
   },
   {
     value: "fashion",
-    label: "Fashion & Apparel",
+    title: "Fashion & Apparel",
     menu: "Fashion",
     description: "Clothing, shoes, bags, accessories.",
     icon: "shirt",
@@ -23,7 +35,7 @@ export const categories = [
   },
   {
     value: "home-goods",
-    label: "Home Goods & Furniture",
+    title: "Home Goods & Furniture",
     menu: "Furniture",
     description: "Furniture, decor, kitchen, appliances.",
     icon: "sofa",
@@ -31,7 +43,7 @@ export const categories = [
   },
   {
     value: "collectibles",
-    label: "Collectibles & Hobbies",
+    title: "Collectibles & Hobbies",
     menu: "Collectibles",
     description: "Collectibles, antiques, hobbies, instruments.",
     icon: "palette",
@@ -39,21 +51,21 @@ export const categories = [
   },
   {
     value: "books-media",
-    label: "Books & Media",
+    title: "Books & Media",
     menu: "Books",
     description: "Books, comics, music, movies.",
     icon: "library-big",
   },
   {
     value: "sports-outdoors",
-    label: "Sports & Outdoors",
+    title: "Sports & Outdoors",
     menu: "Sports",
     description: "Sports gear, fitness, outdoor items.",
     icon: "volleyball",
   },
   {
     value: "other",
-    label: "Other",
+    title: "Other",
     description: "For all other items.",
   },
 ];

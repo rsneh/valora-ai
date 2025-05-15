@@ -18,3 +18,12 @@ export interface ProductFormData {
   image_url?: string;
   image_key?: string;
 }
+
+export interface Category {
+  value: string;
+  title: string;
+  description?: string;
+  icon?: string;
+  show?: boolean;
+  menu?: string;
+}
