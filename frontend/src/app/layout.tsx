@@ -3,7 +3,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import type React from "react"
 import Loader from "@/components/loader"
-import { AuthProvider } from "@/contexts/AuthContext"
+import { AuthProvider } from "@/components/auth/auth-context"
 import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "@/components/theme-provider"
 

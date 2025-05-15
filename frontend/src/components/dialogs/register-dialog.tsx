@@ -10,7 +10,7 @@ import xSocialIcon from "@/assets/icons/x-social.svg"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog"
 import { Separator } from "../ui/separator";
 import { auth } from "@/services/firebase";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/components/auth/auth-context";
 import Link from "next/link";
 
 interface RegisterDialogProps {
