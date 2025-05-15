@@ -145,7 +145,7 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
           </div>
         </form>
         <div className="text-center text-sm">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href={""} className="underline underline-offset-4" onClick={() => openSignUpDialog(true)}>
             Sign up.
           </Link>

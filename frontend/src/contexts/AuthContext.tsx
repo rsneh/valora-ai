@@ -10,13 +10,13 @@ import {
   type User as FirebaseUser,
 } from 'firebase/auth';
 import { auth, googleProvider, twitterProvider, facebookProvider } from '@/services/firebase';
-import { useRouter } from 'next/navigation';
 
 export type RegisterDialogDetails = {
   title: string;
   description: string;
   onSuccess?: () => void;
 }
+
 interface AuthContextType {
   currentUser: FirebaseUser | null;
   firebaseIdToken: string | null;
@@ -55,7 +55,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     description: "Browse our categories to find what you need, or post your own items for sale.",
   }
 
-  const router = useRouter();
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [firebaseIdToken, setFirebaseIdToken] = useState<string | null>(null);
