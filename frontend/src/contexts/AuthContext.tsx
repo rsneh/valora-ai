@@ -4,23 +4,28 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import {
   onAuthStateChanged,
   signOut as firebaseSignOut,
-  GoogleAuthProvider,
   signInWithPopup,
   UserCredential,
   signInWithEmailAndPassword,
   type User as FirebaseUser,
-  FacebookAuthProvider,
-  TwitterAuthProvider,
 } from 'firebase/auth';
-import { auth } from '@/services/firebase';
+import { auth, googleProvider, twitterProvider, facebookProvider } from '@/services/firebase';
+import { useRouter } from 'next/navigation';
 
+export type RegisterDialogDetails = {
+  title: string;
+  description: string;
+  onSuccess?: () => void;
+}
 interface AuthContextType {
   currentUser: FirebaseUser | null;
   firebaseIdToken: string | null;
   loadingAuth: boolean;
   showRegisterDialog: boolean;
   showLoginDialog: boolean;
+  registerDialogDetails: RegisterDialogDetails;
   setShowRegisterDialog: (value: boolean) => void;
+  setRegisterDialogDetails: (details: RegisterDialogDetails) => void;
   setShowLoginDialog: (value: boolean) => void;
   signInWithGoogle: () => Promise<UserCredential>;
   signInWithFacebook: () => Promise<UserCredential>;
@@ -39,16 +44,25 @@ export function useAuth(): AuthContextType {
   return context;
 }
 
+
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const registerDialogDetailsDefault = {
+    title: "Create an Account",
+    description: "Browse our categories to find what you need, or post your own items for sale.",
+  }
+
+  const router = useRouter();
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [firebaseIdToken, setFirebaseIdToken] = useState<string | null>(null);
   const [showRegisterDialog, setShowRegisterDialog] = useState<boolean>(false);
   const [showLoginDialog, setShowLoginDialog] = useState<boolean>(false);
+  const [registerDialogDetails, setRegisterDialogDetails] = useState<RegisterDialogDetails>(registerDialogDetailsDefault);
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -81,27 +95,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const signInWithGoogle = async (): Promise<UserCredential> => {
-    const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
-  };
 
+  const signInWithGoogle = async (): Promise<UserCredential> => signInWithPopup(auth, googleProvider);
+  const signInWithFacebook = async (): Promise<UserCredential> => signInWithPopup(auth, facebookProvider);
+  const signInWithTwitter = async (): Promise<UserCredential> => signInWithPopup(auth, twitterProvider);
   const signInEmailAndPassword = async (
     email: string,
     password: string
-  ): Promise<UserCredential> => {
-    return signInWithEmailAndPassword(auth, email, password);
-  };
-
-  const signInWithFacebook = async (): Promise<UserCredential> => {
-    const provider = new FacebookAuthProvider();
-    return signInWithPopup(auth, provider);
-  };
-
-  const signInWithTwitter = async (): Promise<UserCredential> => {
-    const provider = new TwitterAuthProvider();
-    return signInWithPopup(auth, provider);
-  };
+  ): Promise<UserCredential> => signInWithEmailAndPassword(auth, email, password);
 
   const value: AuthContextType = {
     currentUser,
@@ -109,11 +110,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     loadingAuth: loading,
     showRegisterDialog,
     showLoginDialog,
+    registerDialogDetails,
     logout,
     signInWithGoogle,
     signInWithFacebook,
     signInWithTwitter,
     signInEmailAndPassword,
+    setRegisterDialogDetails,
     setShowRegisterDialog,
     setShowLoginDialog
   };

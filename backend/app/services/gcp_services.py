@@ -110,7 +110,6 @@ async def move_gcs_image_to_permanent(
         destination_blob = bucket.copy_blob(source_blob, bucket, permanent_object_name)
         source_blob.delete()  # Delete the temporary file
 
-        destination_blob.make_public()  # Ensure permanent one is also public
         print(
             f"Image moved to permanent location: {permanent_object_name}, URL: {destination_blob.public_url}"
         )

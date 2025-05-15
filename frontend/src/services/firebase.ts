@@ -1,5 +1,5 @@
 import { initializeApp, type FirebaseApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, EmailAuthProvider, type Auth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, EmailAuthProvider, type Auth, TwitterAuthProvider, FacebookAuthProvider } from "firebase/auth";
 // import { getFirestore, Firestore } from "firebase/firestore";
 // import { getStorage, FirebaseStorage } from "firebase/storage";
 
@@ -18,6 +18,8 @@ const auth: Auth = getAuth(app);
 // const db: Firestore = getFirestore(app);
 // const storage: FirebaseStorage = getStorage(app);
 const googleProvider = new GoogleAuthProvider();
+const twitterProvider = new TwitterAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 const emailProvider = new EmailAuthProvider();
 
-export { auth, googleProvider, emailProvider /*, db, storage */ };
+export { auth, googleProvider, emailProvider, twitterProvider, facebookProvider /*, db, storage */ };

@@ -24,7 +24,7 @@ export const categories = [
   {
     value: "home-goods",
     label: "Home Goods & Furniture",
-    menu: "Home",
+    menu: "Furniture",
     description: "Furniture, decor, kitchen, appliances.",
     icon: "sofa",
     show: true,
@@ -32,8 +32,10 @@ export const categories = [
   {
     value: "collectibles",
     label: "Collectibles & Hobbies",
+    menu: "Collectibles",
     description: "Collectibles, antiques, hobbies, instruments.",
     icon: "palette",
+    show: true,
   },
   {
     value: "books-media",

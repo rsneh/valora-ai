@@ -17,7 +17,7 @@ router = APIRouter()
 async def create_product(
     *,  # Ensures following arguments are keyword-only
     db: Session = Depends(database.get_db),
-    product_data: product_schema.ProductCreate,  # Changed: now expects JSON body
+    product_data: product_schema.ProductCreate,
     current_user: user_schema.User = Depends(get_current_active_user),
 ):
     """

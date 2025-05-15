@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { type Product } from '@/types/product';
+import { type ProductFormData, type Product } from '@/types/product';
 
 export const getProducts = async (): Promise<Product[]> => {
   const response = await apiClient.get<Product[]>('/products/');
@@ -12,10 +12,9 @@ export const getProductById = async (productId: string | number): Promise<Produc
 };
 
 
-export const createProduct = async (formData: FormData, token: string): Promise<Product> => { // Renamed to avoid conflict
+export const createProduct = async (formData: ProductFormData, token: string): Promise<Product> => { // Renamed to avoid conflict
   const response = await apiClient.post<Product>('/products/', formData, {
     headers: {
-      'Content-Type': 'multipart/form-data', // Axios sets this automatically for FormData
       'Authorization': `Bearer ${token}`,
     },
   });

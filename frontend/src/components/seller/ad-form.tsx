@@ -32,10 +32,11 @@ type ProductFormData = z.infer<typeof productFormSchema>;
 interface SellerAdFormProps {
   defaultValues?: Partial<ProductFormData>;
   suggestedCategory?: string;
+  loading?: boolean;
   onSubmit: (data: ProductFormData) => void;
 }
 
-export function SellerAdForm({ defaultValues, suggestedCategory, onSubmit }: SellerAdFormProps) {
+export function SellerAdForm({ defaultValues, suggestedCategory, loading = false, onSubmit }: SellerAdFormProps) {
   // Initialize the form with react-hook-form
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
@@ -141,7 +142,7 @@ export function SellerAdForm({ defaultValues, suggestedCategory, onSubmit }: Sel
         />
 
         {/* Submit Button */}
-        <Button type="submit" className="w-full">Submit</Button>
+        <Button type="submit" className="w-full" disabled={loading}>{loading ? "Submitting..." : "Submit"}</Button>
       </form>
     </Form>
   );

@@ -16,4 +16,5 @@ export interface ProductFormData {
   price?: number;
   category?: string;
   image_url?: string;
+  image_key?: string;
 }

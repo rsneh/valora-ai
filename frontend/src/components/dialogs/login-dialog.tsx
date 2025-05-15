@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Separator } from "../ui/separator";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import Link from "next/link";
 
 interface LoginDialogProps {
   open: boolean;
@@ -143,10 +144,11 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
             </Button>
           </div>
         </form>
-        <div className="flex flex-col items-center">
-          <Button variant="ghost" className="text-sm" onClick={() => openSignUpDialog(true)}>
-            {`Don't have an account? Sign up.`}
-          </Button>
+        <div className="text-center text-sm">
+          Don't have an account?{" "}
+          <Link href={""} className="underline underline-offset-4" onClick={() => openSignUpDialog(true)}>
+            Sign up.
+          </Link>
         </div>
       </DialogContent>
     </Dialog>

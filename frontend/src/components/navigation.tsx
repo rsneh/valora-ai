@@ -23,6 +23,7 @@ export function Navigation() {
     currentUser,
     showRegisterDialog,
     showLoginDialog,
+    registerDialogDetails,
     setShowRegisterDialog,
     setShowLoginDialog,
   } = useAuth();
@@ -134,6 +135,7 @@ export function Navigation() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem onSelect={() => router.push("/profile")}>Profile</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => router.push("/manage")}>Manage Ads</DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onSelect={handleLogout}><LogOutIcon />Log out</DropdownMenuItem>
                   </DropdownMenuContent>
@@ -144,6 +146,7 @@ export function Navigation() {
         </div >
       </header>
       <RegisterDialog
+        {...registerDialogDetails}
         open={showRegisterDialog}
         onOpenChange={setShowRegisterDialog}
         closeDialog={() => setShowRegisterDialog(false)}

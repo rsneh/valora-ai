@@ -8,9 +8,10 @@ from datetime import datetime
 class ProductCreate(BaseModel):
     title: str
     price: float
-    # Image will be handled as UploadFile in the endpoint, not directly in this schema for creation
-    # description: Optional[str] = None # Will be AI generated
-    # category: Optional[str] = None # Will be AI suggested
+    description: str = None
+    category: str = None
+    image_url: HttpUrl = None
+    image_key: str
 
 
 # Properties to receive on item update
@@ -19,7 +20,7 @@ class ProductUpdate(BaseModel):
     description: Optional[str] = None
     price: Optional[float] = None
     category: Optional[str] = None
-    image_url: Optional[HttpUrl] = None  # In case image needs to be updated
+    image_url: Optional[HttpUrl] = None
 
 
 class ProductInDBBase(BaseModel):
