@@ -311,7 +311,7 @@ async def get_ai_category(
       Item Title: '{title}'
       Visual Features from Image: {features_str if features_str else 'No specific visual features detected.'}]
       Predefined Categories and their descriptions:
-        {newline.join([f"- {cat.label}: [{cat.prompt}]" for cat in predefined_categories])}
+        {newline.join([f"- {cat.title}: [{cat.prompt}]" for cat in predefined_categories])}
       Based on the title and visual features, select the single most appropriate category from the predefined list.
       Respond with ONLY the category name from the list. If unsure, select 'Other'.
       Category:"""
