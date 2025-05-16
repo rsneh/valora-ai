@@ -46,7 +46,7 @@ app.include_router(api_v1.router, prefix="/api/v1")
 # --- Root Endpoint ---
 @app.get("/", tags=["Root"])
 async def read_root():
-    return {"message": "Welcome to AidSell API!"}
+    return {"message": "Welcome to Valora.ai's API!"}
 
 
 # --- Health Check Endpoint ---

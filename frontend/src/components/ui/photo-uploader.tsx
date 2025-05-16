@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { CloudUpload } from 'lucide-react';
+import { ImageIcon } from 'lucide-react';
 import { uploadImage } from '@/services/api/images';
 import { useAuth } from '@/components/auth/auth-context';
 import { SpinnerLoader } from './spinner-loader';
@@ -52,6 +52,7 @@ export function PhotoUploader({ onUploadComplete }: PhotoUploaderProps) {
     } catch (error) {
       console.error('Upload failed:', error);
       setUploadStatus('error');
+      setSelectedFiles([]);
       return;
     }
   }, [firebaseIdToken, onUploadComplete, selectedFiles]);
@@ -108,7 +109,10 @@ export function PhotoUploader({ onUploadComplete }: PhotoUploaderProps) {
             onDropCapture={handleOnDropCapture}
             className={`flex flex-col items-center justify-center p-8 border-2 border-dashed ${dragging ? 'border-blue-500' : 'border-gray-300'} rounded-lg text-gray-500 cursor-pointer md:w-full`}
           >
-            <CloudUpload className={`h-12 w-12 mb-4 transition-colors duration-300 ease-in-out ${dragging ? 'text-blue-300' : 'text-gray-500'}`} />
+            <ImageIcon
+              className={`h-12 w-12 mb-4 transition-colors duration-300 ease-in-out ${dragging ? 'text-blue-300' : 'text-gray-500'}`}
+              strokeWidth={1}
+            />
             <p className="mb-4 text-center">Drag and drop image or click here</p>
           </div>
         );

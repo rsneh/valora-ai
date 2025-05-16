@@ -270,10 +270,9 @@ async def get_ai_title(image_features: List[str], web_entities: List[str]) -> st
     prompt = f"""Based on the following features observed in an image: '{features_str}'.
         Suggest a concise, marketable, and descriptive product title (max 7-10 words) for a used item listing.
         Focus on the primary subject. Avoid phrases like "Image of" or "Photo of".
-        Dont use words like "used", "second hand" or include any condition.
         The title should be clear and informative, helping potential buyers understand what the item is.
         The title should be suitable for a marketplace listing and should not exceed 40 characters.
-        Avoid using the word "item" in the title.
+        Avoid using words like "item", "product", "used", "second hand" or include any condition in the title.
         Examples: "Blue Ceramic Vase", "Sony PlayStation 5 Console (Disc Version)", "Men's Nike Air Max Sneakers Size 10".
         Title:"""
 

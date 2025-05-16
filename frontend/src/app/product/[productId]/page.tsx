@@ -3,9 +3,10 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { getProductById } from '@/services/api/products';
 import { Button } from '@/components/ui/button';
-import { HeartIcon, UserCircleIcon } from 'lucide-react';
+import { HeartIcon, HomeIcon, UserCircleIcon } from 'lucide-react';
 import { ProductProvider } from '@/components/product/product-context';
 import { Gallery } from '@/components/product/gallery';
+import { ProductBreadcrumbs } from '@/components/product/product-breadcrumbs';
 
 
 export async function generateMetadata(props: {
@@ -73,6 +74,7 @@ export default async function ProductPage(props: { params: Promise<{ productId: 
         }}
       />
       <div className="container mx-auto px-4">
+        <ProductBreadcrumbs product={product} />
         <Suspense fallback={<div className="animate-pulse">Loading...</div>}>
           <div className="bg-white p-6 md:p-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">

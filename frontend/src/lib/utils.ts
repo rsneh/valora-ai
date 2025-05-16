@@ -69,3 +69,7 @@ export const categories: Category[] = [
     description: "For all other items.",
   },
 ];
+
+export const getCategoryByValue = (value: string): Category | undefined => {
+  return categories.find((cat) => cat.value === value);
+}

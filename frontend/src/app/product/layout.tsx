@@ -10,7 +10,7 @@ export default function SearchLayout({
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
-      <main className="py-8 md:py-10 container mx-auto px-4 flex-grow">
+      <main className="py-8 container mx-auto px-4 flex-grow">
         <Suspense fallback={null}>
           {children}
         </Suspense>

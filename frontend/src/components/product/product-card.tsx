@@ -5,19 +5,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { useMemo } from "react";
-import { categories } from "@/lib/utils";
+import { categories, cn, getCategoryByValue } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;
+  sizes?: string;
+  className?: string;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, className, sizes }) => {
   const category = useMemo(
-    () => categories.find(cat => cat.value === product.category || cat.title === product.category),
+    () => product.category ? getCategoryByValue(product.category) : null,
     [product.category]
   );
   return (
-    <div className="border rounded-lg shadow-lg bg-white animate-fadeIn">
+    <div className={cn("border rounded-lg shadow-lg bg-white animate-fadeIn", className)}>
       <Link href={`/product/${product.id}`}>
         {product.image_url && (
           <div className="relative inline-block h-48 w-full">
@@ -27,7 +29,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               loading="lazy"
               alt={product.title}
               fill
-              sizes="(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
+              sizes={sizes || "(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"}
             />
           </div>
         )}

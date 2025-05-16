@@ -7,7 +7,7 @@ import StepContent from '../ui/step-content'
 import { Category, ProductFormData } from '@/types/product'
 import { SellerAdForm } from './ad-form'
 import { Card, CardContent } from '../ui/card'
-import { categories, cn } from '@/lib/utils'
+import { cn, getCategoryByValue } from '@/lib/utils'
 import { useAuth } from '@/components/auth/auth-context'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
@@ -68,7 +68,7 @@ export default function SellerPostWizard() {
   function handleUploadComplete(imageData: ImageData): void {
     console.log("Image upload complete:", imageData);
     if (imageData.suggested_category) {
-      const category = categories.find((cat) => cat.value === imageData.suggested_category);
+      const category = getCategoryByValue(imageData.suggested_category);
       if (category) {
         setSuggestedCategory(category);
       }
