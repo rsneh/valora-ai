@@ -3,7 +3,7 @@
 import { getLocation } from '@/services/api/location';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useAuth } from './auth/auth-context';
-
+import { Location } from '@/types/location';
 
 interface LocationContextType {
   location: Location | null;

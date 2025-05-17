@@ -14,11 +14,13 @@ import { useRouter } from 'next/navigation'
 import { createProduct } from '@/services/api/products'
 import { Image as ImageData } from '@/types/image'
 import { Dialog, DialogContent, DialogTitle } from '../ui/dialog'
+import { useLocation } from '../location-context'
 
 
 export default function SellerPostWizard() {
   const router = useRouter();
   const { toast } = useToast();
+  const { location } = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -75,6 +77,7 @@ export default function SellerPostWizard() {
     }
     setProductFormData({
       ...productFormData,
+      ...location,
       title: imageData.suggested_title,
       image_url: imageData.image_url,
       image_key: imageData.image_key,

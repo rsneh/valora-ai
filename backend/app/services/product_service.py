@@ -40,10 +40,10 @@ async def create_product(
         category=product_in.category,
         image_url=permanent_image_url,
         seller_id=seller_id,
-        location_text=product_in.location_text,
         latitude=latitude,
         longitude=longitude,
-        # location_source=location_source_info
+        location_text=product_in.location_text,
+        location_source=product_in.location_source,
     )
     db.add(db_product)
     db.commit()

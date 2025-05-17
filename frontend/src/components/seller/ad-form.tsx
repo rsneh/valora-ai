@@ -8,9 +8,6 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { CategoryGrid } from "../ui/category-grid";
 import { Textarea } from "../ui/textarea";
-// import { useLocation } from "../location-context";
-
-// Import form components
 import {
   Form,
   FormControl,
@@ -41,7 +38,6 @@ interface SellerAdFormProps {
 
 export function SellerAdForm({ defaultValues, suggestedCategory, loading = false, onSubmit }: SellerAdFormProps) {
   const [category, setCategory] = useState<string>();
-  // const { location } = useLocation();
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
     defaultValues: defaultValues,

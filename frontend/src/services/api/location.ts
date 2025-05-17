@@ -1,5 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
 import apiClient from './client';
+import { Location } from '@/types/location';
 
 export const getLocation = async (
   lat: number,
