@@ -80,7 +80,7 @@ export const RegisterDialog = ({ open, title, description, onOpenChange, openSig
                     <DialogTitle className="text-center text-lg md:text-2xl">
                       {title}
                     </DialogTitle>
-                    <DialogDescription className="text-center text-sm px-2 mb-5 md:px-10">
+                    <DialogDescription className="text-center text-sm px-2 mb-5 md:px-8">
                       {description}
                     </DialogDescription>
                   </DialogHeader>
@@ -168,7 +168,6 @@ export const RegisterDialog = ({ open, title, description, onOpenChange, openSig
               </div>
             </div>
           </div>
-
         </div>
       </DialogContent>
     </Dialog>

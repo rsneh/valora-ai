@@ -35,26 +35,25 @@ export function LocationProvider({ children }: LocationProviderProps) {
         setLoading(true);
         navigator.geolocation.getCurrentPosition(
           async (position) => {
-            console.log("Current position:", position);
-
             const { latitude, longitude } = position.coords;
-            // Now call your reverse geocoding function
             try {
-              const locationData = await getLocation(latitude, longitude, firebaseIdToken!);
-              console.log("Location from reverse geocoding:", locationData);
+              const locationData = await getLocation(firebaseIdToken!, latitude, longitude);
               setLocation(locationData);
             } catch (error) {
               console.error("Reverse geocoding failed:", error);
-              // Handle error (e.g., show a message to the user)
             } finally {
               setLoading(false);
             }
           },
-          (error) => {
-            console.error("Error getting location:", error);
-            // Handle errors (PERMISSION_DENIED, POSITION_UNAVAILABLE, TIMEOUT)
-            // e.g., show a message like "Could not get your location. Please enter manually."
-            setLoading(false);
+          async (error) => {
+            try {
+              const locationData = await getLocation(firebaseIdToken!);
+              setLocation(locationData);
+            } catch (error) {
+              console.error("Get location failed:", error);
+            } finally {
+              setLoading(false);
+            }
           }
         );
       } else {

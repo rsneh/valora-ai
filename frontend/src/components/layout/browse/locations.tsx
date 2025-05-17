@@ -13,22 +13,16 @@ function LocationFilter() {
       <h3 className="hidden text-xs text-neutral-500 md:block dark:text-neutral-400">
         Location
       </h3>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center text-sm text-black dark:text-white">
         {location?.location_text ? (
-          <div className="text-black dark:text-white">
-            <p
-              className={cn(
-                'w-full text-sm',
-              )}
-            >
+          <div>
+            <p className="w-full">
               {location.location_text}
             </p>
           </div>
         ) : (
-          <div className="flex items-center">
-            <span className="text-sm text-neutral-500 dark:text-neutral-400">
-              No location selected
-            </span>
+          <div className="italic">
+            Unknown
           </div>
         )}
         <div className="text-black dark:text-white">
