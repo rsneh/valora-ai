@@ -46,6 +46,7 @@ export function LocationProvider({ children }: LocationProviderProps) {
             }
           },
           async (error) => {
+            console.warn("Geolocation error:", error);
             try {
               const locationData = await getLocation(firebaseIdToken!);
               setLocation(locationData);

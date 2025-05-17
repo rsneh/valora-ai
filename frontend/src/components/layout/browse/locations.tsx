@@ -27,13 +27,13 @@ function LocationFilter() {
         )}
         <div className="text-black dark:text-white">
           <Button
-            className="font-light text-xs p-0"
+            className="font-light text-xs p-0 gap-1"
             size="sm"
             variant="clean"
             onClick={() => console.log("Checking location")}
           >
-            <PenLineIcon />
             Change
+            <PenLineIcon />
           </Button>
         </div>
       </div>
