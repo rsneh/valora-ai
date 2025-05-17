@@ -12,6 +12,10 @@ class ProductCreate(BaseModel):
     category: str = None
     image_url: HttpUrl = None
     image_key: str
+    location_text: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    location_source: Optional[str] = None
 
 
 # Properties to receive on item update
@@ -33,6 +37,10 @@ class ProductInDBBase(BaseModel):
     seller_id: str
     time_created: datetime
     time_updated: Optional[datetime] = None
+    location_text: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    location_source: Optional[str] = None
 
     class Config:
         from_attributes = True

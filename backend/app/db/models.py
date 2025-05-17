@@ -15,6 +15,11 @@ class Product(Base):
     category = Column(String, index=True, nullable=True)  # AI suggested
     image_url = Column(String, nullable=True)  # URL from GCS
 
+    # Location example: "New York, NY"
+    location_text = Column(String, index=True, nullable=False)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
+
     # Store Firebase User ID as the seller_id
     # Firebase UID is a string
     seller_id = Column(String, index=True, nullable=False)

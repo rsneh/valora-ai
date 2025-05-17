@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { useMemo } from "react";
-import { categories, cn, getCategoryByValue } from "@/lib/utils";
+import { cn, getCategoryByValue } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;

@@ -52,6 +52,15 @@ def read_products(
     db: Session = Depends(database.get_db),
     skip: int = 0,
     limit: int = 100,
+    location_query: Optional[str] = Query(
+        None, description="Filter products by location text"
+    ),
+    lat: Optional[float] = Query(
+        None, description="Filter products by location latitude"
+    ),
+    lng: Optional[float] = Query(
+        None, description="Filter products by location longitude"
+    ),
     category: Optional[str] = Query(
         None, description="Filter products by category name"
     ),

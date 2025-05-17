@@ -1,7 +1,7 @@
 import { Product } from "@/types/product";
 import { ProductCard } from "./product-card";
 
-async function RelatedProducts({ productId }: { productId: string }) {
+export async function RelatedProducts({ }: { productId?: string }) {
   const relatedProducts: Product[] = []; //await getProductRecommendations(id);
 
   if (!relatedProducts.length) return null;

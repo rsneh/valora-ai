@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { getProductById } from '@/services/api/products';
 import { Button } from '@/components/ui/button';
-import { HeartIcon, HomeIcon, UserCircleIcon } from 'lucide-react';
+import { HeartIcon, UserCircleIcon } from 'lucide-react';
 import { ProductProvider } from '@/components/product/product-context';
 import { Gallery } from '@/components/product/gallery';
 import { ProductBreadcrumbs } from '@/components/product/product-breadcrumbs';

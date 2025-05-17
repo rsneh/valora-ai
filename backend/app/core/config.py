@@ -1,6 +1,15 @@
-# backend/app/core/config.py
+import os
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+from dotenv import load_dotenv
+
+project_root = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..")
+)  # Adjust '..' as needed
+dotenv_path = os.path.join(project_root, ".env")
+
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
 
 
 class Settings(BaseSettings):
@@ -11,6 +20,7 @@ class Settings(BaseSettings):
     )
     FIREBASE_PROJECT_ID: str
     GCS_BUCKET_NAME: str
+    ADMIN_EMAIL: str | None = None  # Optional: For local
 
     class Config:
         env_file = ".env"

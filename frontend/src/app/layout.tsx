@@ -6,6 +6,7 @@ import Loader from "@/components/loader"
 import { AuthProvider } from "@/components/auth/auth-context"
 import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "@/components/theme-provider"
+import { LocationProvider } from "@/components/location-context"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -32,7 +33,9 @@ export default function RootLayout({
         <Loader />
         <ThemeProvider>
           <AuthProvider>
-            {children}
+            <LocationProvider>
+              {children}
+            </LocationProvider>
           </AuthProvider>
           <Toaster />
         </ThemeProvider>

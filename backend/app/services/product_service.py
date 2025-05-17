@@ -1,10 +1,9 @@
-# backend/app/services/product_service.py
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from fastapi import UploadFile, HTTPException, status
+from fastapi import HTTPException, status
 from app.db import models
 from app.schemas import product as product_schema
-from . import gcp_services
+from . import gcp_services, location_service
 
 
 async def create_product(
@@ -26,6 +25,13 @@ async def create_product(
             detail="Invalid image key or failed to process image.",
         )
 
+    latitude = product_in.latitude
+    longitude = product_in.longitude
+    if latitude is None or longitude is None:
+        latitude, longitude = await location_service.geocode_address(
+            location_text=product_in.location_text
+        )
+
     # 2. Create Product DB entry
     db_product = models.Product(
         title=product_in.title,
@@ -34,6 +40,10 @@ async def create_product(
         category=product_in.category,
         image_url=permanent_image_url,
         seller_id=seller_id,
+        location_text=product_in.location_text,
+        latitude=latitude,
+        longitude=longitude,
+        # location_source=location_source_info
     )
     db.add(db_product)
     db.commit()
@@ -45,12 +55,26 @@ def get_products(
     db: Session,
     skip: int = 0,
     limit: int = 100,
-    category: Optional[str] = None,  # NEW: Optional category filter
+    location_text: str = None,
+    lat: Optional[float] = None,
+    lng: Optional[float] = None,
+    max_distance: Optional[float] = None,
+    category: Optional[str] = None,
 ) -> List[models.Product]:
     """
     Retrieves a list of products, with optional category filtering.
     """
     query = db.query(models.Product)
+
+    if location_text:
+        query = query.filter(models.Product.location_text == location_text)
+
+    if lat is not None and lng is not None and max_distance is not None:
+        # Assuming you have a function to filter by distance
+        query = query.filter(
+            models.Product.latitude.between(lat - max_distance, lat + max_distance),
+            models.Product.longitude.between(lng - max_distance, lng + max_distance),
+        )
 
     if category:
         query = query.filter(models.Product.category == category)

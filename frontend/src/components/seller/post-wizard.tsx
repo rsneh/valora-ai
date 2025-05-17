@@ -21,7 +21,7 @@ export default function SellerPostWizard() {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
   const [productFormData, setProductFormData] = useState<ProductFormData>();
   const [suggestedCategory, setSuggestedCategory] = useState<Category>();
 
@@ -98,8 +98,7 @@ export default function SellerPostWizard() {
       });
       router.push("/");
     } catch (err: any) {
-      console.error("Failed to create product:", err);
-      setError(err.response?.data?.detail || err.message || "Failed to post product. Please try again.");
+      setError(err);
     } finally {
       setLoading(false);
     }
@@ -195,7 +194,9 @@ export default function SellerPostWizard() {
                     <DialogTitle className="text-red-600">
                       Unable to create your ad.
                     </DialogTitle>
-                    {error}
+                    {error && (
+                      <span>{error.name}</span>
+                    )}
                   </DialogContent>
                 </Dialog>
               </div>

@@ -1,7 +1,7 @@
 import { Product } from "@/types/product";
 import { ProductCard } from "./product-card";
 
-async function FeatureProducts({ productId }: { productId: string }) {
+export async function FeatureProducts({ }: { productId?: string }) {
   const featureProducts: Product[] = []; //await getProductRecommendations(id);
 
   if (!featureProducts.length) return null;

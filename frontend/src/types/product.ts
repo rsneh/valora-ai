@@ -17,6 +17,7 @@ export interface ProductFormData {
   category?: string;
   image_url?: string;
   image_key?: string;
+  location_text?: string;
 }
 
 export interface Category {
