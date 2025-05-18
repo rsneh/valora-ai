@@ -3,7 +3,6 @@
 import { cn } from "@/lib/utils";
 import { Product } from "@/types/product";
 import { useEffect, useState } from "react";
-import { Badge } from "../ui/badge";
 import Image from "next/image";
 
 interface GalleryProps {
@@ -66,13 +65,6 @@ export const Gallery = ({ product }: GalleryProps) => {
             src={mainImage as string}
             priority
           />
-        )}
-
-        {/* Category Badge */}
-        {product.category && (
-          <Badge className="absolute top-3 right-3 font-semibold px-3 py-1.5">
-            {product.category}
-          </Badge>
         )}
       </div>
     </div>

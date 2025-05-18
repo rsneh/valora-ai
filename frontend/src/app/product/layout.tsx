@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Footer } from "@/components/footer";
 import { Navigation } from "@/components/navigation";
 
-export default function SearchLayout({
+export default function SearchProduct({
   children
 }: {
   children: React.ReactNode;

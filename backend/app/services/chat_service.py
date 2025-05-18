@@ -5,7 +5,7 @@ from app.db import models
 from app.services import ai_negotiation_service
 
 
-def get_or_create_conversation(
+async def get_or_create_conversation_with_greeting(
     db: Session, product_id: int, buyer_id: str, seller_id: str
 ) -> models.Conversation:
     """
@@ -22,15 +22,34 @@ def get_or_create_conversation(
     )
 
     if not conversation:
+        product = (
+            db.query(models.Product).filter(models.Product.id == product_id).first()
+        )
+        if not product:
+            raise ValueError("Product not found for creating conversation")
+
         conversation = models.Conversation(
             product_id=product_id,
             buyer_id=buyer_id,
-            seller_id=seller_id,  # Set the seller_id from the product
+            seller_id=seller_id,
             status=models.ConversationStatus.ACTIVE,
         )
-        print(f"Creating new conversation: {conversation}")
         db.add(conversation)
-        db.commit()
+        db.commit()  # Commit to get conversation.id
+        db.refresh(conversation)
+
+        # Add initial AI greeting message
+        ai_greeting_text = await ai_negotiation_service.generate_initial_ai_greeting(
+            product
+        )
+        add_message_to_conversation(
+            db=db,
+            conversation_id=conversation.id,
+            sender_id="VALORA_AI_ASSISTANT",
+            sender_type=models.MessageSenderType.AI_ASSISTANT,
+            message_text=ai_greeting_text,
+            update_last_message_at=False,
+        )
         db.refresh(conversation)
     return conversation
 
@@ -41,10 +60,8 @@ def add_message_to_conversation(
     sender_id: str,
     sender_type: models.MessageSenderType,
     message_text: str,
+    update_last_message_at: bool = True,  # Added flag
 ) -> models.ChatMessage:
-    """
-    Adds a message to a conversation and updates the conversation's last_message_at.
-    """
     db_message = models.ChatMessage(
         conversation_id=conversation_id,
         sender_id=sender_id,
@@ -53,17 +70,15 @@ def add_message_to_conversation(
     )
     db.add(db_message)
 
-    # Update conversation's last_message_at
-    conversation = (
-        db.query(models.Conversation)
-        .filter(models.Conversation.id == conversation_id)
-        .first()
-    )
-    if conversation:
-        conversation.last_message_at = (
-            func.now()
-        )  # Use func.now() for database's current time
-        db.add(conversation)
+    if update_last_message_at:
+        conversation = (
+            db.query(models.Conversation)
+            .filter(models.Conversation.id == conversation_id)
+            .first()
+        )
+        if conversation:
+            conversation.last_message_at = func.now()
+            db.add(conversation)
 
     db.commit()
     db.refresh(db_message)
@@ -80,7 +95,7 @@ async def process_buyer_message_and_get_ai_response(
     if not product:
         raise ValueError("Product not found")  # Or a specific HTTPException
 
-    conversation = get_or_create_conversation(
+    conversation = await get_or_create_conversation_with_greeting(
         db=db, product_id=product_id, buyer_id=buyer_id, seller_id=product.seller_id
     )
 
@@ -93,8 +108,6 @@ async def process_buyer_message_and_get_ai_response(
         message_text=buyer_message_text,
     )
 
-    # Prepare conversation history for AI (last N messages)
-    # Querying messages again to ensure they are ordered and fresh
     recent_messages_db = (
         db.query(models.ChatMessage)
         .filter(models.ChatMessage.conversation_id == conversation.id)
@@ -103,49 +116,45 @@ async def process_buyer_message_and_get_ai_response(
         .all()
     )
 
-    # Reverse to get chronological order for the prompt
     conversation_history_for_ai = [
         {"sender_type": msg.sender_type.value, "text": msg.message_text}
-        for msg in reversed(recent_messages_db)
+        for msg in reversed(recent_messages_db)  # Ensure chronological for prompt
     ]
 
-    # Get AI response
     ai_response_text = await ai_negotiation_service.generate_ai_response(
         product=product,
-        conversation_history=conversation_history_for_ai,  # Pass the formatted history
+        conversation_history=conversation_history_for_ai,
         buyer_message_text=buyer_message_text,
-        # seller_negotiation_params can be built from product.min_acceptable_price etc.
     )
 
-    # Save AI's message
     ai_message_db = add_message_to_conversation(
         db=db,
         conversation_id=conversation.id,
-        sender_id="VALORA_AI_ASSISTANT",  # Special ID for the AI
+        sender_id="VALORA_AI_ASSISTANT",
         sender_type=models.MessageSenderType.AI_ASSISTANT,
         message_text=ai_response_text,
     )
     return ai_message_db
 
 
-def get_chat_history(
+async def get_chat_history_with_greeting(  # Renamed for clarity
     db: Session, product_id: int, buyer_id: str, seller_id: str
 ) -> List[models.ChatMessage]:
     """
-    Retrieves chat history for a given product and buyer.
+    Retrieves chat history. If conversation is new, it creates it with an AI greeting.
     """
-    conversation = (
-        db.query(models.Conversation)
-        .filter(
-            models.Conversation.product_id == product_id,
-            models.Conversation.buyer_id == buyer_id,
-            models.Conversation.seller_id == seller_id,
-        )
-        .first()
+    # This function ensures the conversation (and greeting) exists
+    conversation = await get_or_create_conversation_with_greeting(
+        db=db, product_id=product_id, buyer_id=buyer_id, seller_id=seller_id
     )
 
-    if not conversation:
-        return []  # No conversation found, so no history
-
-    # Messages are already ordered by timestamp in the relationship definition
-    return conversation.messages
+    # Fetch all messages for the conversation, ordered
+    # The relationship in Conversation model already orders by timestamp
+    # For explicit ordering here:
+    messages = (
+        db.query(models.ChatMessage)
+        .filter(models.ChatMessage.conversation_id == conversation.id)
+        .order_by(models.ChatMessage.timestamp.asc())
+        .all()
+    )
+    return messages

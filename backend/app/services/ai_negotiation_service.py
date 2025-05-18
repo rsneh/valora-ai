@@ -1,9 +1,46 @@
 from app.db.models import Product as ProductModel, ChatMessage as ChatMessageModel
 from app.db.models import MessageSenderType  # Import the enum
-from typing import List, Optional, Dict
+from typing import List, Dict
 from app.services import gcp_services  # Assuming your Gemini interaction is here
 
-# from app.core.config import settings # If needed for specific AI settings
+
+async def generate_initial_ai_greeting(product: ProductModel) -> str:
+    """
+    Generates an initial greeting message from the AI when a buyer starts a chat.
+    """
+    prompt_parts = [
+        "You are Valora AI, a friendly and helpful assistant for a marketplace selling used goods. "
+        "A buyer has just started a chat to inquire about an item. "
+        "Your goal is to greet the buyer, introduce yourself, mention the item they are interested in, "
+        "and briefly explain what you can help with (answer questions, discuss price/terms for an in-person exchange). "
+        "Keep it welcoming, concise, and clear."
+    ]
+    prompt_parts.append("\n--- Product Information ---")
+    prompt_parts.append(f"Item: {product.title}")
+    prompt_parts.append(f"Listed Price: ${product.price:.2f}")
+    if product.location_text:
+        prompt_parts.append(f"Item Location: {product.location_text}")
+
+    prompt_parts.append("\n--- Your Greeting Task ---")
+    prompt_parts.append(
+        "Craft a greeting message to the buyer. Example: '👋 Hi there! I'm Valora AI, your assistant for the \"{Product Title}\". I can answer questions about it and help with price or meetup details in {Product Location}. How can I help you today?'"
+    )
+    prompt_parts.append("Your response should be just the greeting message itself.")
+    prompt_parts.append("\nAI Greeting:")
+
+    full_prompt = "\n".join(prompt_parts)
+
+    print(
+        f"DEBUG: AI Prompt for Initial Greeting:\n{full_prompt}\n--------------------"
+    )
+
+    ai_greeting_text = await gcp_services.generate_text_with_gemini(prompt=full_prompt)
+
+    if not ai_greeting_text:
+        # Fallback greeting if Gemini fails
+        return f'Hello! I\'m Valora AI, your assistant for the "{product.title}". Feel free to ask any questions about the item or discuss the price. How can I help?'
+
+    return ai_greeting_text.strip()
 
 
 async def generate_ai_response(

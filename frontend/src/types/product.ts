@@ -8,6 +8,9 @@ export interface Product {
   seller_id: string;
   time_created: string;
   time_updated?: string;
+  location_text: string;
+  min_acceptable_price?: number;
+  negotiation_notes_for_ai?: string;
 }
 
 export interface ProductFormData {

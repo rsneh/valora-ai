@@ -18,8 +18,8 @@ export const ProductBreadcrumbs = ({ product }: { product: Product }) => {
             <HomeIcon className="h-4 w-4" />
           </Link>
         </BreadcrumbLink>
-        <BreadcrumbSeparator className="text-gray-400" />
       </BreadcrumbItem>
+      <BreadcrumbSeparator className="text-gray-400" />
       <BreadcrumbItem className="text-gray-500">
         {category && (
           <BreadcrumbLink asChild className="hover:text-gray-800">
@@ -28,8 +28,8 @@ export const ProductBreadcrumbs = ({ product }: { product: Product }) => {
             </Link>
           </BreadcrumbLink>
         )}
-        <BreadcrumbSeparator className="text-gray-400" />
       </BreadcrumbItem>
+      <BreadcrumbSeparator className="text-gray-400" />
       <BreadcrumbItem className="text-gray-500">
         <BreadcrumbLink href="/" className="hover:text-gray-800">
           {product.title}
