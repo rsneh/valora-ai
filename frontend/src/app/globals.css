@@ -142,3 +142,16 @@ body {
 .animate-fadeInSlideUp {
   animation: fadeInSlideUp 0.4s ease-out forwards;
 }
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-[#ED1E79] pb-1.5;
+}
+
+.hero-glow {
+  @apply relative;
+}
+
+.hero-glow::after {
+  content: "";
+  @apply absolute -z-10 w-full h-full top-0 left-0 blur-3xl opacity-30 bg-gradient-to-r from-primary/50 to-purple-500/50 rounded-full;
+}

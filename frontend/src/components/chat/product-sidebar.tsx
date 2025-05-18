@@ -11,7 +11,7 @@ interface ChatProductSidebarProps {
 
 const ChatProductSidebar = ({ product }: ChatProductSidebarProps) => {
   return (
-    <aside className="hidden lg:flex flex-col w-72 bg-slate-50 dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 p-4">
+    <aside className="hidden lg:flex flex-col w-72 bg-slate-50 dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 p-4 lg:w-96">
       <h2 className="text-lg font-semibold text-slate-700 dark:text-slate-100 mb-4">Product Details</h2>
       <div className="bg-white dark:bg-slate-700 p-3 rounded-lg shadow">
         <Image
@@ -27,7 +27,7 @@ const ChatProductSidebar = ({ product }: ChatProductSidebarProps) => {
         {product.location_text && (
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Location: ${product.location_text}</p>
         )}
-        <Link href={`/products/${product.id}`} className="block text-center mt-3 w-full p-2 text-sm bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors">
+        <Link href={`/product/${product.id}`} className="block text-center mt-3 w-full p-2 text-sm bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors">
           View Details
         </Link>
       </div>

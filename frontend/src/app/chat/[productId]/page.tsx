@@ -8,6 +8,8 @@ import { ChatMessage } from '@/types/chat';
 import { getChatHistoryAPI, sendChatMessageAPI } from '@/services/api/chat';
 import Message from '@/components/ui/message';
 import { useChatContext } from './chat-context';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
 
 export default function ChatPage() {
   const { product } = useChatContext();
@@ -88,7 +90,15 @@ export default function ChatPage() {
       {/* Chat Header */}
       {product && (
         <header className="bg-white dark:bg-slate-800 p-4 rounded-t-xl shadow-md border-b border-slate-200 dark:border-slate-700 flex items-center space-x-3">
-          {/* <Image src="https://placehold.co/48x48/9333ea/ffffff?text=AI" alt="AI Assistant" width={48} height={48} className="w-10 h-10 rounded-full" /> */}
+          <Avatar>
+            <AvatarImage
+              src="/images/valora-ai-avatar.webp"
+              alt="Valora AI Assistant"
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+          </Avatar>
           <div>
             <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Valora AI Seller Assistant</h2>
             <p className="text-xs text-green-500 dark:text-green-400">Online</p>
@@ -123,15 +133,15 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="bg-white dark:bg-slate-800 p-4 rounded-b-xl shadow-md border-t border-slate-200 dark:border-slate-700">
+      <div className="bg-white dark:bg-slate-800 p-4 rounded-b-xl shadow-md border-t border-slate-200">
         <form onSubmit={handleSendMessage}>
           <div className="flex items-center space-x-2">
-            <input
+            <Input
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type your message..."
-              className="flex-grow p-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:bg-gray-100"
+              className="flex-grow p-2 border-0"
               disabled={isSendingMessage}
               autoComplete="off"
             />

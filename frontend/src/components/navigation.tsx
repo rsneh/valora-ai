@@ -108,7 +108,7 @@ export function Navigation() {
             )}
             <Link href="/sell" passHref>
               <Button size="lg" className="ml-auto hidden md:flex">
-                Post for Sale
+                Create Ad
               </Button>
             </Link>
             {currentUser && (

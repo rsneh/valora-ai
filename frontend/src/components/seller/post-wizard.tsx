@@ -48,7 +48,7 @@ export default function SellerPostWizard() {
         }
       });
     }
-  }, [currentUser]);
+  }, [currentUser, setShowRegisterDialog, setRegisterDialogDetails, toast]);
 
   // Function to go to the next step
   const nextStep = () => {

@@ -28,6 +28,7 @@ class Product(Base):
     location_text = Column(String, index=True, nullable=False)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
+    location_source = Column(String, nullable=True)
 
     # Store Firebase User ID as the seller_id
     # Firebase UID is a string

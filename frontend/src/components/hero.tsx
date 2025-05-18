@@ -16,20 +16,25 @@ export function Hero() {
           className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
         />
       </div>
-      <div className="relative mx-auto max-w-5xl px-6 py-24 sm:py-32 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-            The Smartest, Simplest Way to Sell Your Used Goods.
-          </h1>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground md:max-w-lg mx-auto">
+      <div className="relative space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32 overflow-hidden">
+        <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center relative z-10">
+          <div className="rounded-full bg-primary/10 backdrop-blur-sm px-4 py-1.5 text-sm font-medium text-primary border border-primary/20">
+            Introducing Valora AI
+          </div>
+          <div className="hero-glow">
+            <h1 className="font-heading text-3xl sm:text-5xl md:text-6xl lg:text-6xl tracking-tight">
+              The Smartest, Simplest Way to Sell Your Used Goods.
+            </h1>
+          </div>
+          <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8 glass-effect p-4 rounded-lg">
             Effortless AI listings and buyer negotiations – selling made truly simple and intelligent.
           </p>
-          <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Link href="/sell">
-              <Button size="lg" className="rounded-full">
-                Post Your Item with AI
-              </Button>
-            </Link>
+          <div className="flex flex-wrap justify-center gap-4 mt-6">
+            <Button size="lg" className="rounded-full" asChild>
+              <Link href="/sell">
+                Create Ad with AI
+              </Link>
+            </Button>
           </div>
         </div>
       </div>

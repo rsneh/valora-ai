@@ -21,6 +21,9 @@ export interface ProductFormData {
   image_url?: string;
   image_key?: string;
   location_text?: string;
+  latitude?: number;
+  longitude?: number;
+  location_source?: string;
 }
 
 export interface Category {
@@ -30,4 +33,5 @@ export interface Category {
   icon?: string;
   show?: boolean;
   menu?: string;
+  imagePath?: string;
 }

@@ -24,6 +24,7 @@ export const categories: Category[] = [
     description: "Gadgets, devices, phones, computers, consoles.",
     icon: "monitor-smartphone",
     show: true,
+    imagePath: "/images/category/electronics.jpg",
   },
   {
     value: "fashion",
@@ -32,6 +33,7 @@ export const categories: Category[] = [
     description: "Clothing, shoes, bags, accessories.",
     icon: "shirt",
     show: true,
+    imagePath: "/images/category/fashion.jpg",
   },
   {
     value: "home-goods",
@@ -40,6 +42,7 @@ export const categories: Category[] = [
     description: "Furniture, decor, kitchen, appliances.",
     icon: "sofa",
     show: true,
+    imagePath: "/images/category/home-goods.jpg",
   },
   {
     value: "collectibles",
@@ -48,6 +51,7 @@ export const categories: Category[] = [
     description: "Collectibles, antiques, hobbies, instruments.",
     icon: "palette",
     show: true,
+    imagePath: "/images/category/collectibles.jpg",
   },
   {
     value: "books-media",
@@ -55,6 +59,7 @@ export const categories: Category[] = [
     menu: "Books",
     description: "Books, comics, music, movies.",
     icon: "library-big",
+    imagePath: "/images/category/books.jpg",
   },
   {
     value: "sports-outdoors",
@@ -62,6 +67,7 @@ export const categories: Category[] = [
     menu: "Sports",
     description: "Sports gear, fitness, outdoor items.",
     icon: "volleyball",
+    imagePath: "/images/category/sports.jpg",
   },
   {
     value: "other",

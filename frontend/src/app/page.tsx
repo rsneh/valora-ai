@@ -1,7 +1,8 @@
 import { Navigation } from "@/components/navigation"
 import { Hero } from "@/components/hero"
-import { FeaturedPrompts } from "@/components/featured-prompts"
+import { IntelligentFeatures } from "@/components/intelligent-features"
 import { Footer } from "@/components/footer"
+import { CategoriesSection } from "@/components/categories-section"
 
 export default function Home() {
   return (
@@ -9,7 +10,8 @@ export default function Home() {
       <Navigation />
       <main className="flex-1">
         <Hero />
-        <FeaturedPrompts />
+        <IntelligentFeatures />
+        <CategoriesSection />
       </main>
       <Footer />
     </div>

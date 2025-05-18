@@ -7,6 +7,7 @@ import {
   signInWithPopup,
   UserCredential,
   signInWithEmailAndPassword,
+  updateProfile,
   type User as FirebaseUser,
 } from 'firebase/auth';
 import { auth, googleProvider, twitterProvider, facebookProvider } from '@/services/firebase';
@@ -24,6 +25,7 @@ interface AuthContextType {
   showRegisterDialog: boolean;
   showLoginDialog: boolean;
   registerDialogDetails: RegisterDialogDetails;
+  updateProfile: (user: FirebaseUser, { displayName, photoUrl }: { displayName?: string; photoUrl?: string }) => Promise<void>
   setShowRegisterDialog: (value: boolean) => void;
   setRegisterDialogDetails: (details: RegisterDialogDetails) => void;
   setShowLoginDialog: (value: boolean) => void;
@@ -61,7 +63,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [showRegisterDialog, setShowRegisterDialog] = useState<boolean>(false);
   const [showLoginDialog, setShowLoginDialog] = useState<boolean>(false);
   const [registerDialogDetails, setRegisterDialogDetails] = useState<RegisterDialogDetails>(registerDialogDetailsDefault);
-
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -111,6 +112,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     showLoginDialog,
     registerDialogDetails,
     logout,
+    updateProfile,
     signInWithGoogle,
     signInWithFacebook,
     signInWithTwitter,

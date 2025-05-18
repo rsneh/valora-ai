@@ -2,13 +2,18 @@
 
 import { LogOutIcon, PiIcon } from "lucide-react";
 import Link from "next/link";
+import { Logo } from "../ui/logo";
 
 const ChatLeftSidebar = () => {
   return (
     <aside className="hidden md:flex flex-col w-64 bg-slate-50 dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 p-4">
       <>
         <div className="flex items-center mb-6">
-          {/* <Image src="https://placehold.co/40x40/7c3aed/ffffff?text=V" alt="Valora Logo" width={40} height={40} className="rounded-full mr-3" /> */}
+          <Link href="/" className="mr-6 flex items-center space-x-2">
+            <Logo />
+          </Link>
+        </div>
+        <div className="flex items-center mb-6">
           <h1 className="text-xl font-semibold text-slate-700 dark:text-slate-100">Valora Chats</h1>
         </div>
         <nav className="flex-grow space-y-2">
