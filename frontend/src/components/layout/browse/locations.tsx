@@ -1,40 +1,66 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import { cn } from "@/lib/utils"
 import { useLocation } from "@/components/location-context"
 import { PenLineIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AutoComplete from "@/components/ui/autocomplete-location";
 
 function LocationFilter() {
-  const { location } = useLocation();
+  const { location, setLocation } = useLocation();
+  const [showSearch, setShowSearch] = useState(false);
   return (
-    <div>
+    <div className="relative">
       <h3 className="hidden text-xs text-neutral-500 md:block dark:text-neutral-400">
         Location
       </h3>
-      <div className="flex justify-between items-center text-sm text-black dark:text-white">
-        {location?.location_text ? (
-          <div>
+      <div className="flex flex-col justify-between items-center text-sm text-black dark:text-white">
+        <div className={cn(
+          "flex justify-between items-center w-full",
+          "transition-all duration-300 ease-out",
+          {
+            "mb-8": showSearch
+          })}>
+          {location?.location_text ? (
             <p className="w-full">
               {location.location_text}
             </p>
+          ) : (
+            <div className="italic">
+              Unknown
+            </div>
+          )}
+          <div className="text-black dark:text-white">
+            <Button
+              className="font-light text-xs p-0 gap-1"
+              size="sm"
+              variant="clean"
+              onClick={() => setShowSearch(!showSearch)}
+            >
+              Change
+              <PenLineIcon />
+            </Button>
           </div>
-        ) : (
-          <div className="italic">
-            Unknown
-          </div>
-        )}
-        <div className="text-black dark:text-white">
-          <Button
-            className="font-light text-xs p-0 gap-1"
-            size="sm"
-            variant="clean"
-            onClick={() => console.log("Checking location")}
-          >
-            Change
-            <PenLineIcon />
-          </Button>
+        </div>
+        <div
+          className={cn(
+            "absolute top-14 left-0 transition-all duration-300 ease-out z-99",
+            showSearch
+              ? "opacity-100 translate-y-0 w-96"
+              : "opacity-0 -translate-y-2 pointer-events-none w-48"
+          )}
+        >
+          <AutoComplete
+            onLocationSelect={(location) => {
+              setLocation({
+                location_text: location?.name,
+                latitude: location?.latitude,
+                longitude: location?.longitude,
+              });
+              setShowSearch(false);
+            }}
+          />
         </div>
       </div>
     </div>

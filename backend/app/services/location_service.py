@@ -1,9 +1,11 @@
 import httpx
 import asyncio
-from typing import Optional
+from typing import List, Optional
+from fastapi import HTTPException
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
-from app.core.config import settings  # Assuming you might add User-Agent to settings
+from app.core.config import settings
+from app.schemas.location import LocationSuggestion
 
 geolocator = Nominatim(
     user_agent=f"ValoraApp/1.0 ({settings.ADMIN_EMAIL or 'contact@valoraai.net'})"
@@ -92,3 +94,101 @@ async def geocode_ip_address(
     except Exception as e:
         print(f"Error geocoding IP '{ip_address}': {e}")
     return None, None, None
+
+
+async def get_location_suggestions(query: str) -> list[dict]:
+    """
+    Provides location suggestions based on the user's query.
+    This would typically call a geocoding service or query your own location database.
+    """
+    try:
+        locations_raw = await asyncio.to_thread(
+            geolocator.geocode,
+            query,
+            exactly_one=False,
+            addressdetails=True,
+            language="en",  # Prefer English results
+            limit=5,
+            timeout=10,
+        )
+
+        suggestions: List[LocationSuggestion] = []
+        if locations_raw:
+            for loc_raw in locations_raw:
+                print(f"Processing location: {loc_raw.raw}")
+                if (
+                    loc_raw
+                    and loc_raw.raw
+                    and loc_raw.raw.get("address")
+                    and loc_raw.raw.get("addresstype") in ["town", "city"]
+                ):
+                    address_details = loc_raw.raw.get("address", {})
+                    city = (
+                        address_details.get("city")
+                        or address_details.get("town")
+                        or address_details.get("village")
+                        or address_details.get("county")
+                    )  # Fallback to county if city/town/village not present
+
+                    country = address_details.get("country", "Unknown")
+
+                    # Construct a display name. Nominatim's display_name is often good.
+                    display_name = ", ".join(filter(None, [city, country]))
+
+                    # Ensure city is part of display_name if available, otherwise construct
+                    if city and city.lower() not in display_name.lower():
+                        name_parts = [part for part in [city, country] if part]
+                        constructed_name = ", ".join(name_parts)
+                        if (
+                            constructed_name
+                            and constructed_name.lower() not in display_name.lower()
+                        ):
+                            display_name = f"{city}, {country}"  # Fallback to simpler format if needed
+
+                    # Use place_id as a unique ID if available, otherwise generate one (less ideal)
+                    # Nominatim's place_id is a good unique identifier.
+                    suggestion_id = str(
+                        loc_raw.raw.get(
+                            "place_id",
+                            f"osm_{loc_raw.raw.get('osm_type', '')}_{loc_raw.raw.get('osm_id', '')}",
+                        )
+                    )
+
+                    suggestions.append(
+                        LocationSuggestion(
+                            id=suggestion_id,
+                            name=display_name,
+                            city=city or "Unknown",  # Provide a fallback
+                            country=country,
+                            latitude=loc_raw.latitude,
+                            longitude=loc_raw.longitude,
+                        )
+                    )
+
+            # If Nominatim returns nothing, but query is somewhat long, you could try a broader search
+            # or return a message indicating no specific matches.
+            # For this example, we just return what we found.
+            if not suggestions and len(query) > 3:  # Simple heuristic
+                # You might want to log that no results were found for a specific query
+                pass
+
+        return suggestions
+    except GeocoderTimedOut:
+        print(f"Nominatim geocoding timed out for query: {query}")
+        raise HTTPException(
+            status_code=504, detail="Location service timed out. Please try again."
+        )
+    except GeocoderUnavailable:
+        print(f"Nominatim service unavailable for query: {query}")
+        raise HTTPException(
+            status_code=503, detail="Location service is currently unavailable."
+        )
+    except Exception as e:
+        print(f"Error fetching location suggestions for query '{query}': {e}")
+        # Consider logging the full traceback here for debugging
+        # import traceback
+        # print(traceback.format_exc())
+        raise HTTPException(
+            status_code=500,
+            detail="Could not fetch location suggestions due to an internal error.",
+        )

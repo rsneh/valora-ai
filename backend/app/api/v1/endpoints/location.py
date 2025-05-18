@@ -1,7 +1,7 @@
-from typing import Optional
+from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query, Request, status
 from app.services import location_service
-from app.schemas.location import Location, LocationResponse
+from app.schemas.location import LocationResponse, LocationSuggestion
 from app.core.utils import get_client_ip
 
 
@@ -79,3 +79,25 @@ async def get_location(
         longitude=final_longitude,
         location_source=location_source_info,
     )
+
+
+@router.get("/suggest", response_model=List[LocationSuggestion])
+async def suggest_locations(
+    q: str = Query(..., min_length=1, description="Search query for location")
+):
+    """
+    Provides location suggestions based on the user's query.
+    This would typically call a geocoding service or query your own location database.
+    """
+    if not q:
+        return []
+    try:
+        suggestions = await location_service.get_location_suggestions(q)
+        print(f"Suggestions for '{q}': {suggestions}")
+        return suggestions
+    except Exception as e:
+        # Log the error
+        print(f"Error fetching location suggestions: {e}")
+        raise HTTPException(
+            status_code=500, detail="Could not fetch location suggestions."
+        )

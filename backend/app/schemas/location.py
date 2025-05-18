@@ -11,3 +11,12 @@ class Location(BaseModel):
 
 class LocationResponse(Location):
     pass
+
+
+class LocationSuggestion(BaseModel):
+    id: str
+    name: str
+    city: str
+    country: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
