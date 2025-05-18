@@ -9,8 +9,9 @@ from sqlalchemy import (
     Enum as SAEnum,
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func  # For server-side default timestamp
+from sqlalchemy.sql import func
 from .database import Base
+import enum  # Added import
 
 
 class Product(Base):
@@ -54,13 +55,14 @@ class Product(Base):
 # linked by the Firebase UID as a primary or foreign key.
 
 
-class ConversationStatus(str, SAEnum):  # Using SAEnum for database-level enum type
-    ACTIVE = "active"
-    CLOSED_DEAL = "closed_deal"
-    CLOSED_NO_DEAL = "closed_no_deal"
-    ARCHIVED = "archived"  # Optional: for users to archive chats
+class ConversationStatus(str, enum.Enum):  # Changed SAEnum to enum.Enum
+    ACTIVE = "ACTIVE"  # Changed to uppercase
+    CLOSED_DEAL = "CLOSED_DEAL"  # Changed to uppercase
+    CLOSED_NO_DEAL = "CLOSED_NO_DEAL"  # Changed to uppercase
+    ARCHIVED = "ARCHIVED"  # Changed to uppercase
 
 
+# --- New Conversation Model ---
 class Conversation(Base):
     __tablename__ = "conversations"
 
@@ -82,7 +84,7 @@ class Conversation(Base):
 
     status = Column(
         SAEnum(
-            enums=ConversationStatus,
+            ConversationStatus,
             name="conversation_status_enum",
             create_type=False,
         ),
@@ -107,10 +109,10 @@ class Conversation(Base):
 
 
 # --- New ChatMessage Model ---
-class MessageSenderType(str, SAEnum):  # Using SAEnum
-    BUYER = "buyer"
-    AI_ASSISTANT = "ai_assistant"
-    SELLER = "seller"  # For future use if human seller can join
+class MessageSenderType(str, enum.Enum):  # Changed SAEnum to enum.Enum
+    BUYER = "BUYER"  # Changed to uppercase
+    AI_ASSISTANT = "AI_ASSISTANT"  # Changed to uppercase
+    SELLER = "SELLER"  # Changed to uppercase
 
 
 class ChatMessage(Base):
@@ -127,7 +129,7 @@ class ChatMessage(Base):
     sender_id = Column(String, nullable=False, index=True)
     sender_type = Column(
         SAEnum(
-            enums=MessageSenderType,
+            MessageSenderType,
             name="message_sender_type_enum",
             create_type=False,
         ),

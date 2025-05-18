@@ -48,13 +48,13 @@ def upgrade() -> None:
         sa.Column(
             "status",
             sa.Enum(
-                "active",
-                "closed_deal",
-                "closed_no_deal",
-                "archived",
+                "ACTIVE",
+                "CLOSED_DEAL",
+                "CLOSED_NO_DEAL",
+                "ARCHIVED",
                 name="conversation_status_enum",
             ),
-            server_default="active",
+            server_default="ACTIVE",
             nullable=False,
         ),
         sa.ForeignKeyConstraint(
@@ -94,10 +94,11 @@ def upgrade() -> None:
         # Similar consideration for ENUM type for sender_type
         sa.Column(
             "sender_type",
-            sa.Enum("buyer", "ai_assistant", "seller", name="message_sender_type_enum"),
+            sa.Enum("BUYER", "AI_ASSISTANT", "SELLER", name="message_sender_type_enum"),
             nullable=False,
         ),
         sa.Column("message_text", sa.Text(), nullable=False),
+        sa.Column("message_type", sa.String(), nullable=True),
         sa.Column(
             "timestamp",
             sa.DateTime(timezone=True),
@@ -153,6 +154,6 @@ def downgrade() -> None:
     op.drop_column("products", "min_acceptable_price")
 
     # If you explicitly created ENUM types in upgrade(), you should drop them in downgrade()
-    # op.execute("DROP TYPE message_sender_type_enum")
-    # op.execute("DROP TYPE conversation_status_enum")
+    op.execute("DROP TYPE message_sender_type_enum")
+    op.execute("DROP TYPE conversation_status_enum")
     # ### end Alembic commands ###
