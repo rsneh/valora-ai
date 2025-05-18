@@ -8,10 +8,12 @@ async function fetchProduct(productId: string) {
   return await getProductById(productId);
 }
 
-export default async function ChatLayout({ children, params }: {
+type LayoutProps = {
   children: React.ReactNode;
-  params: { productId: string };
-}) {
+  params: Promise<{ productId: string }>;
+};
+
+export default async function ChatLayout({ children, params }: LayoutProps) {
   const { productId } = await params;
   const product = await fetchProduct(productId);
   return (
