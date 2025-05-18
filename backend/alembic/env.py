@@ -4,8 +4,8 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
-from app.core.config import settings  # Import your settings
-from app.db.database import Base  # Import your Base
+from app.core.config import settings
+from app.db.database import Base
 
 # Add the app directory to the Python path
 sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), "..")))
