@@ -6,13 +6,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/components/auth/auth-context"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useParams } from 'next/navigation';
 
 export default function ProfileForm() {
   const { currentUser, updateProfile } = useAuth();
   const [displayName, setDisplayName] = useState(currentUser?.displayName || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
 
   const handleDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDisplayName(e.target.value);

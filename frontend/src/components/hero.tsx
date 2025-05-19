@@ -22,12 +22,12 @@ export function Hero() {
             Introducing Valora AI
           </div>
           <div className="hero-glow">
-            <h1 className="font-heading text-3xl sm:text-5xl md:text-6xl lg:text-6xl tracking-tight">
-              The Smartest, Simplest Way to Sell Your Used Goods.
+            <h1 className="font-heading text-3xl sm:text-5xl md:text-6xl lg:text-6xl tracking-tight md:max-w-2xl">
+              Selling Your Stuff Just Got a Whole Lot Easier.
             </h1>
           </div>
           <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8 glass-effect p-4 rounded-lg">
-            Effortless AI listings and buyer negotiations – selling made truly simple and intelligent.
+            Valora's AI transforms how you sell used goods – making it quicker, more intelligent, and incredibly simple.
           </p>
           <div className="flex flex-wrap justify-center gap-4 mt-6">
             <Button size="lg" className="rounded-full" asChild>

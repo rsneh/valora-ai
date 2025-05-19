@@ -134,8 +134,8 @@ export function Navigation() {
                     </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    <DropdownMenuItem onSelect={() => router.push("/profile")}>Profile</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => router.push("/manage")}>Manage Ads</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => router.push("/my/profile")}>Profile</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => router.push("/my/ads")}>Ads</DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onSelect={handleLogout}><LogOutIcon />Log out</DropdownMenuItem>
                   </DropdownMenuContent>
