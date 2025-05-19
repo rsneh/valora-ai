@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { GoogleTagManager } from '@next/third-parties/google'
 import { Inter } from "next/font/google"
 import "./globals.css"
 import type React from "react"
@@ -29,6 +30,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <GoogleTagManager gtmId="GTM-WFNRK2VR" />
       <body className={inter.className}>
         <Loader />
         <ThemeProvider>
