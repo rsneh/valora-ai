@@ -42,25 +42,27 @@ export function Navigation() {
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="px-4 flex h-16 items-center">
-          <div className="mr-4 hidden md:flex md:flex-1">
-            <Link href="/" className="mr-6 flex items-center space-x-2">
+          <div className="hidden md:flex">
+            <Link href="/" className="flex items-center space-x-2">
               <Logo />
             </Link>
           </div>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-            {categories.filter((category) => category.show).map((category) => (
-              <Link
-                key={category.value}
-                href={`/browse/${category.value}`}
-                className="transition-colors hover:text-foreground/80 text-foreground"
-              >
-                {category.menu || category.title}
+          <div className="hidden md:flex md:flex-1">
+            <nav className="flex items-center space-x-6 text-sm mx-auto font-medium">
+              {categories.filter((category) => category.show).map((category) => (
+                <Link
+                  key={category.value}
+                  href={`/browse/${category.value}`}
+                  className="transition-colors hover:text-foreground/80 text-foreground"
+                >
+                  {category.menu || category.title}
+                </Link>
+              ))}
+              <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground">
+                Browse
               </Link>
-            ))}
-            <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground">
-              Browse
-            </Link>
-          </nav>
+            </nav>
+          </div>
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -73,19 +75,27 @@ export function Navigation() {
             </SheetTrigger>
             <SheetContent side="left" className="pr-0">
               <nav className="grid gap-6 px-2 py-6">
-                <Link href="/browse" className="hover:text-foreground/80">
+                {categories.filter((category) => category.show).map((category) => (
+                  <Link
+                    key={category.value}
+                    href={`/browse/${category.value}`}
+                    className="transition-colors hover:text-foreground/80 text-foreground"
+                  >
+                    {category.menu || category.title}
+                  </Link>
+                ))}
+                <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground">
                   Browse
-                </Link>
-                <Link href="/sell" className="hover:text-foreground/80">
-                  Sell
-                </Link>
-                <Link href="/profile" className="hover:text-foreground/80">
-                  Profile
                 </Link>
               </nav>
             </SheetContent>
           </Sheet>
-          <div className="flex flex-1 items-center justify-between space-x-4 md:justify-end">
+          <div className="flex-1 grow flex justify-center md:hidden">
+            <Link href="/" className="flex items-center space-x-2">
+              <Logo />
+            </Link>
+          </div>
+          <div className="justify-end md:space-x-4 md:flex md:items-center">
             {!currentUser && (
               <>
                 <Button
@@ -106,18 +116,18 @@ export function Navigation() {
                 </Button>
               </>
             )}
-            <Link href="/sell" passHref>
-              <Button size="lg" className="ml-auto hidden md:flex">
+            <Link href="/sell" passHref className="ml-auto hidden md:flex">
+              <Button className="rounded-md md:h-9 md:px-3 lg:h-11 lg:px-8">
                 Create Ad
               </Button>
             </Link>
             {currentUser && (
               <>
-                <Separator orientation="vertical" className="h-8" />
+                <Separator orientation="vertical" className="hidden md:block h-8" />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild className="flex items-center">
                     <div className="flex items-center justify-center text-sm font-medium text-foreground hover:ring-foreground/80">
-                      <span>{currentUser.displayName}</span>
+                      <span className="hidden lg:inline-block">{currentUser.displayName}</span>
                       {currentUser.photoURL ? (
                         <Image
                           src={currentUser.photoURL}
@@ -127,7 +137,7 @@ export function Navigation() {
                           className="ms-3 rounded-full ring-2 ring-offset-2 ring-offset-background hover:ring-foreground/80"
                         />
                       ) : (
-                        <span className="ms-3 rounded-full ring-2 ring-offset-2 ring-offset-background hover:ring-foreground/80 h-8 w-8 flex items-center justify-center">
+                        <span className=" rounded-full ring-2 ring-offset-2 ring-offset-background hover:ring-foreground/80 flex items-center justify-center md:ms-3 md:h-8 md:w-8">
                           <UserRound className="text-gray-400" />
                         </span>
                       )}

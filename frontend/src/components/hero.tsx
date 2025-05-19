@@ -16,18 +16,18 @@ export function Hero() {
           className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
         />
       </div>
-      <div className="relative space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32 overflow-hidden">
-        <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center relative z-10">
+      <div className="relative space-y-6 py-20 md:pb-12 md:pt-10 lg:py-32 overflow-hidden">
+        <div className="flex mx-auto max-w-[64rem] flex-col px-6 items-center gap-4 text-center relative z-10">
           <div className="rounded-full bg-primary/10 backdrop-blur-sm px-4 py-1.5 text-sm font-medium text-primary border border-primary/20">
             Introducing Valora AI
           </div>
           <div className="hero-glow">
-            <h1 className="font-heading text-3xl sm:text-5xl md:text-6xl lg:text-6xl tracking-tight md:max-w-2xl">
-              Selling Your Stuff Just Got a Whole Lot Easier.
+            <h1 className="font-bold tracking-tight text-3xl sm:text-5xl md:text-6xl lg:text-6xl md:max-w-2xl">
+              Selling Your Stuff Just Got a Whole Lot Easier
             </h1>
           </div>
           <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8 glass-effect p-4 rounded-lg">
-            Valora's AI transforms how you sell used goods – making it quicker, more intelligent, and incredibly simple.
+            Valora's AI transforms how you sell used goods - making it quicker, more intelligent, and incredibly simple.
           </p>
           <div className="flex flex-wrap justify-center gap-4 mt-6">
             <Button size="lg" className="rounded-full" asChild>

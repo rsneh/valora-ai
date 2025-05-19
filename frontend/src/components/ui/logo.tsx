@@ -8,9 +8,9 @@ export function Logo() {
         priority
         src={logoImage}
         alt=""
-        className="h-6 w-auto"
+        className="h-5 md:h-6 w-auto"
       />
-      <span className="hidden font-semibold text-2xl tracking-wide sm:inline-block">valora.ai</span>
+      <span className="inline-block text-xl font-semibold text-2xl tracking-wide">valora.ai</span>
     </>
   )
 }
