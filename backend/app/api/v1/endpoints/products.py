@@ -93,6 +93,77 @@ def read_product(
     return db_product
 
 
-# You can add PUT (update) and DELETE endpoints later if needed for the PoC
-# For PUT, you'd also need to handle image updates (optional: delete old, upload new)
-# and potentially re-run AI assistance if key fields change.
+@router.put("/{product_id}", response_model=product_schema.Product)
+async def update_product(
+    *,
+    db: Session = Depends(database.get_db),
+    product_id: int,
+    product_data: product_schema.ProductUpdate,
+    current_user: user_schema.User = Depends(get_current_active_user),
+):
+    """
+    Update an existing product.
+    """
+    db_product = product_service.get_product(db, product_id=product_id)
+    if not db_product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
+        )
+    if db_product.seller_id != current_user.uid:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to update this product",
+        )
+
+    try:
+        updated_product = await product_service.update_product(
+            db=db,
+            product_id=product_id,
+            product_in=product_data,
+            seller_id=current_user.uid,
+        )
+
+        return updated_product
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(f"Unexpected error updating product: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred while updating the product.",
+        )
+
+
+@router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_product(
+    product_id: int,
+    db: Session = Depends(database.get_db),
+    current_user: user_schema.User = Depends(get_current_active_user),
+):
+    """
+    Delete a product.
+    """
+    db_product = product_service.get_product(db, product_id=product_id)
+    if not db_product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
+        )
+    if db_product.seller_id != current_user.uid:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to delete this product",
+        )
+
+    try:
+        product_service.delete_product(
+            db=db, product_id=product_id, seller_id=current_user.uid
+        )
+        return  # 204 No Content doesn't return a body
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(f"Unexpected error deleting product: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred while deleting the product.",
+        )

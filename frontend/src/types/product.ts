@@ -14,6 +14,7 @@ export interface Product {
 }
 
 export interface ProductFormData {
+  id?: number;
   title?: string;
   description?: string;
   price?: number;
@@ -24,6 +25,8 @@ export interface ProductFormData {
   latitude?: number;
   longitude?: number;
   location_source?: string;
+  min_acceptable_price?: number;
+  negotiation_notes_for_ai?: string;
 }
 
 export interface Category {

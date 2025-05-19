@@ -38,3 +38,12 @@ export const createProduct = async (formData: ProductFormData, token: string): P
   });
   return response.data;
 };
+
+export const updateProduct = async (productId: string, formData: ProductFormData, token: string): Promise<Product> => {
+  const response = await apiClient.put<Product>(`/products/${productId}`, formData, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};

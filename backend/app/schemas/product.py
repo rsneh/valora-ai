@@ -24,7 +24,6 @@ class ProductUpdate(BaseModel):
     description: Optional[str] = None
     price: Optional[float] = None
     category: Optional[str] = None
-    image_url: Optional[HttpUrl] = None
 
 
 class ProductInDBBase(BaseModel):
