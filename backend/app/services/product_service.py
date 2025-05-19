@@ -60,6 +60,7 @@ def get_products(
     lng: Optional[float] = None,
     max_distance: Optional[float] = None,
     category: Optional[str] = None,
+    seller_id: Optional[str] = None,
 ) -> List[models.Product]:
     """
     Retrieves a list of products, with optional category filtering.
@@ -78,6 +79,9 @@ def get_products(
 
     if category:
         query = query.filter(models.Product.category == category)
+
+    if seller_id:
+        query = query.filter(models.Product.seller_id == seller_id)
 
     # Add ordering, e.g., by most recent
     query = query.order_by(models.Product.time_created.desc())

@@ -64,6 +64,7 @@ def read_products(
     category: Optional[str] = Query(
         None, description="Filter products by category name"
     ),
+    seller_id: Optional[str] = Query(None, description="Filter products by seller ID"),
 ):
     """
     Retrieve products.
@@ -71,7 +72,7 @@ def read_products(
     Optionally filters by category.
     """
     products = product_service.get_products(
-        db, skip=skip, limit=limit, category=category
+        db, skip=skip, limit=limit, category=category, seller_id=seller_id
     )
     return products
 
