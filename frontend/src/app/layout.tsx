@@ -23,6 +23,8 @@ export const metadata: Metadata = {
   },
 }
 
+const isProduction = process.env.NODE_ENV === "production"
+
 export default function RootLayout({
   children,
 }: {
@@ -30,7 +32,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <GoogleTagManager gtmId="GTM-WFNRK2VR" />
+      {isProduction && (
+        <GoogleTagManager gtmId="GTM-WFNRK2VR" />
+      )}
       <body className={inter.className}>
         <Loader />
         <ThemeProvider>
