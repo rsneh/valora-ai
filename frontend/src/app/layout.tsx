@@ -38,14 +38,14 @@ export async function generateMetadata(
     metadataBase: new URL(baseUrl),
     title: {
       default: t("site.title"),
-      template: `%s | ${t("site.name")}`, // Template for child page titles
+      template: `%s | ${t("site.name")}`,
     },
     description: t("site.description"),
     openGraph: {
       title: t("site.title"),
       description: t("site.description"),
       siteName: t("site.name"),
-      images: [{ url: '/images/og-image.png' }], // Add your default OG image
+      images: [{ url: '/images/og-image.jpg' }],
       locale: locale,
       type: 'website',
     },
