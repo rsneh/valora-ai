@@ -128,7 +128,7 @@ export default function SellerPostWizard() {
       {/* Step Content - Defined inline using conditional rendering */}
       <div key={currentStep} className="animate-fadeInSlideUp w-full flex-1">
         {currentStep === 0 && (
-          <StepContent className="mt-20 md:mt-32">
+          <StepContent className="mt-20 md:mt-24">
             <h1 className="max-w-2xl mx-auto text-center font-bold text-4xl text-gray-900 mb-5 md:text-5xl">
               {t("postWizard.photoToOfferTitle")}
               <span className="text-indigo-600">{t("postWizard.photoToOfferTitleHighlight")}</span>.

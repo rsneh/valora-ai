@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosResponse, type AxiosInstance, type InternalAxiosRequestConfig } from 'axios';
 import { FastAPIErrorResponse, FormattedErrors, handleFastAPIError } from './errorHandler';
+import { getLocaleClientSide } from '@/locales/config';
 
 export interface CustomApiError extends Error {
   originalError?: AxiosError<FastAPIErrorResponse | any>;
@@ -20,6 +21,12 @@ const apiClient: AxiosInstance = axios.create({
 
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
+    const locale = getLocaleClientSide();
+    if (locale) {
+      config.headers['X-App-Locale'] = locale;
+      config.headers['Accept-Language'] = locale;
+    }
+
     if (config.headers.Authorization) {
       return config;
     }

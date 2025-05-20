@@ -20,3 +20,17 @@ export function getLocaleCookieName(): string {
 export function getLocaleQueryParam(): string {
   return localeQueryParam;
 }
+
+export const getLocaleClientSide = (): AppLocale => {
+  if (typeof window !== 'undefined') {
+    const cookieValue = document.cookie
+      .split('; ')
+      .find(row => row.startsWith(`${localeCookieName}=`))
+      ?.split('=')[1] as AppLocale | undefined;
+    const supportedLocales = getSupportedLocales();
+    if (cookieValue && supportedLocales.includes(cookieValue)) {
+      return cookieValue;
+    }
+  }
+  return getDefaultLocale();
+};
