@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, LogOutIcon, UserRound } from "lucide-react"
+import { Menu, LogOutIcon, UserRound, PlusIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useAuth } from "@/components/auth/auth-context"
@@ -13,7 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Separator } from "./ui/separator"
 import { Logo } from "./ui/logo"
 import { useToast } from "@/hooks/use-toast"
-import { categories } from "@/lib/utils"
+import { categories, cn } from "@/lib/utils"
 import { useI18nContext } from "./locale-context";
 
 export function Navigation() {
@@ -34,7 +34,7 @@ export function Navigation() {
     try {
       await logout();
       router.push("/");
-      toast({ description: "You've been logged out.", variant: "success", });
+      toast({ description: t("navigation.logoutSuccess"), variant: "success", });
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -58,7 +58,7 @@ export function Navigation() {
                   {t(`categories.${category.value}.menu`)}
                 </Link>
               ))}
-              <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground">
+              <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground hidden lg:inline-block">
                 {t("navigation.browse")}
               </Link>
             </nav>
@@ -87,7 +87,7 @@ export function Navigation() {
                     {t(`categories.${category.value}.menu`)}
                   </Link>
                 ))}
-                <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground">
+                <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground ">
                   {t("navigation.browse")}
                 </Link>
               </nav>
@@ -98,7 +98,7 @@ export function Navigation() {
               <Logo />
             </Link>
           </div>
-          <div className="justify-end md:space-x-4 rtl:space-x-reverse md:flex md:items-center">
+          <div className="flex justify-end md:space-x-4 rtl:space-x-reverse md:flex md:items-center">
             {!currentUser && (
               <>
                 <Button
@@ -119,9 +119,20 @@ export function Navigation() {
                 </Button>
               </>
             )}
-            <Link href="/sell" passHref className="ml-auto hidden md:flex">
-              <Button className="rounded-md md:h-9 md:px-3 lg:h-11 lg:px-8">
-                {t("navigation.createAd")}
+            <Link
+              passHref
+              href="/sell"
+              className={cn(
+                "ms-auto md:block",
+                {
+                  "hidden": currentUser,
+                  "flex": !currentUser,
+                }
+              )}
+            >
+              <Button className="rounded-md h-6 px-2 md:h-9 md:px-3 lg:h-11 lg:px-8">
+                <PlusIcon className="h-4 w-4 md:hidden" />
+                <span className="hidden md:inline-block">{t("navigation.createAd")}</span>
               </Button>
             </Link>
             {currentUser && (

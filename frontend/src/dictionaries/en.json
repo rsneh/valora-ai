@@ -1,7 +1,7 @@
 {
   "site": {
     "name": "ValoraAI",
-    "title": "Valora: - Sell & Buy Smarter with AI",
+    "title": "Valora: Sell & Buy Smarter with AI",
     "description": "Sell your used electronics, gadgets, and more with ease on Valora! Our AI helps you create perfect listings from photos, suggests categories, and streamlines your selling process."
   },
   "hero": {
@@ -18,7 +18,8 @@
     "profile": "Profile",
     "ads": "Ads",
     "logout": "Log out",
-    "toggleMenu": "Toggle Menu"
+    "toggleMenu": "Toggle Menu",
+    "logoutSuccess": "You've been logged out."
   },
   "intelligentFeatures": {
     "title": "Intelligent Features",
@@ -112,12 +113,13 @@
     "backToHome": "Go Back Home"
   },
   "footer": {
-    "aboutUs": "About Us",
-    "contactUs": "Contact Us",
-    "termsOfService": "Terms of Service",
-    "privacyPolicy": "Privacy Policy",
-    "helpCenter": "Help Center",
-    "aboutDescription": "Valora&apos;s AI enhances the experience for everyone, making selling effortless and buying more informed.",
+    "company": "Company",
+    "about": "About Us",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Us",
+    "legal": "Legal",
+    "aboutDescription": "Valora's AI enhances the experience for everyone, making selling effortless and buying more informed.",
     "allRightsReserved": "valora.ai. All rights reserved."
   },
   "locationFilter": {

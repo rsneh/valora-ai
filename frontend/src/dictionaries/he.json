@@ -18,7 +18,8 @@
     "profile": "פרופיל",
     "ads": "המודעות שלי",
     "logout": "התנתק",
-    "toggleMenu": "פתח/סגור תפריט"
+    "toggleMenu": "פתח/סגור תפריט",
+    "logoutSuccess": "התנתקות בוצעה בהצלחה."
   },
   "intelligentFeatures": {
     "title": "תכונות חכמות",
