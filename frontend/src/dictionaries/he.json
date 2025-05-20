@@ -1,0 +1,48 @@
+{
+  "hero": {
+    "introducing": "מציגים את Valora AI",
+    "title": "למכור את הדברים שלך נהיה הרבה יותר קל",
+    "subtitle": "הבינה המלאכותית של Valora משנה את הדרך בה מוכרים מוצרים משומשים - מה שהופך את התהליך למהיר יותר, חכם יותר ופשוט הרבה יותר.",
+    "createAdButton": "פרסום מודעה"
+  },
+  "navigation": {
+    "browse": "עיון",
+    "login": "התחברות",
+    "signup": "הרשמה",
+    "createAd": "מודעה חדשה",
+    "profile": "פרופיל",
+    "ads": "מודעות",
+    "logout": "התנתק",
+    "toggleMenu": "פתח/סגור תפריט"
+  },
+  "intelligentFeatures": {
+    "title": "תכונות חכמות",
+    "subtitle": "הבינה המלאכותית של Valora משפרת את החוויה לכולם, הופכת את המכירה למאמץ ואת הקנייה ליותר מושכלת.",
+    "smartItemRecognitionTitle": "זיהוי פריטים חכם",
+    "smartItemRecognitionDescription": "תהנה ממודעות ברורות יותר ומסווגות בצורה מדויקת יותר, מה שמקל על מציאת בדיוק מה שאתה מחפש.",
+    "clearAdsTitle": "מודעות ברורות ומשכנעות",
+    "clearAdsDescription": "הבינה המלאכותית של Valora כותבת תיאורים מרתקים ואינפורמטיביים, חוסכת לך זמן ומושכת יותר עניין.",
+    "aiPoweredCommunicationTitle": "תקשורת מבוססת AI",
+    "aiPoweredCommunicationDescription": "קבל תשובות מהירות לשאלותיך וחווה תהליך תקשורת חלק ומגיב בעת דיון על פריט."
+  },
+  "loginDialog": {
+    "passwordMinLength": "סיסמה צריכה להכיל לפחות 6 תווים.",
+    "emailAlreadyRegistered": "כתובת אימייל זו כבר רשומה.",
+    "invalidCredentials": "אימייל או סיסמה שגויים.",
+    "loginFailed": "ההתחברות נכשלה. אנא נסה שוב.",
+    "welcomeBack": "כמה טוב שבאתם",
+    "signInToAccount": "נדרשת התחברות לחשבון שלך להמשך שימוש.",
+    "emailPlaceholder": "כתובת אימייל",
+    "passwordPlaceholder": "סיסמה",
+    "submitButton": "שליחה",
+    "forgotPassword": "שכחת סיסמה?",
+    "noAccount": "אין לך חשבון?",
+    "signUpLink": "הרשמה.",
+    "backgroundImageAlt": "תמונת רקע עם פריטים"
+  },
+  "notFound": {
+    "title": "הדף לא נמצא",
+    "description": "מצטערים, עמוד זה אינו קיים.",
+    "backToHome": "לעמוד הראשי"
+  }
+}

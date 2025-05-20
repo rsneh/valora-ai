@@ -89,7 +89,7 @@ export default function ChatPage() {
     <>
       {/* Chat Header */}
       {product && (
-        <header className="bg-white dark:bg-slate-800 p-4 rounded-t-xl shadow-md border-b border-slate-200 dark:border-slate-700 flex items-center space-x-3">
+        <header className="bg-white dark:bg-slate-800 p-4 rounded-t-xl shadow-md border-b border-slate-200 dark:border-slate-700 flex items-center space-x-3 rtl:space-x-reverse">
           <Avatar>
             <AvatarImage
               src="/images/valora-ai-avatar.webp"
@@ -135,7 +135,7 @@ export default function ChatPage() {
 
       <div className="bg-white dark:bg-slate-800 p-4 rounded-b-xl shadow-md border-t border-slate-200">
         <form onSubmit={handleSendMessage}>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 rtl:space-x-reverse">
             <Input
               type="text"
               value={newMessage}

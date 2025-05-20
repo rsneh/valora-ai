@@ -8,6 +8,8 @@ import { AuthProvider } from "@/components/auth/auth-context"
 import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "@/components/theme-provider"
 import { LocationProvider } from "@/components/location-context"
+import { getDictionary, getLocaleFromRequest } from "@/lib/dictionaries"
+import { I18nProvider } from "@/components/locale-context"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -25,26 +27,31 @@ export const metadata: Metadata = {
 
 const isProduction = process.env.NODE_ENV === "production"
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const locale = await getLocaleFromRequest();
+  const dictionary = await getDictionary(locale);
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} dir={locale === "he" ? "rtl" : "ltr"} suppressHydrationWarning>
       {isProduction && (
         <GoogleTagManager gtmId="GTM-WFNRK2VR" />
       )}
       <body className={inter.className}>
         <Loader />
-        <ThemeProvider>
-          <AuthProvider>
-            <LocationProvider>
-              {children}
-            </LocationProvider>
-          </AuthProvider>
-          <Toaster />
-        </ThemeProvider>
+        <I18nProvider initialLocale={locale} initialDictionary={dictionary}>
+          <ThemeProvider>
+            <AuthProvider>
+              <LocationProvider>
+                {children}
+              </LocationProvider>
+            </AuthProvider>
+            <Toaster />
+          </ThemeProvider>
+        </I18nProvider>
       </body>
     </html>
   )

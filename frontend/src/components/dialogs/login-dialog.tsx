@@ -10,6 +10,7 @@ import { Separator } from "../ui/separator";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/auth-context";
 import Link from "next/link";
+import { useI18nContext } from "../locale-context";
 
 interface LoginDialogProps {
   open: boolean;
@@ -19,6 +20,7 @@ interface LoginDialogProps {
 }
 
 export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog }: LoginDialogProps) => {
+  const { t } = useI18nContext();
   const router = useRouter();
   const { signInWithGoogle, signInWithFacebook, signInWithTwitter, signInEmailAndPassword } = useAuth();
   const [email, setEmail] = useState<string>('');
@@ -31,7 +33,7 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
     setError(null);
 
     if (password.length < 6) {
-      setError("Password should be at least 6 characters.");
+      setError(t("loginDialog.passwordMinLength"));
       return;
     }
 
@@ -44,11 +46,11 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
       router.push('/');
     } catch (err: Error | any) {
       if (err.code === 'auth/email-already-in-use') {
-        setError('This email address is already registered.');
+        setError(t("loginDialog.emailAlreadyRegistered"));
       } else if (err.code === 'auth/invalid-credential') {
-        setError('Invalid Email or Password.');
+        setError(t("loginDialog.invalidCredentials"));
       } else {
-        setError(err.message || "Failed to login. Please try again.");
+        setError(err.message || t("loginDialog.loginFailed"));
       }
       console.error("Login error:", err);
     } finally {
@@ -69,7 +71,7 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
       }
       router.push('/');
     } catch (err: Error | any) {
-      setError(err.message || "Failed to sign in. Please try again.");
+      setError(err.message || t("loginDialog.loginFailed"));
       console.error("Login error:", err);
     } finally {
       setLoading(false);
@@ -86,31 +88,30 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
                 <div className="flex flex-col gap-2">
                   <DialogHeader>
                     <DialogTitle className="text-center text-lg md:text-2xl">
-                      Welcome back!
+                      {t("loginDialog.welcomeBack")}
                     </DialogTitle>
                     <DialogDescription className="text-center text-sm px-2 mb-5 md:px-8">
-                      {`Please sign in to your account.`}
+                      {t("loginDialog.signInToAccount")}
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="flex items-center justify-center space-x-3 pt-4">
+                  <div className="flex items-center justify-center space-x-3 rtl:space-x-reverse pt-4">
                     <Button variant="outline" className="w-12 h-12 py-2 px-2" onClick={() => handleSocialSignIn('google')}>
                       <Image
                         src={googleIcon}
-                        alt="Google Icon"
+                        alt="Google"
                       />
                     </Button>
-                    <Button variant="outline" className="w-12 h-12 py-2 px-2 bg-[#3a5998]" onClick={() => handleSocialSignIn('facebook')}>
-                      <Image
-                        src={facebookIcon}
-                        alt="Facebook Icon"
-                        className="fill-blue-500"
-                      />
-                    </Button>
-                    <Button variant="outline" className="w-12 h-12 py-2 px-2 bg-black" onClick={() => handleSocialSignIn('twitter')}>
+                    <Button variant="outline" className="w-12 h-12 py-2 px-2" onClick={() => handleSocialSignIn('twitter')}>
                       <Image
                         src={xSocialIcon}
-                        alt="X Social Icon"
-                        className="fill-blue-500"
+                        alt="X"
+                      />
+                    </Button>
+                    <Button variant="outline" className="w-12 h-12 py-2 px-2" onClick={() => handleSocialSignIn('facebook')}>
+                      <Image
+                        src={facebookIcon}
+                        alt="Facebook"
+                        className="fill-[#3a5998]"
                       />
                     </Button>
                   </div>
@@ -125,7 +126,7 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
                         name="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Email Address"
+                        placeholder={t("loginDialog.emailPlaceholder")}
                         required
                       />
                     </div>
@@ -135,36 +136,36 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
                         name="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"
+                        placeholder={t("loginDialog.passwordPlaceholder")}
                         required
                       />
                     </div>
                     {error && <p className="text-red-500 text-sm">{error}</p>}
                     <div className="flex flex-col items-center">
                       <Button type="submit" className="w-full" disabled={loading}>
-                        Submit
+                        {t("loginDialog.submitButton")}
                       </Button>
                       <Button variant="link" className="text-xs">
-                        Forgot password?
+                        {t("loginDialog.forgotPassword")}
                       </Button>
                     </div>
                   </form>
                   <div className="text-center text-sm">
-                    Don&apos;t have an account?{" "}
-                    <Link href={""} className="underline underline-offset-4" onClick={() => openSignUpDialog(true)}>
-                      Sign up.
+                    {t("loginDialog.noAccount")}{" "}
+                    <Link href="#" className="underline underline-offset-4" onClick={() => openSignUpDialog(true)}>
+                      {t("loginDialog.signUpLink")}
                     </Link>
                   </div>
                 </div>
               </div>
-              <div className="relative hidden bg-muted sm:rounded-r-lg md:block">
+              <div className="relative hidden bg-muted sm:rounded-e-lg md:block">
                 <Image
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
                   priority
                   src="/images/background-items-2.jpg"
-                  alt="Background Image with items"
-                  className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale sm:rounded-r-lg"
+                  alt={t("loginDialog.backgroundImageAlt")}
+                  className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale sm:rounded-e-lg"
                 />
               </div>
             </div>

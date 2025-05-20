@@ -1,15 +1,20 @@
+"use client"
+
 import { Card, CardTitle } from "@/components/ui/card"
 import { BrainIcon, FanIcon, ScanTextIcon } from "lucide-react"
+import { useI18nContext } from "./locale-context";
 
 export function IntelligentFeatures() {
+  const { t } = useI18nContext();
+
   return (
     <section id="features" className="container space-y-6 py-8 md:py-12 lg:py-24">
       <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
         <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl gradient-text">
-          Intelligent Features
+          {t("intelligentFeatures.title")}
         </h2>
         <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-          Valora&apos;s AI enhances the experience for everyone, making selling effortless and buying more informed.
+          {t("intelligentFeatures.subtitle")}
         </p>
       </div>
       <div className="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
@@ -19,10 +24,10 @@ export function IntelligentFeatures() {
           </div>
           <div className="space-y-2 pt-6">
             <CardTitle className="text-lg font-bold">
-              Smart Item Recognition
+              {t("intelligentFeatures.smartItemRecognitionTitle")}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Enjoy clearer, more accurately categorized ads, making it easier to find exactly what you&apos;re looking for.
+              {t("intelligentFeatures.smartItemRecognitionDescription")}
             </p>
           </div>
         </Card>
@@ -32,10 +37,10 @@ export function IntelligentFeatures() {
           </div>
           <div className="space-y-2 pt-6">
             <CardTitle className="text-lg font-bold">
-              Clear & Compelling Ads
+              {t("intelligentFeatures.clearAdsTitle")}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Valora&apos;s AI writes engaging, informative descriptions, saving you time and attracting more interest.
+              {t("intelligentFeatures.clearAdsDescription")}
             </p>
           </div>
         </Card>
@@ -45,10 +50,10 @@ export function IntelligentFeatures() {
           </div>
           <div className="space-y-2 pt-6">
             <CardTitle className="text-lg font-bold">
-              AI-Powered Communication
+              {t("intelligentFeatures.aiPoweredCommunicationTitle")}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Get quick answers to your questions and experience a smooth, responsive communication process when discussing an item.
+              {t("intelligentFeatures.aiPoweredCommunicationDescription")}
             </p>
           </div>
         </Card>

@@ -1,7 +1,12 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useI18nContext } from "./locale-context";
 
 export function Hero() {
+  const { t } = useI18nContext();
+
   return (
     <div className="relative isolate">
       <div
@@ -19,20 +24,20 @@ export function Hero() {
       <div className="relative space-y-6 py-20 md:pb-12 md:pt-10 lg:py-32 overflow-hidden">
         <div className="flex mx-auto max-w-[64rem] flex-col px-6 items-center gap-4 text-center relative z-10">
           <div className="rounded-full bg-primary/10 backdrop-blur-sm px-4 py-1.5 text-sm font-medium text-primary border border-primary/20">
-            Introducing Valora AI
+            {t("hero.introducing")}
           </div>
           <div className="hero-glow">
             <h1 className="font-bold tracking-tight text-3xl sm:text-5xl md:text-6xl lg:text-6xl md:max-w-2xl">
-              Selling Your Stuff Just Got a Whole Lot Easier
+              {t("hero.title")}
             </h1>
           </div>
           <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8 glass-effect p-4 rounded-lg">
-            Valora's AI transforms how you sell used goods - making it quicker, more intelligent, and incredibly simple.
+            {t("hero.subtitle")}
           </p>
           <div className="flex flex-wrap justify-center gap-4 mt-6">
             <Button size="lg" className="rounded-full" asChild>
               <Link href="/sell">
-                Create Ad with AI
+                {t("hero.createAdButton")}
               </Link>
             </Button>
           </div>

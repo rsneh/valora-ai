@@ -45,9 +45,9 @@ function LocationFilter() {
         </div>
         <div
           className={cn(
-            "absolute top-14 left-0 transition-all duration-300 ease-out z-99",
+            "absolute start-0 top-10 md:top-14 transition-all duration-300 ease-out z-99",
             showSearch
-              ? "opacity-100 translate-y-0 w-96"
+              ? "opacity-100 translate-y-0 w-full md:w-96"
               : "opacity-0 -translate-y-2 pointer-events-none w-48"
           )}
         >

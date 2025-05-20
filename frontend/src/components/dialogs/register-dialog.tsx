@@ -84,25 +84,24 @@ export const RegisterDialog = ({ open, title, description, onOpenChange, openSig
                       {description}
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="flex items-center justify-center space-x-3 pt-4">
+                  <div className="flex items-center justify-center space-x-3 rtl:space-x-reverse pt-4">
                     <Button variant="outline" className="w-12 h-12 py-2 px-2" onClick={signInWithGoogle}>
                       <Image
                         src={googleIcon}
-                        alt="Google Icon"
+                        alt="Google"
                       />
                     </Button>
-                    <Button variant="outline" className="w-12 h-12 py-2 px-2 bg-[#3a5998]" onClick={signInWithFacebook}>
-                      <Image
-                        src={facebookIcon}
-                        alt="Facebook Icon"
-                        className="fill-blue-500"
-                      />
-                    </Button>
-                    <Button variant="outline" className="w-12 h-12 py-2 px-2 bg-black" onClick={signInWithTwitter}>
+                    <Button variant="outline" className="w-12 h-12 py-2 px-2" onClick={signInWithTwitter}>
                       <Image
                         src={xSocialIcon}
-                        alt="X Social Icon"
-                        className="fill-blue-500"
+                        alt="X"
+                      />
+                    </Button>
+                    <Button variant="outline" className="w-12 h-12 py-2 px-2" onClick={signInWithFacebook}>
+                      <Image
+                        src={facebookIcon}
+                        alt="Facebook"
+                        className="fill-[#3a5998]"
                       />
                     </Button>
                   </div>
@@ -156,14 +155,14 @@ export const RegisterDialog = ({ open, title, description, onOpenChange, openSig
                   </div>
                 </div>
               </div>
-              <div className="relative hidden bg-muted sm:rounded-r-lg md:block">
+              <div className="relative hidden bg-muted sm:rounded-e-lg md:block">
                 <Image
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
                   priority
                   src="/images/background-items.jpg"
                   alt="Background Image with items"
-                  className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale sm:rounded-r-lg"
+                  className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale sm:rounded-e-lg"
                 />
               </div>
             </div>

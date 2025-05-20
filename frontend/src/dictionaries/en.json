@@ -1,0 +1,48 @@
+{
+  "hero": {
+    "introducing": "Introducing Valora AI",
+    "title": "Selling Your Stuff Just Got a Whole Lot Easier",
+    "subtitle": "Valora's AI transforms how you sell used goods - making it quicker, more intelligent, and incredibly simple.",
+    "createAdButton": "Create Ad with AI"
+  },
+  "navigation": {
+    "browse": "Browse",
+    "login": "Log in",
+    "signup": "Sign Up",
+    "createAd": "Create Ad",
+    "profile": "Profile",
+    "ads": "Ads",
+    "logout": "Log out",
+    "toggleMenu": "Toggle Menu"
+  },
+  "intelligentFeatures": {
+    "title": "Intelligent Features",
+    "subtitle": "Valora's AI enhances the experience for everyone, making selling effortless and buying more informed.",
+    "smartItemRecognitionTitle": "Smart Item Recognition",
+    "smartItemRecognitionDescription": "Enjoy clearer and more accurately categorized ads, making it easier to find exactly what you're looking for.",
+    "clearAdsTitle": "Clear and Compelling Ads",
+    "clearAdsDescription": "Valora's AI writes engaging, informative descriptions, saving you time and attracting more interest.",
+    "aiPoweredCommunicationTitle": "AI-Powered Communication",
+    "aiPoweredCommunicationDescription": "Get quick answers to your questions and experience a smooth, responsive communication process when discussing an item."
+  },
+  "loginDialog": {
+    "passwordMinLength": "Password should be at least 6 characters.",
+    "emailAlreadyRegistered": "This email address is already registered.",
+    "invalidCredentials": "Invalid email or password.",
+    "loginFailed": "Failed to log in. Please try again.",
+    "welcomeBack": "Welcome back!",
+    "signInToAccount": "Please sign in to your account.",
+    "emailPlaceholder": "Email Address",
+    "passwordPlaceholder": "Password",
+    "submitButton": "Submit",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign Up.",
+    "backgroundImageAlt": "Background Image with items"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you are looking for does not exist.",
+    "backToHome": "Go Back Home"
+  }
+}

@@ -4,7 +4,7 @@ import { IntelligentFeatures } from "@/components/intelligent-features"
 import { Footer } from "@/components/footer"
 import { CategoriesSection } from "@/components/categories-section"
 
-export default function Home() {
+export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />

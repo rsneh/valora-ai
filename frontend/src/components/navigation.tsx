@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Menu, LogOutIcon, UserRound } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -14,10 +14,12 @@ import { Separator } from "./ui/separator"
 import { Logo } from "./ui/logo"
 import { useToast } from "@/hooks/use-toast"
 import { categories } from "@/lib/utils"
+import { useI18nContext } from "./locale-context";
 
 export function Navigation() {
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useI18nContext();
   const {
     logout,
     currentUser,
@@ -41,14 +43,12 @@ export function Navigation() {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="px-4 flex h-16 items-center">
-          <div className="hidden md:flex">
-            <Link href="/" className="flex items-center space-x-2">
+        <div className="px-4 flex h-16 items-center justify-between">
+          <div className="hidden md:flex space-x-6 rtl:space-x-reverse">
+            <Link href="/" className="flex items-center space-x-2 rtl:space-x-reverse">
               <Logo />
             </Link>
-          </div>
-          <div className="hidden md:flex md:flex-1">
-            <nav className="flex items-center space-x-6 text-sm mx-auto font-medium">
+            <nav className="flex items-center space-x-6 text-sm mx-auto font-medium rtl:space-x-reverse">
               {categories.filter((category) => category.show).map((category) => (
                 <Link
                   key={category.value}
@@ -59,7 +59,7 @@ export function Navigation() {
                 </Link>
               ))}
               <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground">
-                Browse
+                {t("navigation.browse")}
               </Link>
             </nav>
           </div>
@@ -67,13 +67,16 @@ export function Navigation() {
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
-                className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
+                className="me-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
               >
                 <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle Menu</span>
+                <span className="sr-only">{t("navigation.toggleMenu")}</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="pr-0">
+            <SheetContent side="start" className="pe-0" aria-describedby={undefined}>
+              <SheetTitle className="flex items-center space-x-2 rtl:space-x-reverse">
+                <Logo />
+              </SheetTitle>
               <nav className="grid gap-6 px-2 py-6">
                 {categories.filter((category) => category.show).map((category) => (
                   <Link
@@ -85,17 +88,17 @@ export function Navigation() {
                   </Link>
                 ))}
                 <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground">
-                  Browse
+                  {t("navigation.browse")}
                 </Link>
               </nav>
             </SheetContent>
           </Sheet>
           <div className="flex-1 grow flex justify-center md:hidden">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2 rtl:space-x-reverse">
               <Logo />
             </Link>
           </div>
-          <div className="justify-end md:space-x-4 md:flex md:items-center">
+          <div className="justify-end md:space-x-4 rtl:space-x-reverse md:flex md:items-center">
             {!currentUser && (
               <>
                 <Button
@@ -104,7 +107,7 @@ export function Navigation() {
                   className="ml-auto hidden md:flex text-foreground/80"
                   onClick={() => setShowLoginDialog(true)}
                 >
-                  Log in
+                  {t("navigation.login")}
                 </Button>
                 <Button
                   size="sm"
@@ -112,13 +115,13 @@ export function Navigation() {
                   className="ml-auto hidden md:flex"
                   onClick={() => setShowRegisterDialog(true)}
                 >
-                  Sign Up
+                  {t("navigation.signup")}
                 </Button>
               </>
             )}
             <Link href="/sell" passHref className="ml-auto hidden md:flex">
               <Button className="rounded-md md:h-9 md:px-3 lg:h-11 lg:px-8">
-                Create Ad
+                {t("navigation.createAd")}
               </Button>
             </Link>
             {currentUser && (
@@ -144,10 +147,10 @@ export function Navigation() {
                     </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    <DropdownMenuItem onSelect={() => router.push("/my/profile")}>Profile</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => router.push("/my/ads")}>Ads</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => router.push("/my/profile")}>{t("navigation.profile")}</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => router.push("/my/ads")}>{t("navigation.ads")}</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={handleLogout}><LogOutIcon />Log out</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={handleLogout}><LogOutIcon />{t("navigation.logout")}</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </>

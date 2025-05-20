@@ -22,7 +22,7 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
         </div>
 
         {/* Stats - Adapt for Valora (e.g., Posted Date, Seller Info) */}
-        <div className="flex items-center space-x-4 text-sm text-gray-600 mb-6 border-t border-b border-gray-200 py-3">
+        <div className="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-600 mb-6 border-t border-b border-gray-200 py-3">
           {/* <span>⭐ 4.8 (1624 Reviews)</span> // Not applicable for PoC */}
           <span>Posted: {new Date(product.time_created).toLocaleDateString()}</span>
           {product.time_updated && product.time_updated !== product.time_created && (

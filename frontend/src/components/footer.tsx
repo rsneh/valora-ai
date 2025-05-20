@@ -13,14 +13,14 @@ export function Footer() {
       <div className="container py-10">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
           <div className="col-span-2">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2 rtl:space-x-reverse">
               <Logo />
             </Link>
             <p className="mt-4 text-sm text-gray-600 max-w-xs">
               Valora&apos;s AI enhances the experience for everyone, making selling effortless and buying more informed.
             </p>
-            <div className="mt-6 flex space-x-6">
-              <div className="flex space-x-4">
+            <div className="mt-6 flex space-x-6 rtl:space-x-reverse">
+              <div className="flex space-x-4 rtl:space-x-reverse">
                 <Button variant="ghost" size="icon" className="w-8 h-8 py-2 px-2">
                   <Image
                     src={xSocialIcon}

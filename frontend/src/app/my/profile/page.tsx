@@ -6,8 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/components/auth/auth-context"
-import { useState, useEffect } from "react"
-import { useParams } from 'next/navigation';
+import { useState } from "react"
 
 export default function ProfileForm() {
   const { currentUser, updateProfile } = useAuth();

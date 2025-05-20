@@ -6,6 +6,7 @@ import * as ScrollArea from '@radix-ui/react-scroll-area';
 import { CheckIcon, ChevronDownIcon, SearchIcon, Loader2Icon } from 'lucide-react'; // Added Loader2Icon
 import { queryLocation } from '@/services/api/location'; // Assuming your configured axios instance is here
 import { LocationSuggestion } from '@/types/location';
+import { Input } from './input';
 
 interface AutoCompleteProps {
   label?: string;
@@ -136,7 +137,7 @@ const AutoCompleteLocation: React.FC<AutoCompleteProps> = ({
             <div className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none">
               {isLoading ? <Loader2Icon className="animate-spin" /> : <SearchIcon className="h-5 w-5" />}
             </div>
-            <input
+            <Input
               id="location-autocomplete"
               ref={inputRef}
               type="text"
@@ -144,7 +145,7 @@ const AutoCompleteLocation: React.FC<AutoCompleteProps> = ({
               onChange={handleInputChange}
               onClick={() => setIsOpen(true)}
               placeholder={placeholder}
-              className="w-full pl-10 pr-8 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:opacity-50 disabled:bg-gray-100"
+              // className="w-full ps-10 pe-8 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               role="presentation"
               aria-controls="location-suggestions-list"
               autoComplete="off"
