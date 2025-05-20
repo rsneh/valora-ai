@@ -19,13 +19,14 @@ import {
 } from "@/components/ui/form";
 import { useEffect, useState } from "react";
 import { Category } from "@/types/product";
+import { useI18nContext } from "../locale-context";
 
 // Define Zod schema for form validation
 const productFormSchema = z.object({
   title: z.string(),
-  description: z.string().min(1, { message: "Description is required." }),
-  price: z.coerce.number().positive({ message: "Price must be a positive number." }),
-  category: z.string().min(1, { message: "Category is required." }),
+  description: z.string().min(1, { message: "adForm.descriptionRequired" }),
+  price: z.coerce.number().positive({ message: "adForm.pricePositive" }),
+  category: z.string().min(1, { message: "adForm.categoryRequired" }),
 });
 
 type ProductFormData = z.infer<typeof productFormSchema>;
@@ -38,6 +39,7 @@ interface SellerAdFormProps {
 }
 
 export function SellerAdForm({ defaultValues, suggestedCategory, loading = false, onSubmit }: SellerAdFormProps) {
+  const { t } = useI18nContext();
   const [category, setCategory] = useState<string>();
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
@@ -58,10 +60,10 @@ export function SellerAdForm({ defaultValues, suggestedCategory, loading = false
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>{t("adForm.titleLabel")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="e.g., Nintendo Switch"
+                  placeholder={t("adForm.titlePlaceholder")}
                   {...field}
                 />
               </FormControl>
@@ -76,10 +78,10 @@ export function SellerAdForm({ defaultValues, suggestedCategory, loading = false
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>{t("adForm.descriptionLabel")}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="e.g., A Nintendo Switch in great condition."
+                  placeholder={t("adForm.descriptionPlaceholder")}
                   {...field}
                 />
               </FormControl>
@@ -94,14 +96,14 @@ export function SellerAdForm({ defaultValues, suggestedCategory, loading = false
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Price</FormLabel>
+              <FormLabel>{t("adForm.priceLabel")}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="number"
                     className="pl-9"
-                    placeholder="Enter your desired price"
+                    placeholder={t("adForm.pricePlaceholder")}
                     step="0.01"
                     min="0.01"
                     // react-hook-form manages value as number, input expects string
@@ -128,7 +130,7 @@ export function SellerAdForm({ defaultValues, suggestedCategory, loading = false
           name="category"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>{t("adForm.categoryLabel")}</FormLabel>
               <FormControl>
                 <CategoryGrid
                   size="sm"
@@ -143,7 +145,7 @@ export function SellerAdForm({ defaultValues, suggestedCategory, loading = false
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={loading}>{loading ? "Submitting..." : "Submit"}</Button>
+        <Button type="submit" className="w-full" disabled={loading}>{loading ? t("adForm.submittingButton") : t("adForm.submitButton")}</Button>
       </form>
     </Form>
   );

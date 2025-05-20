@@ -25,8 +25,6 @@ const AutoCompleteLocation: React.FC<AutoCompleteProps> = ({
   disabled = false,
   required = false,
 }) => {
-  console.log(placeholder);
-
   const [inputValue, setInputValue] = useState<string>(initialValue?.name || '');
   const [filteredLocations, setFilteredLocations] = useState<LocationSuggestion[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<LocationSuggestion | null>(initialValue || null);

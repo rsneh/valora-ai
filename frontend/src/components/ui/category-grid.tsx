@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils';
 import { Sparkles } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
 import { Category } from '@/types/product';
+import { useI18nContext } from '../locale-context';
+import { AiSuggestionTooltip } from './ai-suggestion-tooltip';
 
 type CategoryGridSize = 'sm' | 'md' | 'lg';
 
@@ -16,6 +18,7 @@ interface CategoryGridProps {
 }
 
 export function CategoryGrid({ selectedCategory, categories, suggestedCategory, size = 'md', onCategorySelect }: CategoryGridProps) {
+  const { t } = useI18nContext();
   return (
     <div
       className={`grid grid-cols-1 sm:grid-cols-2 gap-4 mx-auto`}
@@ -25,12 +28,13 @@ export function CategoryGrid({ selectedCategory, categories, suggestedCategory, 
           key={i}
           size={size}
           icon={category.icon}
-          title={category.title}
+          title={t(`categories.${category.value}.title`)}
           value={category.value}
           description={category.description || ''}
           isSelected={selectedCategory === category.value}
           isSuggested={suggestedCategory === category.value}
           onClick={() => onCategorySelect(category.value)}
+          t={t}
         />
       ))}
     </div>
@@ -46,9 +50,10 @@ interface CategoryCardProps {
   isSelected: boolean;
   isSuggested: boolean;
   onClick?: () => void;
+  t: (key: string) => string;
 }
 
-const CategoryCard = ({ icon, title, value, description, isSelected, isSuggested, size, onClick }: CategoryCardProps) => {
+const CategoryCard = ({ icon, title, value, description, isSelected, isSuggested, size, onClick, t }: CategoryCardProps) => {
   const iconSize = size === 'sm' ? 40 : size === 'md' ? 52 : 60;
   const sparkleSize = size === 'sm' ? 24 : size === 'md' ? 32 : 42;
   const isOther = value === "other";
@@ -72,16 +77,7 @@ const CategoryCard = ({ icon, title, value, description, isSelected, isSuggested
           {!isOther && (
             <div className="relative mb-3 md:mb-4 text-gray-600">
               {isSuggested && (
-                <>
-                  <Tooltip>
-                    <TooltipTrigger className="absolute -top-2 -start-6">
-                      <Sparkles className="text-primary-500" size={sparkleSize} strokeWidth={1} />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs text-gray-500">Suggested for you by our AI.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </>
+                <AiSuggestionTooltip size={sparkleSize} />
               )}
               {icon && (
                 <DynamicIcon name={icon as IconName} size={iconSize} strokeWidth={1} className="group-hover:text-primary-800 transition-colors duration-300" />

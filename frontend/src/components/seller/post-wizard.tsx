@@ -15,6 +15,7 @@ import { createProduct } from '@/services/api/products'
 import { Image as ImageData } from '@/types/image'
 import { Dialog, DialogContent, DialogTitle } from '../ui/dialog'
 import { useLocation } from '../location-context'
+import { useI18nContext } from '../locale-context'
 
 
 export default function SellerPostWizard() {
@@ -26,6 +27,7 @@ export default function SellerPostWizard() {
   const [error, setError] = useState<Error | null>(null);
   const [productFormData, setProductFormData] = useState<ProductFormData>();
   const [suggestedCategory, setSuggestedCategory] = useState<Category>();
+  const { t } = useI18nContext();
 
   const {
     currentUser,
@@ -37,18 +39,16 @@ export default function SellerPostWizard() {
 
   useEffect(() => {
     if (!currentUser) {
-      console.log("User is not logged in");
-
       setRegisterDialogDetails({
-        title: "Unlock Smart Selling!",
-        description: "Create a free account in seconds to post your ad and let AI assist you.",
+        title: t("postWizard.unlockSellingTitle"),
+        description: t("postWizard.unlockSellingDescription"),
         onSuccess: () => {
           setShowRegisterDialog(false);
-          toast({ title: "🥳 Awesome!", description: "You're all set. Time to hit 'Submit' to publish your ad.", variant: "primary", });
+          toast({ title: t("postWizard.registrationSuccessTitle"), description: t("postWizard.registrationSuccessDescription"), variant: "primary", });
         }
       });
     }
-  }, [currentUser, setShowRegisterDialog, setRegisterDialogDetails, toast]);
+  }, [currentUser, setShowRegisterDialog, setRegisterDialogDetails, toast, t]);
 
   // Function to go to the next step
   const nextStep = () => {
@@ -95,11 +95,11 @@ export default function SellerPostWizard() {
       const newProduct = await createProduct(formData, firebaseIdToken!);
       console.log({ newProduct });
       toast({
-        title: "Product Created!",
-        description: "Your product has been successfully created.",
+        title: t("postWizard.productCreatedTitle"),
+        description: t("postWizard.productCreatedDescription"),
         variant: "success",
       });
-      router.push("/");
+      router.push("/my/ads/");
     } catch (err: any) {
       setError(err);
     } finally {
@@ -126,15 +126,15 @@ export default function SellerPostWizard() {
         </div> */}
 
       {/* Step Content - Defined inline using conditional rendering */}
-      <div key={currentStep} className="animate-fadeInSlideUp">
+      <div key={currentStep} className="animate-fadeInSlideUp w-full flex-1">
         {currentStep === 0 && (
           <StepContent className="mt-20 md:mt-32">
             <h1 className="max-w-2xl mx-auto text-center font-bold text-4xl text-gray-900 mb-5 md:text-5xl">
-              Turn Your Photo into a Perfect Offer,
-              <span className="text-indigo-600">{` Instantly`}</span>.
+              {t("postWizard.photoToOfferTitle")}
+              <span className="text-indigo-600">{t("postWizard.photoToOfferTitleHighlight")}</span>.
             </h1>
             <p className="max-w-sm mx-auto text-center font-normal mt-4 text-lg text-gray-500 md:text-xl md:leading-8 md:max-w-2xl">
-              Upload your item&apos;s photo, and our intelligent AI will help you create an optimized listing designed to sell quickly and effortlessly.
+              {t("postWizard.photoToOfferDescription")}
             </p>
             <div className="flex flex-col align-center justify-center max-w-lg mx-auto py-6 w-full">
               <div className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 rounded-4lg">
@@ -149,7 +149,7 @@ export default function SellerPostWizard() {
         {currentStep === 1 && (
           <StepContent className="m-16 md:mt-20">
             <h3 className="max-w-2xl mx-auto text-center font-bold text-2xl text-gray-900 mb-5 md:text-4xl">
-              Your AI Suggestions Are Ready! Please Verify & Submit
+              {t("postWizard.aiSuggestionsReadyTitle")}
             </h3>
             <div className="w-full container bg-white p-8 rounded-xl shadow-2xl lg:max-w-3xl">
               {productFormData?.category && (
@@ -195,7 +195,7 @@ export default function SellerPostWizard() {
                 <Dialog open={!!error} onOpenChange={() => setError(null)}>
                   <DialogContent>
                     <DialogTitle className="text-red-600">
-                      Unable to create your ad.
+                      {t("postWizard.errorCreateAdTitle")}
                     </DialogTitle>
                     {error && (
                       <span>{error.name}</span>
@@ -206,7 +206,7 @@ export default function SellerPostWizard() {
             </div>
           </StepContent>
         )}
-        {currentStep === 2 && (
+        {/* {currentStep === 2 && (
           <StepContent>
             Step 3: Summary
           </StepContent>
@@ -215,7 +215,7 @@ export default function SellerPostWizard() {
           <StepContent>
             Step 4: Completion
           </StepContent>
-        )}
+        )} */}
       </div>
     </div>
   );

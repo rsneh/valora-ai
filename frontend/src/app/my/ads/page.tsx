@@ -9,9 +9,11 @@ import { Card, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { SquarePenIcon } from "lucide-react"
 import Link from "next/link"
+import { useI18nContext } from "@/components/locale-context"
 
 export default function ProfileForm() {
   const { currentUser, firebaseIdToken } = useAuth()
+  const { t } = useI18nContext();
   const [ads, setAds] = useState<Product[]>([])
 
   useEffect(() => {
@@ -24,12 +26,12 @@ export default function ProfileForm() {
 
   return (
     <div className="p-8 min-h-screen container mx-auto">
-      <h2 className="text-2xl font-bold mb-8">Ads</h2>
+      <h2 className="text-2xl font-bold mb-8">{t("my.ads.title")}</h2>
       <div className="w-full space-y-8 p-6 bg-white/50 backdrop-blur-xs shadow-xs">
-        <Suspense fallback={<div className="flex justify-center items-center h-full">Loading...</div>}>
+        <Suspense fallback={<div className="flex justify-center items-center h-full">{t("my.ads.loading")}</div>}>
           <div className="flex flex-col items-center justify-center">
             {ads.length === 0 ? (
-              <p className="text-sm text-gray-500">You have no ads yet.</p>
+              <p className="text-sm text-gray-500">{t("my.ads.noAds")}</p>
             ) : (
               <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
                 {ads.map((ad) => (

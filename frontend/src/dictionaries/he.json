@@ -1,4 +1,9 @@
 {
+  "site": {
+    "name": "ValoraAI",
+    "title": "Valora - הדרך החכמה והפשוטה למכור ולקנות מוצרי יד שנייה, בעזרת AI",
+    "description": "עם Valora, מכירת פריטי יד שנייה הופכת לפשוטה מתמיד. קבלו סיוע חכם מבינה מלאכותית ליצירת מודעות, תיאורים ואפילו ניהול משא ומתן."
+  },
   "hero": {
     "introducing": "מציגים את Valora AI",
     "title": "למכור את הדברים שלך נהיה הרבה יותר קל",
@@ -11,7 +16,7 @@
     "signup": "הרשמה",
     "createAd": "מודעה חדשה",
     "profile": "פרופיל",
-    "ads": "מודעות",
+    "ads": "המודעות שלי",
     "logout": "התנתק",
     "toggleMenu": "פתח/סגור תפריט"
   },
@@ -26,6 +31,10 @@
     "aiPoweredCommunicationDescription": "קבל תשובות מהירות לשאלותיך וחווה תהליך תקשורת חלק ומגיב בעת דיון על פריט."
   },
   "browse": {
+    "seo": {
+      "title": "Browse Products",
+      "description": "Explore a wide range of products available for sale. Find electronics, fashion, home goods, collectibles, and more."
+    },
     "noProductsFound": "לא נמצאו מוצרים בקטגוריה זו."
   },
   "categoriesSection": {
@@ -150,5 +159,49 @@
     "sellerTipsTitle": "טיפים",
     "tipClearMessages": "היה ברור ותמציתי בהודעות שלך.",
     "tipAgreePriceMeeting": "הסכם על מחיר ונקודת מפגש לפני שיתוף פרטים אישיים."
-  }
+  },
+  "postWizard": {
+    "unlockSellingTitle": "עולם חדש של מכירות חכמות!",
+    "unlockSellingDescription": "צרו חשבון חינמי בשניות כדי לפרסם את המודעה שלכם.",
+    "registrationSuccessTitle": "🥳 מעולה!",
+    "registrationSuccessDescription": "הכל מוכן. עכשיו לחצו על שליחה כדי לפרסם את המודעה שלכם.",
+    "productCreatedTitle": "המוצר נוצר!",
+    "productCreatedDescription": "המוצר שלכם נוצר בהצלחה.",
+    "photoToOfferTitle": "הפכו תמונה להצעה מושלמת,",
+    "photoToOfferTitleHighlight": " באופן מיידי",
+    "photoToOfferDescription": "העלו תמונה של הפריט שלכם, והבינה המלאכותית החכמה שלנו תעזור לכם ליצור מודעה מתאימה שנועדה למכור במהירות וללא מאמץ.",
+    "aiSuggestionsReadyTitle": "הצעות מוכנות! אנא בדקו ואשרו",
+    "errorCreateAdTitle": "לא ניתן ליצור את המודעה."
+  },
+  "photoUploader": {
+    "dragAndDrop": "ניתן לגרור ולשחרר תמונה או ללחוץ כאן",
+    "uploading": "התמונה שלך מנותחת על ידי העוזר החכם שלנו...",
+    "uploadFailed": "העלאת התמונה נכשלה.",
+    "tryAgain": "נסה שוב"
+  },
+  "adForm": {
+    "titleLabel": "כותרת",
+    "titlePlaceholder": "לדוגמה, Nintendo Switch",
+    "descriptionLabel": "תיאור",
+    "descriptionPlaceholder": "לדוגמה, Nintendo Switch במצב מצוין.",
+    "descriptionRequired": "תיאור הוא שדה חובה.",
+    "priceLabel": "מחיר",
+    "pricePlaceholder": "יש להקליד את המחיר הרצוי",
+    "pricePositive": "המחיר חייב להיות מספר חיובי.",
+    "categoryLabel": "קטגוריה",
+    "categoryRequired": "קטגוריה היא שדה חובה.",
+    "submitButton": "שלח",
+    "submittingButton": "שולח..."
+  },
+  "my": {
+    "ads": {
+      "title": "המודעות שלי",
+      "noAds": "אין לך מודעות עדיין.",
+      "loading": "טוען מודעות...",
+      "editTitle": "עריכת מודעה",
+      "adUpdated": "מודעה עודכנה!",
+      "adUpdatedDescription": "המודעה שלך עודכנה בהצלחה."
+    }
+  },
+  "aiSuggestionTooltip": "מוצע על ידי Valora AI"
 }

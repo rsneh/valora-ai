@@ -4,20 +4,21 @@ import { ProductList } from '@/components/product/product-list';
 import { getDictionary, getLocaleFromRequest } from '@/lib/dictionaries';
 import { getCategoryByValue, translate } from '@/lib/utils';
 import { getCategoryProducts } from '@/services/api/products';
+// import { Metadata } from 'next';
 
-// export async function generateMetadata(props: {
-//   params: Promise<{ collection: string }>;
-// }): Promise<Metadata> {
+// export async function generateMetadata(
+//   props: { params: { category: string } },
+// ): Promise<Metadata> {
 //   const params = await props.params;
-//   const collection = await getCollection(params.collection);
-
-//   if (!collection) return notFound();
+//   const category = getCategoryByValue(params.category);
+//   const locale = await getLocaleFromRequest(); // Get current locale for root
+//   const dictionary = await getDictionary(locale);
+//   const t = (key: string, scope?: string): string => translate(dictionary, key, scope);
 
 //   return {
-//     title: collection.seo?.title || collection.title,
-//     description:
-//       collection.seo?.description || collection.description || `${collection.title} products`
-//   };
+//     title: t("browse.seo.title"),
+//     description: t("browse.seo.description"),
+//   }
 // }
 
 export default async function CategoryPage(props: {

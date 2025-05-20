@@ -1,4 +1,9 @@
 {
+  "site": {
+    "name": "ValoraAI",
+    "title": "Valora: AI for Effortless Selling",
+    "description": "Sell your used electronics, gadgets, and more with ease on Valora! Our AI helps you create perfect listings from photos, suggests categories, and streamlines your selling process."
+  },
   "hero": {
     "introducing": "Introducing Valora AI",
     "title": "Selling Your Stuff Just Got a Whole Lot Easier",
@@ -26,6 +31,10 @@
     "aiPoweredCommunicationDescription": "Get quick answers to your questions and experience a smooth, responsive communication process when discussing an item."
   },
   "browse": {
+    "seo": {
+      "title": "Browse Products",
+      "description": "Explore a wide range of products available for sale. Find electronics, fashion, home goods, collectibles, and more."
+    },
     "noProductsFound": "No products found in this category."
   },
   "categoriesSection": {
@@ -141,5 +150,49 @@
     "sellerTipsTitle": "Seller Tips",
     "tipClearMessages": "Be clear and concise in your messages.",
     "tipAgreePriceMeeting": "Agree on a price and meeting point before sharing personal details."
-  }
+  },
+  "postWizard": {
+    "unlockSellingTitle": "Unlock Smart Selling!",
+    "unlockSellingDescription": "Create a free account in seconds to post your ad and let AI assist you.",
+    "registrationSuccessTitle": "🥳 Awesome!",
+    "registrationSuccessDescription": "You're all set. Time to hit 'Submit' to publish your ad.",
+    "productCreatedTitle": "Product Created!",
+    "productCreatedDescription": "Your product has been successfully created.",
+    "photoToOfferTitle": "Turn Your Photo into a Perfect Offer,",
+    "photoToOfferTitleHighlight": " Instantly",
+    "photoToOfferDescription": "Upload your item's photo, and our intelligent AI will help you create an optimized listing designed to sell quickly and effortlessly.",
+    "aiSuggestionsReadyTitle": "Your AI Suggestions Are Ready! Please Verify & Submit",
+    "errorCreateAdTitle": "Unable to create your ad."
+  },
+  "photoUploader": {
+    "dragAndDrop": "Drag and drop image or click here",
+    "uploading": "Your photo is being analyzed by our AI assistant...",
+    "uploadFailed": "Failed to upload the image.",
+    "tryAgain": "Try again"
+  },
+  "adForm": {
+    "titleLabel": "Title",
+    "titlePlaceholder": "e.g., Nintendo Switch",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "e.g., A Nintendo Switch in great condition.",
+    "descriptionRequired": "Description is required.",
+    "priceLabel": "Price",
+    "pricePlaceholder": "Enter your desired price",
+    "pricePositive": "Price must be a positive number.",
+    "categoryLabel": "Category",
+    "categoryRequired": "Category is required.",
+    "submitButton": "Submit",
+    "submittingButton": "Submitting..."
+  },
+  "my": {
+    "ads": {
+      "title": "My Ads",
+      "noAds": "No ads yet.",
+      "loading": "Loading...",
+      "editTitle": "Edit Ad",
+      "adUpdated": "Ad Updated!",
+      "adUpdatedDescription": "Your ad has been successfully updated."
+    }
+  },
+  "aiSuggestionTooltip": "Suggested by Valora AI"
 }
