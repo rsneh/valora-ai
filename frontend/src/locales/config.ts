@@ -1,5 +1,5 @@
 const localesList = ['en', 'he'] as const; // Supported locales
-const defaultLocaleConst = 'en' as const; // Default locale
+const defaultLocaleConst = 'he' as const; // Default locale
 const localeCookieName = 'VALORA_LOCALE'; // Define cookie name
 const localeQueryParam = 'lang'; // Define query parameter name
 

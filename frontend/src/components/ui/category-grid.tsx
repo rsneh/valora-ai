@@ -1,8 +1,7 @@
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic'
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from '@/lib/utils';
-import { Sparkles } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
+import { TooltipProvider } from './tooltip';
 import { Category } from '@/types/product';
 import { useI18nContext } from '../locale-context';
 import { AiSuggestionTooltip } from './ai-suggestion-tooltip';
@@ -34,7 +33,6 @@ export function CategoryGrid({ selectedCategory, categories, suggestedCategory, 
           isSelected={selectedCategory === category.value}
           isSuggested={suggestedCategory === category.value}
           onClick={() => onCategorySelect(category.value)}
-          t={t}
         />
       ))}
     </div>
@@ -50,10 +48,9 @@ interface CategoryCardProps {
   isSelected: boolean;
   isSuggested: boolean;
   onClick?: () => void;
-  t: (key: string) => string;
 }
 
-const CategoryCard = ({ icon, title, value, description, isSelected, isSuggested, size, onClick, t }: CategoryCardProps) => {
+const CategoryCard = ({ icon, title, value, description, isSelected, isSuggested, size, onClick }: CategoryCardProps) => {
   const iconSize = size === 'sm' ? 40 : size === 'md' ? 52 : 60;
   const sparkleSize = size === 'sm' ? 24 : size === 'md' ? 32 : 42;
   const isOther = value === "other";

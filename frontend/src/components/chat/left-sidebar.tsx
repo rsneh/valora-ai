@@ -1,6 +1,5 @@
 "use client";
 
-import { LogOutIcon, PiIcon } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "../ui/logo";
 

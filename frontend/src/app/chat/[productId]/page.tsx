@@ -48,7 +48,7 @@ export default function ChatPage() {
       };
       fetchHistory();
     }
-  }, [product, currentUser, firebaseIdToken]);
+  }, [product, currentUser, firebaseIdToken, t]);
 
 
   const handleSendMessage = async (e?: React.FormEvent<HTMLFormElement>) => {

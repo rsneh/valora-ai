@@ -2,8 +2,6 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { getProductById } from '@/services/api/products';
 import { MyEditProductPage } from '@/components/my/edit-product';
-import { useI18nContext } from '@/components/locale-context';
-import { Edit } from 'lucide-react';
 
 export default async function AdEditPage(props: { params: Promise<{ productId: string }> }) {
   const params = await props.params;
