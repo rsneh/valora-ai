@@ -6,7 +6,7 @@
     "createAdButton": "פרסום מודעה"
   },
   "navigation": {
-    "browse": "עיון",
+    "browse": "לכל המוצרים",
     "login": "התחברות",
     "signup": "הרשמה",
     "createAd": "מודעה חדשה",
@@ -19,18 +19,58 @@
     "title": "תכונות חכמות",
     "subtitle": "הבינה המלאכותית של Valora משפרת את החוויה לכולם, הופכת את המכירה למאמץ ואת הקנייה ליותר מושכלת.",
     "smartItemRecognitionTitle": "זיהוי פריטים חכם",
-    "smartItemRecognitionDescription": "תהנה ממודעות ברורות יותר ומסווגות בצורה מדויקת יותר, מה שמקל על מציאת בדיוק מה שאתה מחפש.",
+    "smartItemRecognitionDescription": "תהנה ממודעות ברורות יותר ומסווגות בצורה מדויקת יותר, מה שמקל על מציאת בדיוק את מה שמחפשים.",
     "clearAdsTitle": "מודעות ברורות ומשכנעות",
-    "clearAdsDescription": "הבינה המלאכותית של Valora כותבת תיאורים מרתקים ואינפורמטיביים, חוסכת לך זמן ומושכת יותר עניין.",
+    "clearAdsDescription": "הבינה המלאכותית של Valora כותבת תיאורים מדויקים ואינפורמטיביים, חוסכת לך זמן ומושכת יותר עניין.",
     "aiPoweredCommunicationTitle": "תקשורת מבוססת AI",
     "aiPoweredCommunicationDescription": "קבל תשובות מהירות לשאלותיך וחווה תהליך תקשורת חלק ומגיב בעת דיון על פריט."
   },
+  "browse": {
+    "noProductsFound": "לא נמצאו מוצרים בקטגוריה זו."
+  },
+  "categoriesSection": {
+    "title": "קטגוריות פופולריות",
+    "browseAll": "לכל המוצרים"
+  },
+  "categories": {
+    "title": "קטגוריות",
+    "all": "הכל",
+    "electronics": {
+      "title": "אלקטרוניקה",
+      "menu": "אלקטרוניקה",
+      "description": "מכשירים, גאדג'טים, טכנולוגיה."
+    },
+    "fashion": {
+      "title": "אופנה וביגוד",
+      "menu": "אופנה",
+      "description": "בגדים, נעליים, תיקים ואביזרים."
+    },
+    "home-goods": {
+      "title": "לבית וריהוט",
+      "menu": "ריהוט",
+      "description": "רהיטים, קישוטים לבית, מוצרי בית."
+    },
+    "collectibles": {
+      "title": "אספנות ותחביבים",
+      "menu": "אספנות",
+      "description": "פריטים ייחודיים, תחביבים, אמנות."
+    },
+    "books-media": {
+      "title": "ספרים ומדיה",
+      "menu": "ספרים",
+      "description": "ספרים, סרטים, מוזיקה."
+    },
+    "sports-outdoors": {
+      "title": "ספורט וחוץ",
+      "menu": "ספורט",
+      "description": "ציוד ספורט, פעילויות חוץ."
+    },
+    "other": {
+      "title": "אחר",
+      "description": "פריטים שונים שאינם מתאימים לקטגוריות אחרות."
+    }
+  },
   "loginDialog": {
-    "passwordMinLength": "סיסמה צריכה להכיל לפחות 6 תווים.",
-    "emailAlreadyRegistered": "כתובת אימייל זו כבר רשומה.",
-    "invalidCredentials": "אימייל או סיסמה שגויים.",
-    "loginFailed": "ההתחברות נכשלה. אנא נסה שוב.",
-    "welcomeBack": "כמה טוב שבאתם",
     "signInToAccount": "נדרשת התחברות לחשבון שלך להמשך שימוש.",
     "emailPlaceholder": "כתובת אימייל",
     "passwordPlaceholder": "סיסמה",
@@ -40,9 +80,75 @@
     "signUpLink": "הרשמה.",
     "backgroundImageAlt": "תמונת רקע עם פריטים"
   },
+  "authDialog": {
+    "registerDialog": {
+      "title": "יצירת חשבון חדש",
+      "description": "עיין בקטגוריות שלנו כדי למצוא את מה שאתה צריך, או פרסם את הפריטים שלך למכירה."
+    },
+    "loginDialog": {
+      "title": "כמה טוב שבאתם!",
+      "description": "התחברות לחשבון שלך לרכוש או לפרסם את הפריט הבא שלך."
+    },
+    "passwordMinLength": "סיסמה צריכה להכיל לפחות 6 תווים.",
+    "emailAlreadyRegistered": "כתובת אימייל זו כבר רשומה.",
+    "invalidCredentials": "אימייל או סיסמה שגויים.",
+    "loginFailed": "ההתחברות נכשלה. אנא נסה שוב.",
+    "emailPlaceholder": "כתובת אימייל",
+    "passwordPlaceholder": "סיסמה",
+    "submitButton": "שליחה",
+    "forgotPassword": "שכחת סיסמה?",
+    "noAccount": "אין לך חשבון?",
+    "signUpLink": "הרשמה כאן.",
+    "backgroundImageAlt": "תמונת רקע עם פריטים",
+    "confirmPasswordPlaceholder": "אימות סיסמה",
+    "alreadyHaveAccount": "כבר יש לך חשבון?",
+    "signInLink": "התחברות כאן.",
+    "registerButton": "הרשמה"
+  },
   "notFound": {
     "title": "הדף לא נמצא",
     "description": "מצטערים, עמוד זה אינו קיים.",
     "backToHome": "לעמוד הראשי"
+  },
+  "footer": {
+    "company": "חברה",
+    "about": "אודות",
+    "terms": "תנאי שימוש",
+    "privacy": "פרטיות",
+    "contact": "יצירת קשר",
+    "legal": "מידע משפטי",
+    "aboutDescription": "הבינה המלאכותית של Valora משפרת את החוויה עבור כולם, הופכת את המכירה לקלה וקניה מושכלת יותר.",
+    "allRightsReserved": "valora.ai. כל הזכויות שמורות."
+  },
+  "locationFilter": {
+    "title": "מיקום",
+    "description": "בחר את המיקום שלך כדי למצוא את המוצרים הקרובים ביותר אליך.",
+    "change": "שינוי",
+    "inputPlaceholder": "הזן את המיקום שלך",
+    "unknown": "לא ידוע"
+  },
+  "productDescription": {
+    "description": "תיאור",
+    "price": "מחיר",
+    "noDescription": "אין תיאור זמין למוצר זה.",
+    "startChat": "התחל שיחה",
+    "posted": "פורסם",
+    "updated": "עודכן"
+  },
+  "chat": {
+    "valoraAIAlt": "Valora AI",
+    "valoraAITitle": "Valora AI",
+    "valoraAIOnline": "מחובר",
+    "loadingHistory": "טוען היסטוריית שיחה...",
+    "couldNotLoadHistory": "לא ניתן לטעון את היסטוריית השיחה.",
+    "couldNotSendMessage": "לא ניתן לשלוח את ההודעה.",
+    "noMessagesYet": "אין הודעות עדיין. התחל שיחה!",
+    "typeMessagePlaceholder": "ההודעה שלך...",
+    "productDetails": "פרטי המוצר",
+    "locationLabel": "מיקום",
+    "viewDetailsButton": "הצג פרטים",
+    "sellerTipsTitle": "טיפים",
+    "tipClearMessages": "היה ברור ותמציתי בהודעות שלך.",
+    "tipAgreePriceMeeting": "הסכם על מחיר ונקודת מפגש לפני שיתוף פרטים אישיים."
   }
 }

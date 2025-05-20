@@ -19,12 +19,14 @@ interface AutoCompleteProps {
 
 const AutoCompleteLocation: React.FC<AutoCompleteProps> = ({
   label,
-  placeholder = "Search city or country...",
+  placeholder = "Search your location...",
   onLocationSelect,
   initialValue,
   disabled = false,
   required = false,
 }) => {
+  console.log(placeholder);
+
   const [inputValue, setInputValue] = useState<string>(initialValue?.name || '');
   const [filteredLocations, setFilteredLocations] = useState<LocationSuggestion[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<LocationSuggestion | null>(initialValue || null);
@@ -134,7 +136,7 @@ const AutoCompleteLocation: React.FC<AutoCompleteProps> = ({
       <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
         <Popover.Anchor asChild>
           <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none">
+            <div className="absolute start-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none">
               {isLoading ? <Loader2Icon className="animate-spin" /> : <SearchIcon className="h-5 w-5" />}
             </div>
             <Input
@@ -145,7 +147,7 @@ const AutoCompleteLocation: React.FC<AutoCompleteProps> = ({
               onChange={handleInputChange}
               onClick={() => setIsOpen(true)}
               placeholder={placeholder}
-              // className="w-full ps-10 pe-8 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="ps-10 pe-8 py"
               role="presentation"
               aria-controls="location-suggestions-list"
               autoComplete="off"
@@ -154,7 +156,7 @@ const AutoCompleteLocation: React.FC<AutoCompleteProps> = ({
             <Popover.Trigger asChild>
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500 hover:text-gray-700 focus:outline-none disabled:opacity-50"
+                className="absolute inset-y-0 end-0 flex items-center pe-2 text-gray-500 hover:text-gray-700 focus:outline-none disabled:opacity-50"
                 onClick={() => setIsOpen(prev => !prev)} // Toggles popover
                 disabled={disabled}
                 aria-label={isOpen ? "Close suggestions" : "Open suggestions"}

@@ -21,7 +21,7 @@ export function Hero() {
           className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
         />
       </div>
-      <div className="relative space-y-6 py-20 md:pb-12 md:pt-10 lg:py-32 overflow-hidden">
+      <div className="relative space-y-6 py-48 md:py-56 overflow-hidden">
         <div className="flex mx-auto max-w-[64rem] flex-col px-6 items-center gap-4 text-center relative z-10">
           <div className="rounded-full bg-primary/10 backdrop-blur-sm px-4 py-1.5 text-sm font-medium text-primary border border-primary/20">
             {t("hero.introducing")}

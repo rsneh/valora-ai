@@ -8,12 +8,12 @@ export function IntelligentFeatures() {
   const { t } = useI18nContext();
 
   return (
-    <section id="features" className="container space-y-6 py-8 md:py-12 lg:py-24">
+    <section id="features" className="px-6 space-y-6 py-8 md:py-12 lg:py-24">
       <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
         <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl gradient-text">
           {t("intelligentFeatures.title")}
         </h2>
-        <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
+        <p className="max-w-[95%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
           {t("intelligentFeatures.subtitle")}
         </p>
       </div>

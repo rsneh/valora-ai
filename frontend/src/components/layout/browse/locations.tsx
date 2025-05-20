@@ -6,14 +6,16 @@ import { useLocation } from "@/components/location-context"
 import { PenLineIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AutoComplete from "@/components/ui/autocomplete-location";
+import { useI18nContext } from "@/components/locale-context";
 
 function LocationFilter() {
   const { location, setLocation } = useLocation();
+  const { t } = useI18nContext();
   const [showSearch, setShowSearch] = useState(false);
   return (
     <div className="relative">
       <h3 className="hidden text-xs text-neutral-500 md:block dark:text-neutral-400">
-        Location
+        {t("locationFilter.title")}
       </h3>
       <div className="flex flex-col justify-between items-center text-sm text-black dark:text-white">
         <div className={cn(
@@ -28,7 +30,7 @@ function LocationFilter() {
             </p>
           ) : (
             <div className="italic">
-              Unknown
+              {t("locationFilter.unknown")}
             </div>
           )}
           <div className="text-black dark:text-white">
@@ -38,7 +40,7 @@ function LocationFilter() {
               variant="clean"
               onClick={() => setShowSearch(!showSearch)}
             >
-              Change
+              {t("locationFilter.change")}
               <PenLineIcon />
             </Button>
           </div>
@@ -52,6 +54,7 @@ function LocationFilter() {
           )}
         >
           <AutoComplete
+            placeholder={t("locationFilter.inputPlaceholder")}
             onLocationSelect={(location) => {
               setLocation({
                 location_text: location?.name,

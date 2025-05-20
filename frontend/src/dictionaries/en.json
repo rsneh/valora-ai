@@ -25,24 +25,121 @@
     "aiPoweredCommunicationTitle": "AI-Powered Communication",
     "aiPoweredCommunicationDescription": "Get quick answers to your questions and experience a smooth, responsive communication process when discussing an item."
   },
-  "loginDialog": {
+  "browse": {
+    "noProductsFound": "No products found in this category."
+  },
+  "categoriesSection": {
+    "title": "Popular Categories",
+    "browseAll": "All Products"
+  },
+  "categories": {
+    "title": "Categories",
+    "all": "All",
+    "electronics": {
+      "title": "Electronics",
+      "menu": "Electronics",
+      "description": "Gadgets, devices, phones, computers, consoles."
+    },
+    "fashion": {
+      "title": "Fashion & Apparel",
+      "menu": "Fashion",
+      "description": "Clothing, shoes, bags, accessories."
+    },
+    "home-goods": {
+      "title": "Home Goods & Furniture",
+      "menu": "Furniture",
+      "description": "Furniture, decor, kitchen, appliances."
+    },
+    "collectibles": {
+      "title": "Collectibles & Hobbies",
+      "menu": "Collectibles",
+      "description": "Collectibles, antiques, hobbies, instruments."
+    },
+    "books-media": {
+      "title": "Books & Media",
+      "menu": "Books",
+      "description": "Books, comics, music, movies."
+    },
+    "sports-outdoors": {
+      "title": "Sports & Outdoors",
+      "menu": "Sports",
+      "description": "Sports gear, fitness, outdoor items."
+    },
+    "other": {
+      "title": "Other",
+      "menu": "Other",
+      "description": "For all other items."
+    }
+  },
+  "authDialog": {
+    "registerDialog": {
+      "title": "Create an Account",
+      "description": "Browse our categories to find what you need, or post your own items for sale."
+    },
+    "loginDialog": {
+      "title": "Welcome back!",
+      "description": "Please sign in to your account."
+    },
     "passwordMinLength": "Password should be at least 6 characters.",
     "emailAlreadyRegistered": "This email address is already registered.",
     "invalidCredentials": "Invalid email or password.",
     "loginFailed": "Failed to log in. Please try again.",
-    "welcomeBack": "Welcome back!",
-    "signInToAccount": "Please sign in to your account.",
+    "registerFailed": "Failed to register. Please try again.",
     "emailPlaceholder": "Email Address",
     "passwordPlaceholder": "Password",
+    "confirmPasswordPlaceholder": "Confirm Password",
     "submitButton": "Submit",
     "forgotPassword": "Forgot Password?",
     "noAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "signInLink": "Sign In.",
     "signUpLink": "Sign Up.",
+    "registerButton": "Register",
     "backgroundImageAlt": "Background Image with items"
   },
   "notFound": {
     "title": "Page Not Found",
     "description": "Sorry, the page you are looking for does not exist.",
     "backToHome": "Go Back Home"
+  },
+  "footer": {
+    "aboutUs": "About Us",
+    "contactUs": "Contact Us",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "helpCenter": "Help Center",
+    "aboutDescription": "Valora&apos;s AI enhances the experience for everyone, making selling effortless and buying more informed.",
+    "allRightsReserved": "valora.ai. All rights reserved."
+  },
+  "locationFilter": {
+    "title": "Location",
+    "description": "Find items near you.",
+    "change": "Change",
+    "inputPlaceholder": "Search your location...",
+    "unknown": "Unknown"
+  },
+  "productDescription": {
+    "description": "Description",
+    "price": "Price",
+    "noDescription": "No description available for this product.",
+    "startChat": "Start AI Chat",
+    "posted": "Posted",
+    "updated": "Updated"
+  },
+  "chat": {
+    "valoraAIAlt": "Valora AI",
+    "valoraAITitle": "Valora AI",
+    "valoraAIOnline": "Online",
+    "loadingHistory": "Loading chat history...",
+    "couldNotLoadHistory": "Could not load chat history.",
+    "couldNotSendMessage": "Failed to send message.",
+    "noMessagesYet": "No messages yet. Start the conversation!",
+    "typeMessagePlaceholder": "Type your message...",
+    "productDetails": "Product Details",
+    "locationLabel": "Location",
+    "viewDetailsButton": "View Details",
+    "sellerTipsTitle": "Seller Tips",
+    "tipClearMessages": "Be clear and concise in your messages.",
+    "tipAgreePriceMeeting": "Agree on a price and meeting point before sharing personal details."
   }
 }

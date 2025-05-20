@@ -24,7 +24,7 @@ interface AuthContextType {
   loadingAuth: boolean;
   showRegisterDialog: boolean;
   showLoginDialog: boolean;
-  registerDialogDetails: RegisterDialogDetails;
+  registerDialogDetails?: RegisterDialogDetails;
   updateProfile: (user: FirebaseUser, { displayName, photoUrl }: { displayName?: string; photoUrl?: string }) => Promise<void>
   setShowRegisterDialog: (value: boolean) => void;
   setRegisterDialogDetails: (details: RegisterDialogDetails) => void;
@@ -52,17 +52,12 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const registerDialogDetailsDefault = {
-    title: "Create an Account",
-    description: "Browse our categories to find what you need, or post your own items for sale.",
-  }
-
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [firebaseIdToken, setFirebaseIdToken] = useState<string | null>(null);
   const [showRegisterDialog, setShowRegisterDialog] = useState<boolean>(false);
   const [showLoginDialog, setShowLoginDialog] = useState<boolean>(false);
-  const [registerDialogDetails, setRegisterDialogDetails] = useState<RegisterDialogDetails>(registerDialogDetailsDefault);
+  const [registerDialogDetails, setRegisterDialogDetails] = useState<RegisterDialogDetails>();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {

@@ -31,7 +31,7 @@ export interface ProductFormData {
 
 export interface Category {
   value: string;
-  title: string;
+  title?: string;
   description?: string;
   icon?: string;
   show?: boolean;

@@ -18,7 +18,7 @@ export async function generateMetadata(props: {
   const indexable = true; //!product.tags.includes(HIDDEN_PRODUCT_TAG);
 
   return {
-    title: product.title,
+    title: `${product.title} - ValueAI`,
     description: product.description,
     robots: {
       index: indexable,

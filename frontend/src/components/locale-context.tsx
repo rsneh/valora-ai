@@ -1,6 +1,7 @@
 'use client'; // This context provider and hook are for client components
 
 import { Dictionary } from '@/lib/dictionaries';
+import { translate } from '@/lib/utils';
 import { AppLocale, getSupportedLocales } from '@/locales/config';
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 
@@ -64,24 +65,7 @@ export const I18nProvider: React.FC<I18nProviderProps> = ({
   }, [initialLocale, initialDictionary]);
 
 
-  // Simple translation function (can be made more robust)
-  const t = (key: string, scope?: string): string => {
-    if (!dictionary) return key; // Fallback if dictionary not loaded
-    let path = key.split('.');
-    if (scope) {
-      path = [scope, ...path];
-    }
-
-    let result: any = dictionary;
-    for (const p of path) {
-      result = result?.[p];
-      if (result === undefined) {
-        console.warn(`Translation key not found: ${scope ? scope + '.' : ''}${key}`);
-        return key; // Return key if not found
-      }
-    }
-    return typeof result === 'string' ? result : key;
-  };
+  const t = (key: string, scope?: string): string => translate(dictionary, key, scope);
 
   return (
     <I18nContext.Provider value={{ locale, setLocale, t, dictionary }}>

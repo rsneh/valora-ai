@@ -1,12 +1,16 @@
+"use client"
+
 import { Product } from "@/types/product";
 import { HeartIcon } from "lucide-react";
 import { StartChatButton } from "./start-chat-button";
+import { useI18nContext } from "../locale-context";
 
 interface ProductDescriptionProps {
   product: Product;
 }
 
 export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product }) => {
+  const { t } = useI18nContext();
   return (
     <div className="flex flex-col justify-between shrink-1">
       <div>
@@ -24,16 +28,16 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
         {/* Stats - Adapt for Valora (e.g., Posted Date, Seller Info) */}
         <div className="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-600 mb-6 border-t border-b border-gray-200 py-3">
           {/* <span>⭐ 4.8 (1624 Reviews)</span> // Not applicable for PoC */}
-          <span>Posted: {new Date(product.time_created).toLocaleDateString()}</span>
+          <span>{t("productDescription.posted")}: {new Date(product.time_created).toLocaleDateString()}</span>
           {product.time_updated && product.time_updated !== product.time_created && (
-            <span>Updated: {new Date(product.time_updated).toLocaleDateString()}</span>
+            <span>{t("productDescription.updated")}: {new Date(product.time_updated).toLocaleDateString()}</span>
           )}
         </div>
 
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">Description</h3>
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">{t("productDescription.description")}</h3>
           <p className="text-gray-600 leading-relaxed whitespace-pre-line">
-            {product.description || "No description provided for this item."}
+            {product.description || t("productDescription.noDescription")}
           </p>
         </div>
 
@@ -49,7 +53,10 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
 
       {/* Action Buttons */}
       <div className="mt-auto">
-        <StartChatButton product={product} />
+        <StartChatButton
+          productId={product.id.toString()}
+          buttonTxt={t("productDescription.startChat")}
+        />
       </div>
     </div>
   )

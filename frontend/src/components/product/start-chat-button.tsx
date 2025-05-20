@@ -1,12 +1,16 @@
 "use client";
 
-import { Product } from "@/types/product";
 import { Button } from "../ui/button";
 import { FormEvent } from "react";
 import { useAuth } from "../auth/auth-context";
 import { useRouter } from "next/navigation";
 
-export function StartChatButton({ product }: { product: Product }) {
+interface StartChatButtonProps {
+  productId: string;
+  buttonTxt: string;
+}
+
+export function StartChatButton({ productId, buttonTxt }: StartChatButtonProps) {
   const router = useRouter();
   const {
     currentUser,
@@ -19,7 +23,7 @@ export function StartChatButton({ product }: { product: Product }) {
       setShowRegisterDialog(true);
       return;
     }
-    router.push(`/chat/${product.id}`);
+    router.push(`/chat/${productId}`);
   }
 
   return (
@@ -29,7 +33,7 @@ export function StartChatButton({ product }: { product: Product }) {
         variant="default"
         type="submit"
       >
-        Start AI Chat
+        {buttonTxt}
       </Button>
     </form>
   );

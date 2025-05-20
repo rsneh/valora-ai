@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { useMemo } from "react";
 import { cn, getCategoryByValue } from "@/lib/utils";
+import { useI18nContext } from "../locale-context";
 
 interface ProductCardProps {
   product: Product;
@@ -14,6 +15,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, className, sizes }) => {
+  const { t } = useI18nContext();
   const category = useMemo(
     () => product.category ? getCategoryByValue(product.category) : null,
     [product.category]
@@ -45,7 +47,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className, si
         </p>
         {category && (
           <Badge className="px-3 py-1.5" variant="secondary">
-            {category.title}
+            {t(`categories.${category.value}.title`)}
           </Badge>
         )}
         <div className="flex justify-between items-center mt-3">

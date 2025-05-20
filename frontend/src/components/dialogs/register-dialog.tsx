@@ -1,3 +1,5 @@
+"use client"
+
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -12,6 +14,7 @@ import { Separator } from "../ui/separator";
 import { auth } from "@/services/firebase";
 import { useAuth } from "@/components/auth/auth-context";
 import Link from "next/link";
+import { useI18nContext } from "../locale-context";
 
 interface RegisterDialogProps {
   open: boolean;
@@ -25,12 +28,20 @@ interface RegisterDialogProps {
 
 export const RegisterDialog = ({ open, title, description, onOpenChange, openSignInDialog, onSuccess, closeDialog }: RegisterDialogProps) => {
   const router = useRouter();
+  const { t } = useI18nContext();
   const { signInWithGoogle, signInWithFacebook, signInWithTwitter } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  if (!title) {
+    title = t("authDialog.registerDialog.title");
+  }
+  if (!description) {
+    description = t("authDialog.registerDialog.description");
+  }
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -58,9 +69,9 @@ export const RegisterDialog = ({ open, title, description, onOpenChange, openSig
       }
     } catch (err: Error | any) {
       if (err.code === 'auth/email-already-in-use') {
-        setError('This email address is already registered.');
+        setError(t("authDialog.emailAlreadyRegistered"));
       } else {
-        setError(err.message || "Failed to register. Please try again.");
+        setError(err.message || t("authDialog.registerFailed"));
       }
       console.error("Registration error:", err);
     } finally {
@@ -116,7 +127,7 @@ export const RegisterDialog = ({ open, title, description, onOpenChange, openSig
                         name="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Email"
+                        placeholder={t("authDialog.emailPlaceholder")}
                         required
                       />
                     </div>
@@ -126,7 +137,7 @@ export const RegisterDialog = ({ open, title, description, onOpenChange, openSig
                         name="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"
+                        placeholder={t("authDialog.passwordPlaceholder")}
                         required
                       />
                     </div>
@@ -136,21 +147,21 @@ export const RegisterDialog = ({ open, title, description, onOpenChange, openSig
                         name="confirmPassword"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Confirm Password"
+                        placeholder={t("authDialog.confirmPasswordPlaceholder")}
                         required
                       />
                     </div>
                     {error && <p className="text-red-500 text-sm">{error}</p>}
                     <div className="flex flex-col items-center">
                       <Button type="submit" className="w-full" disabled={loading}>
-                        {loading ? "Registering..." : "Register"}
+                        {t("authDialog.registerButton")}
                       </Button>
                     </div>
                   </form>
                   <div className="text-center text-sm md:mt-6">
-                    Already have an account?{" "}
+                    {t("authDialog.alreadyHaveAccount")}{" "}
                     <Link href={""} className="underline underline-offset-4" onClick={() => openSignInDialog(true)}>
-                      Sign in.
+                      {t("authDialog.signInLink")}
                     </Link>
                   </div>
                 </div>

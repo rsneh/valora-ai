@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import discordIcon from "@/assets/icons/discord.svg"
@@ -6,8 +8,10 @@ import linkedInIcon from "@/assets/icons/linkedin.svg"
 import { Logo } from "./ui/logo"
 import Image from "next/image"
 import { categories } from "@/lib/utils"
+import { useI18nContext } from "./locale-context"
 
 export function Footer() {
+  const { t } = useI18nContext();
   return (
     <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container py-10">
@@ -17,7 +21,7 @@ export function Footer() {
               <Logo />
             </Link>
             <p className="mt-4 text-sm text-gray-600 max-w-xs">
-              Valora&apos;s AI enhances the experience for everyone, making selling effortless and buying more informed.
+              {t("footer.aboutDescription")}
             </p>
             <div className="mt-6 flex space-x-6 rtl:space-x-reverse">
               <div className="flex space-x-4 rtl:space-x-reverse">
@@ -50,43 +54,43 @@ export function Footer() {
           </div>
           <div className="flex flex-col space-y-8">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Company</h3>
+              <h3 className="text-lg font-semibold mb-4">{t("footer.company")}</h3>
               <ul className="space-y-2">
                 <li>
                   <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground">
-                    About Us
+                    {t("footer.about")}
                   </Link>
                 </li>
                 <li>
                   <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground">
-                    Contact Us
+                    {t("footer.contact")}
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Legal</h3>
+              <h3 className="text-lg font-semibold mb-4">{t("footer.legal")}</h3>
               <ul className="space-y-2">
                 <li>
                   <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
-                    Privacy Policy
+                    {t("footer.privacy")}
                   </Link>
                 </li>
                 <li>
                   <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">
-                    Terms of Service
+                    {t("footer.terms")}
                   </Link>
                 </li>
               </ul>
             </div>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-4">Categories</h3>
+            <h3 className="text-lg font-semibold mb-4">{t("categories.title")}</h3>
             <ul className="space-y-2">
               {categories.map((category, index) => (
                 <li key={index}>
                   <Link href={`/browse/${category.value}`} className="text-sm text-muted-foreground hover:text-foreground">
-                    {category.title}
+                    {t(`categories.${category.value}.title`)}
                   </Link>
                 </li>
               ))}
@@ -95,7 +99,7 @@ export function Footer() {
         </div>
         <div className="mt-10 border-t pt-6 text-center">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} valora.ai. All rights reserved.
+            © {new Date().getFullYear()} {t("footer.allRightsReserved")}
           </p>
         </div>
       </div>

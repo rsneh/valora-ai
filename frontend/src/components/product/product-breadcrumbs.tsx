@@ -1,11 +1,15 @@
+"use client"
+
 import { getCategoryByValue } from "@/lib/utils";
 import { Product } from "@/types/product";
 import { useMemo } from "react";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from "../ui/breadcrumb";
 import { HomeIcon } from "lucide-react";
 import Link from "next/link";
+import { useI18nContext } from "../locale-context";
 
 export const ProductBreadcrumbs = ({ product }: { product: Product }) => {
+  const { t } = useI18nContext();
   const category = useMemo(
     () => product.category ? getCategoryByValue(product.category) : null,
     [product.category]
@@ -24,7 +28,7 @@ export const ProductBreadcrumbs = ({ product }: { product: Product }) => {
         {category && (
           <BreadcrumbLink asChild className="hover:text-gray-800">
             <Link href={`/browse/${category.value}`} className="flex items-center">
-              {category.title}
+              {t(`categories.${category.value}.title`)}
             </Link>
           </BreadcrumbLink>
         )}

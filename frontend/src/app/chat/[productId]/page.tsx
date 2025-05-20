@@ -10,8 +10,10 @@ import Message from '@/components/ui/message';
 import { useChatContext } from './chat-context';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
+import { useI18nContext } from '@/components/locale-context';
 
 export default function ChatPage() {
+  const { t } = useI18nContext();
   const { product } = useChatContext();
   const { currentUser, firebaseIdToken } = useAuth();
 
@@ -39,7 +41,7 @@ export default function ChatPage() {
           setMessages(history);
         } catch (err: any) {
           console.error("Failed to fetch chat history:", err);
-          setError(err.message || "Could not load chat history.");
+          setError(err.message || t("chat.couldNotLoadHistory"));
         } finally {
           setIsLoadingHistory(false);
         }
@@ -77,7 +79,7 @@ export default function ChatPage() {
       });
     } catch (err: any) {
       console.error("Failed to send message or get AI response:", err);
-      setError(err.message || "Failed to send message.");
+      setError(err.message || t("chat.couldNotSendMessage"));
       // Optionally, add the user's message back to input or mark as failed
       setMessages(prevMessages => prevMessages.filter(msg => msg.id !== optimisticUserMessage.id)); // Remove optimistic
     } finally {
@@ -93,25 +95,25 @@ export default function ChatPage() {
           <Avatar>
             <AvatarImage
               src="/images/valora-ai-avatar.webp"
-              alt="Valora AI Assistant"
+              alt={t("chat.valoraAIAlt")}
               width={40}
               height={40}
               className="rounded-full"
             />
           </Avatar>
           <div>
-            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Valora AI Seller Assistant</h2>
-            <p className="text-xs text-green-500 dark:text-green-400">Online</p>
+            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{t("chat.valoraAITitle")}</h2>
+            <p className="text-xs text-green-500 dark:text-green-400">{t("chat.valoraAIOnline")}</p>
           </div>
         </header>
       )}
 
       {/* Message List Area */}
       <div className="chat-messages flex-grow overflow-y-auto p-4 space-y-4 bg-white dark:bg-slate-800 shadow-md">
-        {isLoadingHistory && <p className="text-center text-gray-500">Loading history...</p>}
+        {isLoadingHistory && <p className="text-center text-gray-500">{t("chat.loadingHistory")}</p>}
         {error && !isLoadingHistory && <Message type="error" message={error} onClose={() => setError(null)} />}
         {!isLoadingHistory && messages.length === 0 && !error && (
-          <p className="text-center text-gray-500">No messages yet. Start the conversation!</p>
+          <p className="text-center text-gray-500">{t("chat.noMessagesYet")}</p>
         )}
         {messages.map((msg, index) => {
           const isBuyer = msg.sender_type === 'BUYER';
@@ -140,14 +142,14 @@ export default function ChatPage() {
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type your message..."
+              placeholder={t("chat.typeMessagePlaceholder")}
               className="flex-grow p-2 border-0"
               disabled={isSendingMessage}
               autoComplete="off"
             />
             <Button type="submit" className="rounded-full w-10 h-10" disabled={isSendingMessage || !newMessage.trim()}>
               {isSendingMessage && <Loader className="animate-spin mr-2" />}
-              {!isSendingMessage && <SendHorizonalIcon />}
+              {!isSendingMessage && <SendHorizonalIcon className="rtl:rotate-180" />}
             </Button>
           </div>
         </form>

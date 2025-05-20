@@ -1,21 +1,21 @@
 "use client"
 
 import { Suspense } from "react"
-// import { Slider } from "@/components/ui/slider"
 import { categories, cn } from "@/lib/utils"
-import FilterList from "./filter"
+import FilterList, { PathFilterItem } from "./filter"
+import { useI18nContext } from "@/components/locale-context";
 
 function CategoryList() {
-  // Map categories to ListItem type
-  const listItems = categories.map((category) => ({
-    path: `/browse/${category.value}`,
-    title: category.title,
+  const { t } = useI18nContext();
+  const listItems = categories.map<PathFilterItem>((category) => ({
+    path: `/browse/${category.value}/`,
+    title: t(`categories.${category.value}.title`),
   }));
   listItems.unshift({
-    path: '/browse',
-    title: 'All',
+    path: '/browse/',
+    title: t('categories.all'),
   });
-  return <FilterList list={listItems} title="Categories" />;
+  return <FilterList list={listItems} title={t("categories.title")} />;
 }
 
 const skeleton = 'mb-3 h-4 w-5/6 animate-pulse rounded-sm';

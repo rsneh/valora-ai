@@ -33,7 +33,7 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
     setError(null);
 
     if (password.length < 6) {
-      setError(t("loginDialog.passwordMinLength"));
+      setError(t("authDialog.passwordMinLength"));
       return;
     }
 
@@ -45,12 +45,10 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
       closeDialog();
       router.push('/');
     } catch (err: Error | any) {
-      if (err.code === 'auth/email-already-in-use') {
-        setError(t("loginDialog.emailAlreadyRegistered"));
-      } else if (err.code === 'auth/invalid-credential') {
-        setError(t("loginDialog.invalidCredentials"));
+      if (err.code === 'auth/invalid-credential') {
+        setError(t("authDialog.invalidCredentials"));
       } else {
-        setError(err.message || t("loginDialog.loginFailed"));
+        setError(err.message || t("authDialog.loginFailed"));
       }
       console.error("Login error:", err);
     } finally {
@@ -71,7 +69,7 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
       }
       router.push('/');
     } catch (err: Error | any) {
-      setError(err.message || t("loginDialog.loginFailed"));
+      setError(err.message || t("authDialog.loginFailed"));
       console.error("Login error:", err);
     } finally {
       setLoading(false);
@@ -88,10 +86,10 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
                 <div className="flex flex-col gap-2">
                   <DialogHeader>
                     <DialogTitle className="text-center text-lg md:text-2xl">
-                      {t("loginDialog.welcomeBack")}
+                      {t("authDialog.loginDialog.title")}
                     </DialogTitle>
                     <DialogDescription className="text-center text-sm px-2 mb-5 md:px-8">
-                      {t("loginDialog.signInToAccount")}
+                      {t("authDialog.loginDialog.description")}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="flex items-center justify-center space-x-3 rtl:space-x-reverse pt-4">
@@ -126,7 +124,7 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
                         name="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder={t("loginDialog.emailPlaceholder")}
+                        placeholder={t("authDialog.emailPlaceholder")}
                         required
                       />
                     </div>
@@ -136,24 +134,24 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
                         name="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder={t("loginDialog.passwordPlaceholder")}
+                        placeholder={t("authDialog.passwordPlaceholder")}
                         required
                       />
                     </div>
                     {error && <p className="text-red-500 text-sm">{error}</p>}
                     <div className="flex flex-col items-center">
                       <Button type="submit" className="w-full" disabled={loading}>
-                        {t("loginDialog.submitButton")}
+                        {t("authDialog.submitButton")}
                       </Button>
                       <Button variant="link" className="text-xs">
-                        {t("loginDialog.forgotPassword")}
+                        {t("authDialog.forgotPassword")}
                       </Button>
                     </div>
                   </form>
                   <div className="text-center text-sm">
-                    {t("loginDialog.noAccount")}{" "}
+                    {t("authDialog.noAccount")}{" "}
                     <Link href="#" className="underline underline-offset-4" onClick={() => openSignUpDialog(true)}>
-                      {t("loginDialog.signUpLink")}
+                      {t("authDialog.signUpLink")}
                     </Link>
                   </div>
                 </div>
@@ -164,7 +162,7 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
                   priority
                   src="/images/background-items-2.jpg"
-                  alt={t("loginDialog.backgroundImageAlt")}
+                  alt={t("authDialog.backgroundImageAlt")}
                   className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale sm:rounded-e-lg"
                 />
               </div>
