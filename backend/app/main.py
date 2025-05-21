@@ -12,7 +12,8 @@ from app.api.v1 import api as api_v1  # Import the v1 API router
 from app.security import firebase_auth  # This import will trigger the initialization
 
 app = FastAPI(
-    title="AidSell API", openapi_url=f"/api/v1/openapi.json"  # Or adjust path as needed
+    title="ValoraAI API",
+    openapi_url=f"/api/v1/openapi.json",
 )
 
 origins = [

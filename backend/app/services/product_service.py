@@ -39,6 +39,7 @@ async def create_product(
         description=product_in.description,
         category=product_in.category,
         image_url=permanent_image_url,
+        condition=product_in.condition,
         seller_id=seller_id,
         latitude=latitude,
         longitude=longitude,

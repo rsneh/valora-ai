@@ -1,15 +1,30 @@
+import json
 import uuid
 import vertexai
+from pydantic import BaseModel
+from requests import Session
 from fastapi import UploadFile
-from typing import List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from google.cloud import vision, storage
 from vertexai.generative_models import GenerativeModel
 from app.core.config import settings
-from app.core.utils import find_category_by_title
-from app.schemas.category import CATEGORIES, Category
+from app.services import category_service
+from app.db.models import ProductConditionEnum
+
 
 TEMP_UPLOAD_PREFIX = "temp-uploads/"
 PRODUCT_IMAGE_PREFIX = "product-images/"
+
+
+class AISuggestions(BaseModel):  # Pydantic model for clarity
+    image_key: str
+    image_url: str
+    suggested_category_key: Optional[str] = None
+    suggested_attributes: Optional[Dict[str, Any]] = None
+    suggested_slug: Optional[str] = None
+    suggested_description: Optional[str] = None
+    suggested_condition: Optional[ProductConditionEnum] = None
+
 
 # Initialize Google Cloud clients
 # These will use the GOOGLE_APPLICATION_CREDENTIALS environment variable
@@ -29,15 +44,15 @@ except Exception as e:
     vision_client = None
 
 
-async def upload_image_to_gcs_temp_and_get_title(
+async def upload_image_to_gcs_temp(
     file: UploadFile, filename: str
-) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+) -> Tuple[Optional[str], Optional[str]]:
     """
-    Uploads an image, analyzes it, suggests a title, and returns (key, url, title).
+    Uploads an image, analyzes it, and returns (key, url).
     """
     if not storage_client or not vision_client:
         print("GCP clients not initialized.")
-        return None, None, None
+        return None, None
     try:
         bucket_name = settings.GCS_BUCKET_NAME
         bucket = storage_client.bucket(bucket_name)
@@ -51,28 +66,17 @@ async def upload_image_to_gcs_temp_and_get_title(
         print(
             f"Image uploaded to GCS temp: {gcs_object_name_key}, URL: {blob.public_url}"
         )
-        # Analyze image to get features for title generation
-        labels, objects, web_entities = await analyze_image_with_vision_ai(
-            blob.public_url
-        )
 
-        # Generate AI title
-        suggested_title = ""
-        if labels or objects or web_entities:
-            all_features = list(set(labels + objects))
-            suggested_title = await get_ai_title(all_features, web_entities)
-
-        return gcs_object_name_key, blob.public_url, suggested_title
-
+        return gcs_object_name_key, blob.public_url
     except Exception as e:
-        print(f"Error in upload_image_to_gcs_temp_and_get_title: {e}")
+        print(f"Error in upload_image_to_gcs_temp: {e}")
         if "blob" in locals() and blob.exists():
             try:
                 blob.delete()
                 print(f"Cleaned up GCS blob {gcs_object_name_key} due to error.")
             except Exception as cleanup_e:
                 print(f"Error during GCS blob cleanup: {cleanup_e}")
-        return None, None, None
+        return None, None
 
 
 async def move_gcs_image_to_permanent(
@@ -249,97 +253,303 @@ async def generate_text_with_gemini(
         return ""
 
 
-async def get_ai_title(image_features: List[str], web_entities: List[str]) -> str:
-    """
-    Generates a product title using Vertex AI Gemini based on image analysis.
-    Prioritizes web entities for more specific titles if available.
-    """
-    # Combine features, giving preference to web entities if they exist
-    if web_entities:
-        # Use a mix, but web entities are often more specific for titles
-        context_features = list(
-            set(web_entities[:3] + image_features[:5])
-        )  # Limit length
-    else:
-        context_features = list(set(image_features[:7]))  # Limit length
+async def get_ai_category_key(
+    db: Session, image_features: List[str], web_entities: List[str]
+) -> Optional[str]:
+    if not image_features and not web_entities:
+        return "other"  # Default if no features
 
-    features_str = ", ".join(filter(None, context_features))  # Filter out empty strings
+    # Prioritize web entities for more specific categorization context
+    context_features = list(set(web_entities[:3] + image_features[:7]))  # Limit length
+    features_str = ", ".join(filter(None, context_features))
     if not features_str:
         features_str = "the item in the image"
 
-    prompt = f"""Based on the following features observed in an image: '{features_str}'.
-        Suggest a concise, marketable, and descriptive product title (max 7-10 words) for a used item listing.
-        Focus on the primary subject. Avoid phrases like "Image of" or "Photo of".
-        The title should be clear and informative, helping potential buyers understand what the item is.
-        The title should be suitable for a marketplace listing and should not exceed 40 characters.
-        Avoid using words like "item", "product", "used", "second hand" or include any condition in the title.
-        Examples: "Blue Ceramic Vase", "Sony PlayStation 5 Console (Disc Version)", "Men's Nike Air Max Sneakers Size 10".
-        Title:"""
+    # Fetch categories from DB for the prompt
+    db_categories = category_service.get_all_active_categories_for_ai(db)
+    if not db_categories:
+        print("No categories found in DB for AI prompt. Defaulting to 'other'.")
+        return "other"
 
-    generated_title = await generate_text_with_gemini(prompt)
+    category_options_str = "\n".join(
+        [
+            f"- {cat['category_key']}: {cat['description_for_ai']}"
+            for cat in db_categories
+        ]
+    )
+    available_category_keys = [cat["category_key"] for cat in db_categories]
 
-    if generated_title.startswith('"') and generated_title.endswith('"'):
-        generated_title = generated_title[1:-1]
+    prompt = f"""Analyze the following item features: "{features_str}".
+        Based on these features, select the single most appropriate category key from the list below.
+        Respond with ONLY the category key (e.g., 'electronics_laptop').
+        Available Category Keys and Descriptions:
+        {category_options_str}
+        Selected Category Key:"""
 
-    return generated_title.strip()
+    suggested_key = await generate_text_with_gemini(prompt)
+
+    if suggested_key and suggested_key in available_category_keys:
+        return suggested_key
+    print(
+        f"AI suggested category key '{suggested_key}' not in predefined list {available_category_keys}. Defaulting to 'other'."
+    )
+    return "other"
 
 
-async def get_ai_description(title: str, image_features: List[str]) -> str:
-    """
-    Generates a product description using Vertex AI Gemini.
-    """
-    features_str = ", ".join(list(set(image_features)))  # Unique features
-    prompt = f"""You are an expert at writing compelling product descriptions for a used items marketplace.
-      Item Title: '{title}'
-      Visual Features from Image: {features_str if features_str else 'No specific visual features detected.'}
-      Based on this, write a concise and appealing product description (2-3 sentences) suitable for a marketplace listing. Focus on key selling points a buyer would look for.
-      If the visual features are not very descriptive, focus more on the item title.
-      Description:"""
+async def get_ai_attributes(
+    db: Session,
+    category_key: Optional[str],
+    image_features: List[str],
+    web_entities: List[str],
+) -> Optional[Dict[str, Any]]:  # ADDED db parameter
+    if not category_key or category_key == "other":
+        return None
+
+    context_features = list(set(web_entities[:3] + image_features[:7]))
+    features_str = ", ".join(filter(None, context_features))
+    if not features_str:
+        features_str = "the item in the image"
+
+    # Get category description from DB to provide more context to AI for attributes
+    category_obj = category_service.get_category_by_key(db, category_key)
+    category_description_for_ai = (
+        category_obj.description_for_ai if category_obj else category_key
+    )
+
+    attribute_examples_prompt = (
+        ""  # This should be more dynamic or stored with categories
+    )
+    if category_key == "electronics_laptop":
+        attribute_examples_prompt = "Example attributes for a laptop: brand (e.g., Apple, Dell), model (e.g., MacBook Pro, XPS 15), screen_size (e.g., 13-inch, 15.6-inch), processor (e.g., Intel Core i7, Apple M1), ram (e.g., 8GB, 16GB), storage (e.g., 256GB SSD, 1TB HDD), condition (e.g., New, Used - Good, Used - Fair)."
+    elif category_key == "fashion_dress":
+        attribute_examples_prompt = "Example attributes for a dress: type (e.g., Summer Dress, Evening Gown), material (e.g., Cotton, Silk), color (e.g., Blue, Red Floral), size (e.g., S, M, L, 10, 12), brand (e.g., Zara, ASOS), condition (e.g., New with tags, Used - Excellent)."
+    # Consider storing attribute examples/schemas per category in the database for more dynamic prompting
+
+    prompt = f"""The item is categorized as '{category_description_for_ai}' with observed features: "{features_str}".
+        {attribute_examples_prompt}
+        Extract relevant attributes for this item based on its category and features.
+        Respond with a JSON object of key-value pairs. If an attribute is not determinable, omit it.
+        Example JSON: {{"brand": "Apple", "model": "MacBook Pro", "condition": "Used - Good"}}
+        Attributes JSON:"""
+
+    json_string = await generate_text_with_gemini(prompt)
+    try:
+        if "```json" in json_string:
+            json_string = json_string.split("```json")[1].split("```")[0].strip()
+        elif json_string.startswith("```") and json_string.endswith("```"):
+            json_string = json_string[3:-3].strip()
+
+        attributes = json.loads(json_string)
+        if isinstance(attributes, dict):
+            return attributes
+        print(f"AI attributes response was not a dict: {attributes}")
+        return None
+    except json.JSONDecodeError as e:
+        print(f"Failed to decode AI attributes JSON: {json_string}. Error: {e}")
+        return None
+    except Exception as e:
+        print(f"An unexpected error occurred parsing AI attributes: {e}")
+        return None
+
+
+async def get_ai_condition(
+    image_features: List[str],
+    web_entities: List[str],
+    category_key: Optional[str],
+    attributes: Optional[Dict[str, Any]],
+) -> Optional[ProductConditionEnum]:
+    if not image_features and not web_entities:  # Not enough info from image
+        return None
+
+    context_features = list(set(web_entities[:3] + image_features[:7]))
+    features_str = ", ".join(filter(None, context_features))
+    if not features_str:
+        features_str = "the item in the image"
+
+    item_context = ""
+    if category_key:
+        item_context += f"The item is likely a '{category_key}'. "
+    if attributes:
+        attr_str = ", ".join(
+            [
+                f"{k}: {v}"
+                for k, v in attributes.items()
+                if k in ["brand", "model", "material", "type"]
+            ]
+        )
+        if attr_str:
+            item_context += f"Key attributes: {attr_str}. "
+
+    condition_options = [e.value for e in ProductConditionEnum]
+    condition_options_str = ", ".join(f"'{e}'" for e in condition_options)
+
+    prompt = f"""Visually analyze an item based on its features: "{features_str}".
+        Context: {item_context}
+        The item is used, unless features strongly suggest it is new (e.g., "in box", "tags attached").
+        Based on the visual cues and context, assess its condition.
+        Choose ONE condition from the following options: {condition_options_str}.
+        Consider typical signs of wear for a used item (scratches, dents, fading, cleanliness, completeness).
+        If the image is unclear or provides insufficient detail to judge condition, respond with "Good" as a neutral default for a used item.
+        Condition:"""
+    suggested_condition_str = await generate_text_with_gemini(prompt)
+
+    # Validate and map to Enum
+    try:
+        # Attempt to match case-insensitively and handle minor variations if Gemini doesn't return exact enum value
+        for enum_member in ProductConditionEnum:
+            if (
+                enum_member.value.lower()
+                == suggested_condition_str.lower().strip().replace("'", "")
+            ):
+                return enum_member
+        print(
+            f"AI suggested condition '{suggested_condition_str}' not in Enum. Defaulting based on logic or to None."
+        )
+        # If no direct match, could add more logic here or default (e.g., to GOOD if it's clearly used)
+        if "new" in suggested_condition_str.lower():
+            return ProductConditionEnum.NEW
+        if "like_new" in suggested_condition_str.lower():
+            return ProductConditionEnum.LIKE_NEW
+        return ProductConditionEnum.GOOD
+    except ValueError:
+        print(
+            f"AI suggested condition '{suggested_condition_str}' is not a valid ProductConditionEnum value."
+        )
+        return ProductConditionEnum.GOOD
+    except Exception as e:
+        print(f"Error processing AI condition: {e}")
+        return ProductConditionEnum.GOOD
+
+
+async def get_ai_slug(
+    db: Session,
+    category_key: Optional[str],
+    attributes: Optional[Dict[str, Any]],
+    image_features: List[str] = [],
+) -> Optional[str]:  # ADDED db parameter
+    if not category_key:
+        return None
+
+    category_obj = category_service.get_category_by_key(db, category_key)
+    category_name_for_slug = (
+        category_obj.name_en.split(" & ")[0] if category_obj else category_key
+    )  # Use English name for slug base
+
+    description_parts = [category_name_for_slug]
+    if attributes:
+        if attributes.get("brand"):
+            description_parts.append(str(attributes.get("brand")))
+        if attributes.get("model"):
+            description_parts.append(str(attributes.get("model")))
+        if (
+            attributes.get("type")
+            and str(attributes.get("type")).lower() not in description_parts[0].lower()
+        ):
+            description_parts.append(str(attributes.get("type")))
+        if attributes.get("color"):
+            description_parts.append(str(attributes.get("color")))
+
+    if not attributes and image_features:
+        description_parts.extend(image_features[:2])
+
+    base_string_for_slug = " ".join(description_parts).strip()
+    if not base_string_for_slug:
+        base_string_for_slug = "item-for-sale"
+
+    prompt = f"""Based on the item description: "{base_string_for_slug}".
+        Generate a short, URL-friendly slug (max 5-7 words).
+        The slug should be all lowercase, with words separated by hyphens.
+        Remove any special characters except hyphens. Ensure no leading/trailing hyphens and no multiple consecutive hyphens.
+        Example input: "Apple MacBook Pro 16-inch Laptop Silver"
+        Example output: "apple-macbook-pro-16-inch-silver"
+        Slug:"""
+
+    slug = await generate_text_with_gemini(prompt)
+    if slug:
+        slug = slug.lower().replace("_", "-").replace(" ", "-")
+        slug = "".join(c for c in slug if c.isalnum() or c == "-")
+        slug = "-".join(filter(None, slug.split("-")))
+        return slug[:80]
+    return None
+
+
+async def get_ai_description_from_structured_data(
+    db: Session,
+    slug_or_title_hint: Optional[str],
+    category_key: Optional[str],
+    attributes: Optional[Dict[str, Any]],
+    condition: Optional[str],
+    image_features: List[str],
+) -> Optional[str]:
+
+    prompt_context = f"Item (slug/hint): {slug_or_title_hint or 'Used Item'}\n"
+    if category_key:
+        category_obj = category_service.get_category_by_key(db, category_key)
+        category_desc_for_prompt = (
+            category_obj.description_for_ai if category_obj else category_key
+        )
+        prompt_context += f"Category: {category_desc_for_prompt}\n"
+    if condition:
+        prompt_context += f"Condition: {condition}\n"
+    if attributes:
+        attr_str = ", ".join([f"{k}: {v}" for k, v in attributes.items()])
+        prompt_context += f"Key Attributes: {attr_str}\n"
+    if image_features:
+        features_str = ", ".join(image_features[:5])
+        prompt_context += f"Observed Visual Features: {features_str}\n"
+
+    prompt = f"""Based on the following item details:
+        {prompt_context}
+        Write a compelling and informative product description (2-4 sentences) suitable for a marketplace listing for a used item.
+        Make sure to mention the condition if it's notable (e.g., "like new", "good with some wear").
+        Highlight key selling points. Maintain a friendly and trustworthy tone.
+        Description:"""
+
     return await generate_text_with_gemini(prompt)
 
 
-async def get_ai_category(
-    title: str, image_features: List[str], predefined_categories: List[Category]
-) -> str:
-    """
-    Suggests a product category using Vertex AI Gemini from a predefined list.
-    """
-    newline = "\n"
-    features_str = ", ".join(list(set(image_features)))
-    prompt = f"""You are an expert product categorizer.
-      Item Title: '{title}'
-      Visual Features from Image: {features_str if features_str else 'No specific visual features detected.'}]
-      Predefined Categories and their descriptions:
-        {newline.join([f"- {cat.title}: [{cat.prompt}]" for cat in predefined_categories])}
-      Based on the title and visual features, select the single most appropriate category from the predefined list.
-      Respond with ONLY the category name from the list. If unsure, select 'Other'.
-      Category:"""
-    suggested_category = await generate_text_with_gemini(prompt)
+async def process_image_for_suggestions(
+    db: Session, file: UploadFile, filename: str
+) -> AISuggestions:  # ADDED db parameter
+    image_key, temp_image_url = await upload_image_to_gcs_temp(file, filename)
+    if not image_key or not temp_image_url:
+        return AISuggestions(
+            image_key="error_upload", image_url="error_upload"
+        )  # Indicate error
 
-    # Validate if the suggested category is in the predefined list
-    category = find_category_by_title(predefined_categories, suggested_category)
+    labels, objects, web_entities = await analyze_image_with_vision_ai(temp_image_url)
+    all_image_features = list(
+        set(labels + objects)
+    )  # Web entities used more directly in sub-functions
 
-    if category:
-        return category.value
-
-    print(
-        f"Gemini suggested category '{suggested_category}' not in predefined list. Defaulting to 'Other'."
+    suggested_category_key = await get_ai_category_key(
+        db, all_image_features, web_entities
     )
-    return "Other"
+    suggested_attributes = await get_ai_attributes(
+        db, suggested_category_key, all_image_features, web_entities
+    )
+    suggested_slug = await get_ai_slug(
+        db, suggested_category_key, suggested_attributes, all_image_features
+    )
 
+    suggested_condition = await get_ai_condition(
+        all_image_features, web_entities, suggested_category_key, suggested_attributes
+    )
 
-async def get_ai_assistance(
-    title: str,
-    image_uri: str,
-    predefined_categories: List[Category] = CATEGORIES,
-) -> Tuple[str, str]:
-    """
-    Main function to get AI-assisted product description and category.
-    """
-    labels, objects, web_entities = await analyze_image_with_vision_ai(image_uri)
-    image_features = labels + objects + web_entities
+    suggested_description = await get_ai_description_from_structured_data(
+        db=db,
+        slug_or_title_hint=suggested_slug,
+        category_key=suggested_category_key,
+        attributes=suggested_attributes,
+        image_features=all_image_features,
+        condition=suggested_condition,
+    )
 
-    description = await get_ai_description(title, image_features)
-    category = await get_ai_category(title, image_features, predefined_categories)
-
-    return description, category
+    return AISuggestions(
+        image_key=image_key,
+        image_url=temp_image_url,
+        suggested_category_key=suggested_category_key,
+        suggested_attributes=suggested_attributes,
+        suggested_slug=suggested_slug,
+        suggested_description=suggested_description,
+    )

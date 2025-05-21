@@ -1,21 +1,27 @@
 # backend/app/schemas/product.py
 from pydantic import BaseModel, HttpUrl
-from typing import Optional
+from typing import Any, Dict, Optional
 from datetime import datetime
+from app.db.models import ProductConditionEnum
 
 
 # Properties to receive on item creation
 class ProductCreate(BaseModel):
-    title: str
-    price: float
+    slug: str
     description: str = None
     category: str = None
+    attributes: Optional[Dict[str, Any]] = None
+    condition: Optional[ProductConditionEnum] = None
+    price: float
+    currency: str
     image_url: HttpUrl = None
     image_key: str
     location_text: str
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     location_source: Optional[str] = None
+    min_acceptable_price: Optional[float] = None
+    negotiation_notes_for_ai: Optional[str] = None
 
 
 # Properties to receive on item update
@@ -28,11 +34,13 @@ class ProductUpdate(BaseModel):
 
 class ProductInDBBase(BaseModel):
     id: int
-    title: str
+    slug: str
     description: Optional[str] = None
     price: float
-    category: Optional[str] = None
-    image_url: Optional[str] = None  # Changed to str to accommodate GCS URLs directly
+    currency: str
+    category: str
+    condition: Optional[ProductConditionEnum] = None
+    image_url: Optional[str] = None
     seller_id: str
     time_created: datetime
     time_updated: Optional[datetime] = None
@@ -40,6 +48,9 @@ class ProductInDBBase(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     location_source: Optional[str] = None
+    min_acceptable_price: Optional[float] = None
+    negotiation_notes_for_ai: Optional[str] = None
+    attributes: Optional[Dict[str, Any]] = None
 
     class Config:
         from_attributes = True

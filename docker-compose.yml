@@ -3,14 +3,14 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: aidsell_backend
+    container_name: valora_backend
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - ./backend:/app
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://aidsell_user:aidsell_password@db:5432/aidsell_db
+      - DATABASE_URL=postgresql://valora_user:valora_password@db:5432/valora_db
       - GOOGLE_APPLICATION_CREDENTIALS=/app/secrets/gcp-service-account-key.json
       - FIREBASE_PROJECT_ID=aidsell-platform
       - GCS_BUCKET_NAME=aidsell-poc-product-images-a3ljgkntce
@@ -18,28 +18,28 @@ services:
       - db # Ensures the 'db' service is started before the 'backend' service
     restart: always
     networks:
-      - aidsell_network # Connects this service to the custom network
+      - valora_network # Connects this service to the custom network
 
   # PostgreSQL Database Service
   db:
     image: postgres:15-alpine
-    container_name: aidsell_db
+    container_name: valora_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data/ # Persists database data on the host machine using a named volume
+      - valora_data:/var/lib/postgresql/data/ # Persists database data on the host machine using a named volume
     environment:
-      - POSTGRES_USER=aidsell_user # Sets the PostgreSQL superuser
-      - POSTGRES_PASSWORD=aidsell_password # Sets the password for the superuser
-      - POSTGRES_DB=aidsell_db # Creates an initial database named 'aidsell_db'
+      - POSTGRES_USER=valora_user # Sets the PostgreSQL superuser
+      - POSTGRES_PASSWORD=valora_password # Sets the password for the superuser
+      - POSTGRES_DB=valora_db # Creates an initial database named 'aidsell_db'
     ports:
       - "5432:5432"
     networks:
-      - aidsell_network
+      - valora_network
 
 # Named Volumes
 volumes:
-  postgres_data: # Defines a named volume for persistent PostgreSQL data
+  valora_data: # Defines a named volume for persistent PostgreSQL data
 
 # Networks
 networks:
-  aidsell_network: # Defines a custom bridge network for services to communicate
+  valora_network: # Defines a custom bridge network for services to communicate
     driver: bridge

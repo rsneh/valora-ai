@@ -1,69 +1,72 @@
-from typing import List, Optional
+from pydantic import BaseModel, constr
+from typing import Optional, List, Annotated
 
 
-class Category:
-    """
-    Category class representing a category of items.
-    """
+# Base schema with fields common to creating and reading a category
+class CategoryBase(BaseModel):
+    category_key: Annotated[
+        str, constr(strip_whitespace=True, min_length=1, max_length=100)
+    ]  # Enforce some constraints
+    name_en: str
+    name_he: Optional[str] = None  # Or other languages
+    # Add other name_xx fields as needed
 
-    value: str
-    title: str
-    description: str
-    icon: str
-    show: bool = True
-    prompt: Optional[str] = None
+    description_ui_en: Optional[Annotated[str, constr(max_length=255)]] = (
+        None  # UI descriptions are short
+    )
+    description_ui_he: Optional[Annotated[str, constr(max_length=255)]] = None
+    # Add other description_ui_xx fields
 
-    def __init__(
-        self,
-        value: str,
-        title: str,
-        description: Optional[str] = None,
-        icon: Optional[str] = None,
-        show: bool = False,
-        prompt: Optional[str] = None,
-    ):
-        self.value = value
-        self.title = title
-        self.description = description
-        self.icon = icon
-        self.show = show
-        self.prompt = prompt
+    description_for_ai: Optional[str] = None  # Can be longer text
+
+    parent_category_key: Optional[
+        Annotated[str, constr(strip_whitespace=True, max_length=100)]
+    ] = None
+    sort_order: Optional[int] = 0
+    is_active: Optional[bool] = True
 
 
-CATEGORIES: List[Category] = [
-    Category(
-        value="electronics",
-        title="Electronics",
-        prompt="Category: Electronics. Includes consumer electronics, gadgets, and devices. Keywords: smartphone, iPhone, Android, laptop, computer, PC, MacBook, gaming console, PlayStation, Xbox, Nintendo Switch, video games, TV, television, smart TV, camera, DSLR, mirrorless, headphones, earbuds, speakers, Bluetooth, home audio, tablet, iPad, e-reader, Kindle, smartwatch, drone, chargers, cables, accessories for electronic devices.",
-    ),
-    Category(
-        value="fashion",
-        title="Fashion & Apparel",
-        prompt="Category: Fashion & Apparel. Includes all types of clothing, footwear, and fashion accessories. Keywords: dress, shirt, t-shirt, pants, jeans, jacket, coat, sweater, suit, skirt, activewear, swimwear, shoes, sneakers, boots, heels, sandals, handbag, purse, backpack, wallet, jewelry, necklace, bracelet, earrings, ring, watch, scarf, hat, gloves, belt, sunglasses, men's fashion, women's fashion, children's clothing.",
-    ),
-    Category(
-        value="home-goods",
-        title="Home Goods & Furniture",
-        prompt="Category: Home Goods & Furniture. Includes items for home living, decoration, and functionality. Keywords: furniture, sofa, couch, chair, table, desk, bed, mattress, bookshelf, cabinet, storage, home decor, rug, lamp, lighting, mirror, art, vase, curtains, cushions, kitchenware, cookware, bakeware, dishes, cutlery, utensils, small kitchen appliances (blender, toaster, coffee maker), home appliances (vacuum), bedding, towels, bathroom accessories, plants, planters, organization.",
-    ),
-    Category(
-        value="collectibles",
-        title="Collectibles & Hobbies",
-        prompt="Category: Collectibles & Hobbies. Includes items sought by collectors, hobbyists, and enthusiasts. Keywords: collectible, antique, vintage, rare, memorabilia, trading cards (sports, Pokemon, TCG), action figures, dolls, model kits, stamps, coins, art prints, comics, graphic novels, musical instruments (guitar, keyboard, drums, violin), hobby supplies, craft supplies, board games, puzzles, vinyl records, LPs, retro gaming items (not consoles themselves if 'Electronics' is primary).",
-    ),
-    Category(
-        value="books-media",
-        title="Books & Media",
-        prompt="Category: Books & Media. Includes physical media for reading, listening, or viewing. Keywords: book, hardcover, paperback, novel, textbook, magazine, comic book, graphic novel, vinyl record, LP, CD, album, DVD, Blu-ray, movie, TV series box set, audiobooks (physical format).",
-    ),
-    Category(
-        value="sports-outdoors",
-        title="Sports & Outdoors",
-        prompt="Category: Sports & Outdoors. Includes gear for athletic activities, fitness, and outdoor recreation. Keywords: bicycle, bike, exercise equipment, treadmill, weights, yoga mat, fitness tracker (wearable if not under electronics), camping gear, tent, sleeping bag, hiking boots, backpack (outdoor specific), sporting goods, golf clubs, tennis racket, basketball, football, skis, snowboard, skateboard, scooter, fishing gear, outdoor apparel (specialized).",
-    ),
-    Category(
-        value="other",
-        title="Other",
-        prompt="Category: Other. Use as a fallback if the item does not clearly fit into any other predefined category. This is for miscellaneous items. If an item has features from multiple categories, try to pick the most dominant one before defaulting to 'Other'.",
-    ),
-]
+# Schema for creating a new category (e.g., via an admin interface or seeding)
+# This might be identical to CategoryBase if all fields are provided at creation.
+class CategoryCreate(CategoryBase):
+    pass
+
+
+# Schema for reading/returning a category from the API
+# This will include the 'id' and potentially relationships like children.
+class Category(CategoryBase):
+    id: int
+    # If you want to return children categories directly nested within a parent category:
+    children: List["Category"] = []  # Forward reference for self-referencing model
+
+    class Config:
+        from_attributes = True  # For Pydantic V2 (replaces orm_mode)
+
+
+# Optional: Schema for updating a category
+class CategoryUpdate(BaseModel):
+    category_key: Optional[
+        Annotated[str, constr(strip_whitespace=True, min_length=1, max_length=100)]
+    ] = None
+    name_en: Optional[str] = None
+    name_he: Optional[str] = None
+    description_ui_en: Optional[Annotated[str, constr(max_length=255)]] = None
+    description_ui_he: Optional[Annotated[str, constr(max_length=255)]] = None
+    description_for_ai: Optional[str] = None
+    parent_category_key: Optional[
+        Annotated[str, constr(strip_whitespace=True, max_length=100)]
+    ] = None
+    sort_order: Optional[int] = None
+    is_active: Optional[bool] = None
+
+
+# Schema for a flat list of categories, perhaps without children for simple dropdowns
+class CategorySimple(BaseModel):
+    id: int
+    category_key: str
+    name_en: str  # Or a localized name based on request context
+    name_he: Optional[str] = None
+    parent_category_key: Optional[str] = None
+
+    class Config:
+        from_attributes = True

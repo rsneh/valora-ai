@@ -1,13 +1,16 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Any, Dict, Optional
+from app.db.models import ProductConditionEnum
 
 
 class ImageUploadResponse(BaseModel):
     image_key: str
-    image_url: Optional[str] = None
-    suggested_title: Optional[str] = None
-    suggested_category: Optional[str] = None
+    image_url: str
+    suggested_category_key: Optional[str] = None
+    suggested_attributes: Optional[Dict[str, Any]] = None
+    suggested_slug: Optional[str] = None
     suggested_description: Optional[str] = None
+    suggested_condition: Optional[ProductConditionEnum] = None
 
 
 class ImageDeleteResponse(BaseModel):
