@@ -19,6 +19,7 @@ class CategoryBase(BaseModel):
 
     description_for_ai: Optional[str] = None  # Can be longer text
 
+    image_path: Optional[str] = None
     parent_category_key: Optional[
         Annotated[str, constr(strip_whitespace=True, max_length=100)]
     ] = None
@@ -61,11 +62,12 @@ class CategoryUpdate(BaseModel):
 
 
 # Schema for a flat list of categories, perhaps without children for simple dropdowns
-class CategorySimple(BaseModel):
+class CategoryUI(BaseModel):
     id: int
     category_key: str
-    name_en: str  # Or a localized name based on request context
-    name_he: Optional[str] = None
+    name: str
+    image_path: Optional[str]
+    description: Optional[Annotated[str, constr(max_length=255)]] = None
     parent_category_key: Optional[str] = None
 
     class Config:

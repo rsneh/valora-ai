@@ -19,9 +19,9 @@ PRODUCT_IMAGE_PREFIX = "product-images/"
 class AISuggestions(BaseModel):  # Pydantic model for clarity
     image_key: str
     image_url: str
+    suggested_title: str
     suggested_category_key: Optional[str] = None
     suggested_attributes: Optional[Dict[str, Any]] = None
-    suggested_slug: Optional[str] = None
     suggested_description: Optional[str] = None
     suggested_condition: Optional[ProductConditionEnum] = None
 
@@ -421,68 +421,97 @@ async def get_ai_condition(
         return ProductConditionEnum.GOOD
 
 
-async def get_ai_slug(
+async def get_ai_title(
     db: Session,
     category_key: Optional[str],
     attributes: Optional[Dict[str, Any]],
-    image_features: List[str] = [],
-) -> Optional[str]:  # ADDED db parameter
-    if not category_key:
-        return None
+    image_features: List[str],
+    web_entities: List[str],
+) -> Optional[str]:
 
-    category_obj = category_service.get_category_by_key(db, category_key)
-    category_name_for_slug = (
-        category_obj.name_en.split(" & ")[0] if category_obj else category_key
-    )  # Use English name for slug base
+    context_parts = []
+    if category_key:
+        category_obj = category_service.get_category_by_key(db, category_key)
+        if category_obj:
+            context_parts.append(
+                f"Category: {category_obj.name_en}"
+            )  # Use English name for title context
 
-    description_parts = [category_name_for_slug]
     if attributes:
-        if attributes.get("brand"):
-            description_parts.append(str(attributes.get("brand")))
-        if attributes.get("model"):
-            description_parts.append(str(attributes.get("model")))
+        # Prioritize key attributes for title generation
+        brand = attributes.get("brand")
+        model = attributes.get("model")
+        item_type = attributes.get(
+            "type"
+        )  # e.g., "Laptop", "Smartphone", "Summer Dress"
+        color = attributes.get("color")
+        size = attributes.get("size")  # e.g. "256GB" for storage, or clothing size
+
+        if item_type:
+            context_parts.append(f"Type: {item_type}")
+        if brand:
+            context_parts.append(f"Brand: {brand}")
+        if model:
+            context_parts.append(f"Model: {model}")
+        if color:
+            context_parts.append(f"Color: {color}")
         if (
-            attributes.get("type")
-            and str(attributes.get("type")).lower() not in description_parts[0].lower()
-        ):
-            description_parts.append(str(attributes.get("type")))
-        if attributes.get("color"):
-            description_parts.append(str(attributes.get("color")))
+            size
+            and category_key
+            and ("electronics" in category_key or "phone" in category_key)
+        ):  # Be specific for storage size
+            context_parts.append(f"Storage/Capacity: {size}")
+        elif size:  # For other sizes like clothing
+            context_parts.append(f"Size: {size}")
 
-    if not attributes and image_features:
-        description_parts.extend(image_features[:2])
+    # Use web entities if more specific context is missing from attributes
+    if not context_parts and web_entities:
+        context_parts.extend(web_entities[:3])  # Top 3 web entities
+    elif not context_parts and image_features:
+        context_parts.extend(image_features[:3])  # Top 3 image features as last resort
 
-    base_string_for_slug = " ".join(description_parts).strip()
-    if not base_string_for_slug:
-        base_string_for_slug = "item-for-sale"
+    if not context_parts:
+        context_str = "the item in the image"
+    else:
+        context_str = ", ".join(context_parts)
 
-    prompt = f"""Based on the item description: "{base_string_for_slug}".
-        Generate a short, URL-friendly slug (max 5-7 words).
-        The slug should be all lowercase, with words separated by hyphens.
-        Remove any special characters except hyphens. Ensure no leading/trailing hyphens and no multiple consecutive hyphens.
-        Example input: "Apple MacBook Pro 16-inch Laptop Silver"
-        Example output: "apple-macbook-pro-16-inch-silver"
-        Slug:"""
+    prompt = f"""Based on the following information about an item: "{context_str}".
+        Generate a short, clear, and marketable title for an item.
+        The title should be concise (ideally 3-7 words).
+        Include key identifying information like brand, model, and important specifications if applicable.
+        Respond with ONLY the title.
 
-    slug = await generate_text_with_gemini(prompt)
-    if slug:
-        slug = slug.lower().replace("_", "-").replace(" ", "-")
-        slug = "".join(c for c in slug if c.isalnum() or c == "-")
-        slug = "-".join(filter(None, slug.split("-")))
-        return slug[:80]
+        Examples:
+        "iPhone 16 Pro 256GB"
+        "Sony Noise Cancelling Headphones WH-1000XM5"
+        "AirPods Max Silver"
+        "Samsung Galaxy S25 Ultra 512GB"
+        "Chicco NextFit Baby Stroller"
+        "Wooden Dining Table with 6 Chairs"
+        "Vintage Leather Armchair"
+        "Dell XPS 15 Laptop i7 16GB RAM"
+        Suggested Title:"""
+
+    title = await generate_text_with_gemini(prompt)
+    # Clean the title (remove quotes, extra whitespace)
+    if title:
+        title = title.strip().replace('"', "")
+        # Capitalize main words (optional, can be complex to get perfect)
+        # title = ' '.join(word.capitalize() if not word.islower() else word for word in title.split())
+        return title
     return None
 
 
 async def get_ai_description_from_structured_data(
     db: Session,
-    slug_or_title_hint: Optional[str],
+    title: Optional[str],
     category_key: Optional[str],
     attributes: Optional[Dict[str, Any]],
     condition: Optional[str],
     image_features: List[str],
 ) -> Optional[str]:
 
-    prompt_context = f"Item (slug/hint): {slug_or_title_hint or 'Used Item'}\n"
+    prompt_context = f"Item Title: {title or 'Used Item'}\n"
     if category_key:
         category_obj = category_service.get_category_by_key(db, category_key)
         category_desc_for_prompt = (
@@ -510,7 +539,7 @@ async def get_ai_description_from_structured_data(
 
 async def process_image_for_suggestions(
     db: Session, file: UploadFile, filename: str
-) -> AISuggestions:  # ADDED db parameter
+) -> AISuggestions:
     image_key, temp_image_url = await upload_image_to_gcs_temp(file, filename)
     if not image_key or not temp_image_url:
         return AISuggestions(
@@ -518,9 +547,7 @@ async def process_image_for_suggestions(
         )  # Indicate error
 
     labels, objects, web_entities = await analyze_image_with_vision_ai(temp_image_url)
-    all_image_features = list(
-        set(labels + objects)
-    )  # Web entities used more directly in sub-functions
+    all_image_features = list(set(labels + objects))
 
     suggested_category_key = await get_ai_category_key(
         db, all_image_features, web_entities
@@ -528,8 +555,12 @@ async def process_image_for_suggestions(
     suggested_attributes = await get_ai_attributes(
         db, suggested_category_key, all_image_features, web_entities
     )
-    suggested_slug = await get_ai_slug(
-        db, suggested_category_key, suggested_attributes, all_image_features
+    suggested_title = await get_ai_title(
+        db,
+        suggested_category_key,
+        suggested_attributes,
+        all_image_features,
+        web_entities,
     )
 
     suggested_condition = await get_ai_condition(
@@ -538,7 +569,7 @@ async def process_image_for_suggestions(
 
     suggested_description = await get_ai_description_from_structured_data(
         db=db,
-        slug_or_title_hint=suggested_slug,
+        title=suggested_title,
         category_key=suggested_category_key,
         attributes=suggested_attributes,
         image_features=all_image_features,
@@ -550,6 +581,7 @@ async def process_image_for_suggestions(
         image_url=temp_image_url,
         suggested_category_key=suggested_category_key,
         suggested_attributes=suggested_attributes,
-        suggested_slug=suggested_slug,
+        suggested_title=suggested_title,
         suggested_description=suggested_description,
+        suggested_condition=suggested_condition,
     )

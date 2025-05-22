@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from requests import Session
 from app.services import gcp_services
-from app.schemas import image as image_schema
+from app.schemas import image as image_schema, user as user_schema
 from app.db.database import get_db
+from app.security.firebase_auth import get_current_active_user
 
 # from app.lib.locale import get_locale_from_header, AppLocale
 
@@ -18,9 +19,15 @@ router = APIRouter()
 async def upload_image_and_get_suggestions(
     image: UploadFile = File(...),
     db: Session = Depends(get_db),  # NEW: Add DB session dependency
-    # current_user: user_schema.User = Depends(get_current_active_user),
+    current_user: user_schema.User = Depends(get_current_active_user),
     # locale: AppLocale = Depends(get_locale_from_header),
 ):
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not authenticated.",
+        )
+
     if not image.content_type.startswith("image/"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

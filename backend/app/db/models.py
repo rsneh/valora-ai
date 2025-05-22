@@ -41,7 +41,7 @@ class Product(Base):
     __tablename__ = "products"
 
     id = Column(Integer, primary_key=True, index=True)
-    slug = Column(String, index=True, nullable=False)
+    title = Column(String, index=True, nullable=False)
     description = Column(String, nullable=True)
     category = Column(String, index=True, nullable=True)  # AI suggested
     attributes = Column(JSONB, nullable=True)
@@ -172,6 +172,7 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     category_key = Column(String, unique=True, index=True, nullable=False)
+    image_path = Column(String, nullable=True)
 
     parent_category_key = Column(
         String, ForeignKey("categories.category_key"), nullable=True

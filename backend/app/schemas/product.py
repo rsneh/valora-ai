@@ -7,7 +7,7 @@ from app.db.models import ProductConditionEnum
 
 # Properties to receive on item creation
 class ProductCreate(BaseModel):
-    slug: str
+    title: str
     description: str = None
     category: str = None
     attributes: Optional[Dict[str, Any]] = None
@@ -34,7 +34,7 @@ class ProductUpdate(BaseModel):
 
 class ProductInDBBase(BaseModel):
     id: int
-    slug: str
+    title: str
     description: Optional[str] = None
     price: float
     currency: str
