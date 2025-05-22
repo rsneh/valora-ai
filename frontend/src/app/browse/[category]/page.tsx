@@ -2,7 +2,8 @@
 // import { notFound } from 'next/navigation';
 import { ProductList } from '@/components/product/product-list';
 import { getDictionary, getLocaleFromRequest } from '@/lib/dictionaries';
-import { getCategoryByValue, translate } from '@/lib/utils';
+import { translate } from '@/lib/utils';
+import { getCategoriesBySlug } from '@/services/api/categories';
 import { getCategoryProducts } from '@/services/api/products';
 // import { Metadata } from 'next';
 
@@ -35,13 +36,13 @@ export default async function CategoryPage(props: {
   // const { sort } = searchParams as { [key: string]: string };
   // const { sortKey, reverse } = sorting.find((item) => item.slug === sort) || defaultSort;
   const products = await getCategoryProducts(params.category);
-  const category = getCategoryByValue(params.category);
+  const category = await getCategoriesBySlug(params.category);
 
   return (
     <div className="container mx-auto px-4">
       {category && (
         <h2 className="text-2xl font-bold mb-8 md:text-4xl">
-          {t(`categories.${category.value}.title`)}
+          {category.name}
         </h2>
       )}
       {products.length === 0 ? (

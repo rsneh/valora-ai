@@ -204,5 +204,12 @@
       "adUpdatedDescription": "המודעה שלך עודכנה בהצלחה."
     }
   },
-  "aiSuggestionTooltip": "מוצע על ידי Valora AI"
+  "aiSuggestionTooltip": "מוצע על ידי Valora AI",
+  "condition": {
+    "new": "חדש",
+    "like_new": "כמו חדש",
+    "very_good": "מצוין",
+    "good": "טוב",
+    "fair": "סביר"
+  }
 }

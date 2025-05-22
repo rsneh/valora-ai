@@ -11,6 +11,8 @@ import { LocationProvider } from "@/components/location-context"
 import { getDictionary, getLocaleFromRequest } from "@/lib/dictionaries"
 import { I18nProvider } from "@/components/locale-context"
 import { translate } from '@/lib/utils';
+import { getCategories } from '@/services/api/categories';
+import { CategoriesProvider } from '@/components/categories-context';
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.valorra.net"
 
@@ -64,6 +66,7 @@ export default async function RootLayout({
 }) {
   const locale = await getLocaleFromRequest();
   const dictionary = await getDictionary(locale);
+  const categories = await getCategories();
 
   return (
     <html lang={locale} dir={locale === "he" ? "rtl" : "ltr"} suppressHydrationWarning>
@@ -76,7 +79,9 @@ export default async function RootLayout({
           <ThemeProvider>
             <AuthProvider>
               <LocationProvider>
-                {children}
+                <CategoriesProvider categories={categories}>
+                  {children}
+                </CategoriesProvider>
               </LocationProvider>
             </AuthProvider>
             <Toaster />

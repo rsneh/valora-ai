@@ -7,11 +7,13 @@ import xSocialIcon from "@/assets/icons/x-social.svg"
 import linkedInIcon from "@/assets/icons/linkedin.svg"
 import { Logo } from "./ui/logo"
 import Image from "next/image"
-import { categories } from "@/lib/utils"
 import { useI18nContext } from "./locale-context"
+import { useCategories } from "./categories-context"
 
 export function Footer() {
+  const { categories } = useCategories();
   const { t } = useI18nContext();
+
   return (
     <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container py-10">
@@ -89,8 +91,8 @@ export function Footer() {
             <ul className="space-y-2">
               {categories.map((category, index) => (
                 <li key={index}>
-                  <Link href={`/browse/${category.value}`} className="text-sm text-muted-foreground hover:text-foreground">
-                    {t(`categories.${category.value}.title`)}
+                  <Link href={`/browse/${category.path}`} className="text-sm text-muted-foreground hover:text-foreground">
+                    {category.name}
                   </Link>
                 </li>
               ))}

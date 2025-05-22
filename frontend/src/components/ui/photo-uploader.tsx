@@ -17,12 +17,12 @@ interface PhotoUploaderProps {
 }
 
 export function PhotoUploader({ onUploadComplete }: PhotoUploaderProps) {
-  const { firebaseIdToken } = useAuth();
+  const { currentUser, setShowRegisterDialog, firebaseIdToken } = useAuth();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
   const [dragging, setDragging] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const { t } = useI18nContext();
 
   const uploadImages = useCallback(async (): Promise<void> => {
@@ -35,19 +35,8 @@ export function PhotoUploader({ onUploadComplete }: PhotoUploaderProps) {
 
     try {
       const formData = new FormData();
-      // selectedFiles.forEach((file) => {
-      // });
       formData.append('image', selectedFiles[0]);
-      const imageData = await uploadImage(formData, firebaseIdToken!, {
-        onUploadProgress: (progressEvent) => {
-          const total = progressEvent.total || 1; // Avoid division by zero
-          const currentProgress = Math.round((progressEvent.loaded * 100) / total);
-          console.log('Upload progress:', currentProgress);
-          console.log('progressevent.loaded:', progressEvent.loaded);
-          console.log('progressevent.total:', total);
-          setUploadProgress(currentProgress);
-        }
-      });
+      const imageData = await uploadImage(formData, firebaseIdToken!);
       if (typeof onUploadComplete !== 'undefined') {
         onUploadComplete(imageData);
       }
@@ -68,6 +57,12 @@ export function PhotoUploader({ onUploadComplete }: PhotoUploaderProps) {
   }, [selectedFiles, uploadImages]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    if (!currentUser) {
+      setShowRegisterDialog(true);
+      return;
+    }
+
     const files = Array.from(event.target.files ?? []);
     setSelectedFiles(files);
   };
@@ -123,22 +118,6 @@ export function PhotoUploader({ onUploadComplete }: PhotoUploaderProps) {
           <div className="mt-8">
             <div className="flex flex-col items-center">
               <SpinnerLoader text={(<span className='italic'>{t("photoUploader.uploading")}</span>)} />
-              <div className="flex flex-wrap justify-center mt-6">
-                {selectedFiles.map((file, i) => (
-                  <div className="flex flex-col items-center p-4 border-1 border-gray-300 rounded-lg shadow-md" key={i}>
-                    <div className="relative h-24 w-24">
-                      <Image
-                        src={URL.createObjectURL(file)}
-                        alt="Logo"
-                        layout="fill"
-                        objectFit="contain"
-                        className="rounded-lg"
-                      />
-                    </div>
-                  </div>
-                ))}
-                <Progress value={uploadProgress} className="w-full h-1 rounder-lg" />
-              </div>
             </div>
           </div>
         );

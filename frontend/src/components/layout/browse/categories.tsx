@@ -1,19 +1,21 @@
 "use client"
 
 import { Suspense } from "react"
-import { categories, cn } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 import FilterList, { PathFilterItem } from "./filter"
 import { useI18nContext } from "@/components/locale-context";
+import { Category } from "@/types/category";
+import { useCategories } from "@/components/categories-context";
 
-function CategoryList() {
+function CategoryList({ categories }: { categories: Category[] }) {
   const { t } = useI18nContext();
   const listItems = categories.map<PathFilterItem>((category) => ({
-    path: `/browse/${category.value}/`,
-    title: t(`categories.${category.value}.title`),
+    path: `/browse/${category.path}/`,
+    name: category.name,
   }));
   listItems.unshift({
     path: '/browse/',
-    title: t('categories.all'),
+    name: t('categories.all'),
   });
   return <FilterList list={listItems} title={t("categories.title")} />;
 }
@@ -23,6 +25,8 @@ const activeAndTitles = 'bg-neutral-800 dark:bg-neutral-300';
 const items = 'bg-neutral-400 dark:bg-neutral-700';
 
 export default function Categories() {
+  const { categories } = useCategories();
+
   return (
     <Suspense
       fallback={
@@ -40,7 +44,7 @@ export default function Categories() {
         </div>
       }
     >
-      <CategoryList />
+      <CategoryList categories={categories} />
     </Suspense>
   );
 }

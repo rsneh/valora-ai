@@ -3,11 +3,8 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { categories } from "@/lib/utils";
-import { DollarSign } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { CategoryGrid } from "../ui/category-grid";
 import { Textarea } from "../ui/textarea";
 import {
   Form,
@@ -17,136 +14,275 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { useEffect, useState } from "react";
-import { Category } from "@/types/product";
 import { useI18nContext } from "../locale-context";
+import { Category } from "@/types/category";
+import { getCategories } from "@/services/api/categories";
+import { productConditionEnum, ProductFormData } from "@/types/product";
+import PriceInput from "../ui/price-input";
+import { getLocalCurrency } from "@/lib/utils";
+import Image from "next/image";
 
-// Define Zod schema for form validation
+// Define the Zod schema for ProductFormData
 const productFormSchema = z.object({
-  title: z.string(),
-  description: z.string().min(1, { message: "adForm.descriptionRequired" }),
-  price: z.coerce.number().positive({ message: "adForm.pricePositive" }),
-  category: z.string().min(1, { message: "adForm.categoryRequired" }),
+  id: z.number().optional(),
+  title: z.string().min(1, { message: "Title is required." }),
+  description: z.string().min(1, { message: "Description is required." }),
+  price: z.number({ required_error: "Price is required." }).positive({ message: "Price must be a positive number." }),
+  condition: z.enum(productConditionEnum).optional(),
+  category: z.string().min(1, { message: "Category is required." }),
+  currency: z.string(),
 });
-
-type ProductFormData = z.infer<typeof productFormSchema>;
 
 interface SellerAdFormProps {
   defaultValues?: Partial<ProductFormData>;
-  suggestedCategory?: Category;
+  topCategories: Category[];
+  categoryBreadcrumbs?: Category[];
   loading?: boolean;
   onSubmit: (data: ProductFormData) => void;
 }
 
-export function SellerAdForm({ defaultValues, suggestedCategory, loading = false, onSubmit }: SellerAdFormProps) {
-  const { t } = useI18nContext();
-  const [category, setCategory] = useState<string>();
-  const form = useForm<ProductFormData>({
+export function SellerAdForm({ defaultValues, topCategories, categoryBreadcrumbs, loading = false, onSubmit }: SellerAdFormProps) {
+  const [initParentCategory, initSubCategory] = categoryBreadcrumbs || [null, null];
+  const [subCategories, setSubCategories] = useState<Category[]>([]);
+  const [parentCategory, setParentCategory] = useState<Category | null>(initParentCategory);
+  const { t, locale } = useI18nContext();
+
+  const form = useForm({
     resolver: zodResolver(productFormSchema),
-    defaultValues: defaultValues,
-  });
-  const handleFormSubmit = (data: ProductFormData) => onSubmit(data);
-  useEffect(() => {
-    if (suggestedCategory) {
-      setCategory(suggestedCategory.value);
+    defaultValues: {
+      ...defaultValues,
+      category: initSubCategory?.category_key || "",
+      currency: getLocalCurrency(locale),
     }
-  }, [suggestedCategory]);
+  });
+
+  const selectedCurrencyCode = form.watch('currency');
+
+  async function fetchSubCategories(categoryKey: string) {
+    const subCategoriesResponse = await getCategories(categoryKey);
+    if (subCategoriesResponse) {
+      setSubCategories(subCategoriesResponse);
+    }
+  }
+
+  const handleFormSubmit = (data: ProductFormData) => onSubmit(data);
+
+  const handleParentCategoryChange = (value: string) => {
+    const selectedCategory = topCategories.find((category) => category.category_key === value) || null;
+    setParentCategory(selectedCategory);
+    if (selectedCategory) {
+      fetchSubCategories(selectedCategory.category_key);
+    }
+  };
+
+  useEffect(() => {
+    if (parentCategory) {
+      fetchSubCategories(parentCategory.category_key);
+    }
+  }, [parentCategory]);
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="p-4 space-y-6">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("adForm.titleLabel")}</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t("adForm.titlePlaceholder")}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage /> {/* Displays validation errors */}
-            </FormItem>
-          )}
-        />
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <div className="p-4 space-y-6">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("adForm.titleLabel")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t("adForm.titlePlaceholder")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage /> {/* Displays validation errors */}
+                  </FormItem>
+                )}
+              />
 
-        {/* Description Field */}
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("adForm.descriptionLabel")}</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder={t("adForm.descriptionPlaceholder")}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Price Field */}
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("adForm.priceLabel")}</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="number"
-                    className="pl-9"
-                    placeholder={t("adForm.pricePlaceholder")}
-                    step="0.01"
-                    min="0.01"
-                    // react-hook-form manages value as number, input expects string
-                    value={field.value === undefined ? '' : String(field.value)}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      const numberValue = parseFloat(value);
-                      field.onChange(isNaN(numberValue) ? undefined : numberValue);
-                    }}
-                    onBlur={field.onBlur} // Important for validation
-                    name={field.name} // Important for react-hook-form
-                    ref={field.ref} // Important for react-hook-form
+              <FormItem>
+                <FormLabel>{t("adForm.categoryLabel")}</FormLabel>
+                <div className="grid grid-cols-2 gap-2">
+                  <Select value={parentCategory?.category_key} onValueChange={handleParentCategoryChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {topCategories.map((category, i) => (
+                        <SelectItem key={i} value={category.category_key}>{category.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {/* Sub-Category Field */}
+                  <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormControl>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {subCategories.map((category, i) => (
+                              <SelectItem key={i} value={category.category_key}>{category.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                    )}
                   />
                 </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              </FormItem>
 
-        {/* Category Field */}
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("adForm.categoryLabel")}</FormLabel>
-              <FormControl>
-                <CategoryGrid
-                  size="sm"
-                  categories={categories}
-                  suggestedCategory={category}
-                  selectedCategory={field.value} // Pass field value
-                  onCategorySelect={field.onChange} // Pass field onChange
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("adForm.descriptionLabel")}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t("adForm.descriptionPlaceholder")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <Button type="submit" className="w-full" disabled={loading}>{loading ? t("adForm.submittingButton") : t("adForm.submitButton")}</Button>
+              <div className="grid grid-cols-2 gap-2">
+
+                <FormItem>
+                  <FormLabel>{t("adForm.priceLabel")}</FormLabel>
+                  <div className="relative">
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      rules={{
+                        required: 'Price is required', // Validation rule: price is mandatory
+                        pattern: {
+                          value: /^\d+(\.\d{1,2})?$/, // Validation rule: allows integers or decimals with up to 2 decimal places
+                          message: 'Invalid price format. e.g., 123 or 123.45', // Error message for invalid format
+                        },
+                      }}
+                      render={({ field }) => (
+                        <PriceInput
+                          {...field}
+                          setValue={form.setValue}
+                          placeholder={t("adForm.pricePlaceholder")}
+                          selectedCurrencyCode={selectedCurrencyCode}
+                        />
+                      )}
+                    />
+
+                  </div>
+                </FormItem>
+
+                <FormItem>
+                  <FormLabel>{t("adForm.conditionLabel")}</FormLabel>
+                  <FormField
+                    control={form.control}
+                    name="condition"
+                    render={({ field }) => (
+                      <FormControl>
+                        <Select value={(field.value as unknown as string)} onValueChange={field.onChange}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Condition" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {productConditionEnum.map((cond, i) => (
+                              <SelectItem key={i} value={cond}>{t(`condition.${cond.toLowerCase()}`)}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                    )}
+                  />
+                </FormItem>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div>
+            <div className="p-4 space-y-6">
+              <FormItem>
+                <h3 className="text-lg font-semibold mb-3">Feature Image</h3>
+                {defaultValues?.image_url && (
+                  <div className="relative">
+                    <Image
+                      src={defaultValues.image_url}
+                      alt="Product Image"
+                      sizes="100vw"
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                      }}
+                      width={500}
+                      height={300}
+
+                      className="h-auto w-full rounded-lg"
+                    />
+                  </div>
+                )}
+              </FormItem>
+              <FormItem>
+                <h3 className="text-lg font-semibold mb-3">Image Gallery</h3>
+                <div
+                  className="border-2 border-dashed border-gray-400 rounded-md p-6 text-center cursor-pointer"
+                >
+                  <label htmlFor="imageUpload" className="block text-gray-600 text-sm">
+                    Drag & Drop files here or <span className="text-blue-500 hover:underline">Click to Upload</span>
+                  </label>
+                  <input
+                    type="file"
+                    id="imageUpload"
+                    className="hidden"
+                    multiple
+                    accept="image/*"
+                  />
+                  {[1].length > 0 && (
+                    <div className="mt-4 grid grid-cols-3 gap-2">
+                      {[0, 0, 0, 0, 5].map((image, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={`https://flowbite.s3.amazonaws.com/docs/gallery/square/image-${index + 1}.jpg`}
+                            alt={`Product Image ${index + 1}`}
+                            className="w-full h-20 object-cover rounded-md"
+                          />
+                          <button
+                            className="absolute top-0 right-0 bg-gray-200 hover:bg-gray-300 rounded-full w-5 h-5 flex items-center justify-center text-gray-700 text-xs"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      ))}
+                      {[].length < 5 && (
+                        <div className="border-2 border-gray-300 border-dashed rounded-md h-20 flex items-center justify-center text-gray-400">
+                          {/* Placeholder for adding more images */}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <p className="text-gray-500 text-xs mt-2">Recommended size: 1000x1000px, Max 5MB, JPG, PNG</p>
+                </div>
+              </FormItem>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-end mt-6">
+          <Button type="reset" size="lg" className="font-bold me-2" variant="secondary">Cancel</Button>
+          <Button type="submit" size="lg" className="font-bold" disabled={loading}>{loading ? t("adForm.submittingButton") : t("adForm.submitButton")}</Button>
+        </div>
       </form>
-    </Form>
+    </Form >
   );
 }

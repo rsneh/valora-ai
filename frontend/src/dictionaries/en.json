@@ -160,10 +160,10 @@
     "registrationSuccessDescription": "You're all set. Time to hit 'Submit' to publish your ad.",
     "productCreatedTitle": "Product Created!",
     "productCreatedDescription": "Your product has been successfully created.",
-    "photoToOfferTitle": "Turn Your Photo into a Perfect Offer,",
+    "photoToOfferTitle": "Turn Your Photo into a Perfect Ad,",
     "photoToOfferTitleHighlight": " Instantly",
     "photoToOfferDescription": "Upload your item's photo, and our intelligent AI will help you create an optimized listing designed to sell quickly and effortlessly.",
-    "aiSuggestionsReadyTitle": "Your AI Suggestions Are Ready! Please Verify & Submit",
+    "aiSuggestionsReadyTitle": "Almost There! Finalize Your Smart Ad Details",
     "errorCreateAdTitle": "Unable to create your ad."
   },
   "photoUploader": {
@@ -184,7 +184,8 @@
     "categoryLabel": "Category",
     "categoryRequired": "Category is required.",
     "submitButton": "Submit",
-    "submittingButton": "Submitting..."
+    "submittingButton": "Submitting...",
+    "conditionLabel": "Condition"
   },
   "my": {
     "ads": {
@@ -196,5 +197,12 @@
       "adUpdatedDescription": "Your ad has been successfully updated."
     }
   },
-  "aiSuggestionTooltip": "Suggested by Valora AI"
+  "aiSuggestionTooltip": "Suggested by Valora AI",
+  "condition": {
+    "new": "New",
+    "like_new": "Like New",
+    "very_good": "Very Good",
+    "good": "Good",
+    "fair": "Fair"
+  }
 }

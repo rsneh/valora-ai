@@ -1,4 +1,3 @@
-import { Category } from "@/types/product";
 import { type ClassValue, clsx } from "clsx"
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { twMerge } from "tailwind-merge"
@@ -18,51 +17,6 @@ export const createUrl = (
   return `${pathname}${queryString}`;
 };
 
-export const categories: Category[] = [
-  {
-    value: "electronics",
-    icon: "monitor-smartphone",
-    show: true,
-    imagePath: "/images/category/electronics.jpg",
-  },
-  {
-    value: "fashion",
-    icon: "shirt",
-    show: true,
-    imagePath: "/images/category/fashion.jpg",
-  },
-  {
-    value: "home-goods",
-    icon: "sofa",
-    show: true,
-    imagePath: "/images/category/home-goods.jpg",
-  },
-  {
-    value: "collectibles",
-    icon: "palette",
-    show: true,
-    imagePath: "/images/category/collectibles.jpg",
-  },
-  {
-    value: "books-media",
-    icon: "library-big",
-    imagePath: "/images/category/books.jpg",
-  },
-  {
-    value: "sports-outdoors",
-    icon: "volleyball",
-    imagePath: "/images/category/sports.jpg",
-  },
-  {
-    value: "other",
-    title: "Other",
-  },
-];
-
-export const getCategoryByValue = (value: string): Category | undefined => {
-  return categories.find((cat) => cat.value === value);
-}
-
 export const translate = (dictionary: Dictionary | null, key: string, scope?: string): string => {
   if (!dictionary) return key;
   let path = key.split('.');
@@ -79,4 +33,16 @@ export const translate = (dictionary: Dictionary | null, key: string, scope?: st
     }
   }
   return typeof result === 'string' ? result : key;
+};
+
+export const getLocalCurrency = (locale?: string) => {
+  if (!locale) return "USD";
+  const country = locale?.split('-')[1];
+  if (!country) return "USD"; // Default to USD if no country code is found
+  switch (country) {
+    case "IL":
+      return "ILS";
+    default:
+      return "USD";
+  }
 };

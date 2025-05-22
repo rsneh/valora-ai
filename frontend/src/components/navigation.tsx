@@ -6,18 +6,19 @@ import { Menu, LogOutIcon, UserRound, PlusIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useAuth } from "@/components/auth/auth-context"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { RegisterDialog } from "./dialogs/register-dialog"
 import { LoginDialog } from "./dialogs/login-dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Separator } from "./ui/separator"
 import { Logo } from "./ui/logo"
 import { useToast } from "@/hooks/use-toast"
-import { categories, cn } from "@/lib/utils"
-import { useI18nContext } from "./locale-context";
+import { cn } from "@/lib/utils"
+import { useI18nContext } from "./locale-context"
 
 export function Navigation() {
   const router = useRouter();
+  const pathname = usePathname();
   const { toast } = useToast();
   const { t } = useI18nContext();
   const {
@@ -29,6 +30,8 @@ export function Navigation() {
     setShowRegisterDialog,
     setShowLoginDialog,
   } = useAuth();
+
+  const isSellPage = pathname === "/sell/";
 
   const handleLogout = async () => {
     try {
@@ -49,15 +52,6 @@ export function Navigation() {
               <Logo />
             </Link>
             <nav className="flex items-center space-x-6 text-sm mx-auto font-medium rtl:space-x-reverse">
-              {categories.filter((category) => category.show).map((category) => (
-                <Link
-                  key={category.value}
-                  href={`/browse/${category.value}`}
-                  className="transition-colors hover:text-foreground/80 text-foreground"
-                >
-                  {t(`categories.${category.value}.menu`)}
-                </Link>
-              ))}
               <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground hidden lg:inline-block">
                 {t("navigation.browse")}
               </Link>
@@ -78,15 +72,6 @@ export function Navigation() {
                 <Logo />
               </SheetTitle>
               <nav className="grid gap-6 px-2 py-6">
-                {categories.filter((category) => category.show).map((category) => (
-                  <Link
-                    key={category.value}
-                    href={`/browse/${category.value}`}
-                    className="transition-colors hover:text-foreground/80 text-foreground"
-                  >
-                    {t(`categories.${category.value}.menu`)}
-                  </Link>
-                ))}
                 <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground ">
                   {t("navigation.browse")}
                 </Link>
@@ -119,22 +104,24 @@ export function Navigation() {
                 </Button>
               </>
             )}
-            <Link
-              passHref
-              href="/sell"
-              className={cn(
-                "ms-auto md:block",
-                {
-                  "hidden": currentUser,
-                  "flex": !currentUser,
-                }
-              )}
-            >
-              <Button className="rounded-md h-6 px-2 md:h-9 md:px-3 lg:h-11 lg:px-8">
-                <PlusIcon className="h-4 w-4 md:hidden" />
-                <span className="hidden md:inline-block">{t("navigation.createAd")}</span>
-              </Button>
-            </Link>
+            {!isSellPage && (
+              <Link
+                passHref
+                href="/sell"
+                className={cn(
+                  "ms-auto md:block",
+                  {
+                    "hidden": currentUser,
+                    "flex": !currentUser,
+                  }
+                )}
+              >
+                <Button className="rounded-md h-6 px-2 md:h-9 md:px-3 lg:h-11 lg:px-8">
+                  <PlusIcon className="h-4 w-4 md:hidden" />
+                  <span className="hidden md:inline-block">{t("navigation.createAd")}</span>
+                </Button>
+              </Link>
+            )}
             {currentUser && (
               <>
                 <Separator orientation="vertical" className="hidden md:block h-8" />
