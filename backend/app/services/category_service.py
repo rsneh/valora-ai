@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from typing import List, Dict, Optional
 from app.schemas import category as category_schema
-from app.db import models  # Assuming your Category model is in models.py
+from app.db import models
 
 
 def get_all_active_categories_for_ai(db: Session) -> List[Dict[str, str]]:
@@ -43,6 +43,48 @@ def get_category_by_key(db: Session, category_key: str) -> Optional[models.Categ
         )
         .first()
     )
+
+
+def get_category_by_key_for_ui(
+    db: Session, category_key: str, locale: str = "en"
+) -> Optional[Dict]:
+    """
+    Fetches a single category by its key.
+    """
+    name_column = getattr(models.Category, f"name_{locale}", models.Category.name_en)
+    desc_ui_column = getattr(
+        models.Category, f"description_ui_{locale}", models.Category.description_ui_en
+    )
+
+    cat = (
+        db.query(
+            models.Category.id,
+            models.Category.category_key,
+            models.Category.image_path,
+            name_column.label("name"),  # Use label to have a consistent 'name' key
+            desc_ui_column.label("description_ui"),
+            models.Category.parent_category_key,
+        )
+        .filter(
+            models.Category.category_key == category_key,
+            models.Category.is_active == True,
+        )
+        .first()
+    )
+
+    if not cat:
+        return None
+
+    return {
+        "id": cat.id,
+        "category_key": cat.category_key,
+        "name": cat.name,
+        "image_path": cat.image_path,
+        "path": cat.category_key.replace("_", "-"),
+        "description": cat.description_ui,
+        "parent_category_key": cat.parent_category_key,
+        # You could add a flag 'has_children' if needed for UI
+    }
 
 
 # You can add more functions here as needed, e.g., to get categories for UI display

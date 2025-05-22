@@ -38,3 +38,10 @@ def get_client_ip(request: Request):
                     client_ip = request.client.host
 
     return client_ip
+
+
+def normalize_category_key(category_key: str) -> str:
+    """
+    Normalize the category key by replacing underscores with hyphens.
+    """
+    return category_key.replace("-", "_")

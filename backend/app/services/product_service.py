@@ -1,5 +1,6 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from fastapi import HTTPException, status
 from app.db import models
 from app.schemas import product as product_schema
@@ -56,33 +57,46 @@ def get_products(
     db: Session,
     skip: int = 0,
     limit: int = 100,
-    location_text: str = None,
-    lat: Optional[float] = None,
-    lng: Optional[float] = None,
-    max_distance: Optional[float] = None,
-    category: Optional[str] = None,
+    category: Optional[
+        str
+    ] = None,  # This can now be a parent category key like "electronics"
     seller_id: Optional[str] = None,
+    # Add other filters like location, price_range etc. as needed
+    # user_latitude: Optional[float] = None,
+    # user_longitude: Optional[float] = None,
+    # max_distance_km: Optional[float] = None
 ) -> List[models.Product]:
     """
-    Retrieves a list of products, with optional category filtering.
+    Retrieves a list of products, with optional hierarchical category filtering.
+    If a category key is provided, it fetches products matching that key
+    OR products whose category key starts with the provided key followed by an underscore
+    (e.g., category="electronics" will fetch "electronics", "electronics_laptops", "electronics_phones_smartphones").
     """
-    query = db.query(models.Product)
-
-    if location_text:
-        query = query.filter(models.Product.location_text == location_text)
-
-    if lat is not None and lng is not None and max_distance is not None:
-        # Assuming you have a function to filter by distance
-        query = query.filter(
-            models.Product.latitude.between(lat - max_distance, lat + max_distance),
-            models.Product.longitude.between(lng - max_distance, lng + max_distance),
-        )
+    query = db.query(models.Product).filter(
+        # models.Product.is_active == True
+    )  # Need to add is_active field
 
     if category:
-        query = query.filter(models.Product.category == category)
+        # Filter for exact match OR for sub-categories (prefix matching)
+        # Example: if category = "electronics", match "electronics" OR "electronics_..."
+        # Ensure your category keys are structured consistently (e.g., parent_child_grandchild)
+        query = query.filter(
+            or_(
+                models.Product.category == category,
+                models.Product.category.like(
+                    f"{category}_%"
+                ),  # Matches "category_anything"
+            )
+        )
 
-    if seller_id:
-        query = query.filter(models.Product.seller_id == seller_id)
+    # TODO: Implement location-based filtering if lat/lon/distance are provided
+    # This would involve Haversine formula or PostGIS functions if using lat/lon from Product model.
+    # For example:
+    # if user_latitude is not None and user_longitude is not None and max_distance_km is not None:
+    #     # Add Haversine distance calculation and filtering here
+    #     # This is complex and DB-dependent without PostGIS.
+    #     # With PostGIS: func.ST_DWithin(models.Product.location_geom, func.ST_MakePoint(user_longitude, user_latitude), max_distance_km * 1000)
+    #     pass
 
     # Add ordering, e.g., by most recent
     query = query.order_by(models.Product.time_created.desc())

@@ -66,7 +66,8 @@ class CategoryUI(BaseModel):
     id: int
     category_key: str
     name: str
-    image_path: Optional[str]
+    path: Optional[str] = None
+    image_path: Optional[str] = None
     description: Optional[Annotated[str, constr(max_length=255)]] = None
     parent_category_key: Optional[str] = None
 

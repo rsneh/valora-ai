@@ -4,6 +4,7 @@ from requests import Session
 from app.services import category_service
 from app.schemas import category as category_schema
 from app.db.database import get_db
+from app.core.utils import normalize_category_key
 
 router = APIRouter()
 
@@ -27,13 +28,16 @@ def read_categories(
 
 @router.get("/{category_key}", response_model=category_schema.CategoryUI)
 def read_category(
-    category_key: str,
+    category_key: str = Depends(normalize_category_key),
+    locale: str = Query("en", description="Locale for category names."),
     db: Session = Depends(get_db),
 ):
     """
     Retrieve a specific product by its ID.
     """
-    db_category = category_service.get_category_by_key(db, category_key=category_key)
+    db_category = category_service.get_category_by_key_for_ui(
+        db, category_key=category_key, locale=locale
+    )
     if db_category is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Category not found"
@@ -45,10 +49,8 @@ def read_category(
     "/{category_key}/breadcrumbs", response_model=List[category_schema.CategoryUI]
 )
 def read_category_breadcrumbs(
-    category_key: str,
-    locale: str = Query(
-        "en", description="Locale for category names."
-    ),  # Frontend should pass current locale
+    category_key: str = Depends(normalize_category_key),
+    locale: str = Query("en", description="Locale for category names."),
     db: Session = Depends(get_db),
 ):
     """
