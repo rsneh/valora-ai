@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from requests import Session
-from app.services import gcp_services
+from app.services import gcp_services, category_service
 from app.schemas import image as image_schema, user as user_schema
 from app.db.database import get_db
 from app.security.firebase_auth import get_current_active_user
@@ -43,6 +43,13 @@ async def upload_image_and_get_suggestions(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Could not upload or process image.",
         )
+
+    if suggestions.suggested_category_key:
+        # If a category is suggested, you might want to fetch its details
+        category = category_service.get_category_by_key(
+            db=db, category_key=suggestions.suggested_category_key
+        )
+        suggestions.suggested_category_id = category.id if category else None
 
     return suggestions
 

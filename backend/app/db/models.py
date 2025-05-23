@@ -24,6 +24,14 @@ class ProductConditionEnum(str, enum.Enum):
     FAIR = "FAIR"
 
 
+class ProductStatusEnum(str, enum.Enum):  # Changed SAEnum to enum.Enum
+    DRAFT = "DRAFT"
+    ACTIVE = "ACTIVE"
+    SOLD = "SOLD"
+    ARCHIVED = "ARCHIVED"
+    DELETED = "DELETED"
+
+
 class ConversationStatus(str, enum.Enum):  # Changed SAEnum to enum.Enum
     ACTIVE = "ACTIVE"  # Changed to uppercase
     CLOSED_DEAL = "CLOSED_DEAL"  # Changed to uppercase
@@ -43,16 +51,41 @@ class Product(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True, nullable=False)
     description = Column(String, nullable=True)
-    category = Column(String, index=True, nullable=True)  # AI suggested
+    category_id = Column(
+        Integer,
+        ForeignKey("categories.id", name="fk_products_category_id_categories"),
+        nullable=False,
+        index=True,
+    )
+
+    category = relationship("Category")
+
+    status = Column(
+        SAEnum(
+            ProductStatusEnum,
+            name="product_status_enum",
+            create_type=False,
+        ),
+        default=ProductStatusEnum.DRAFT,
+        nullable=False,
+        index=True,
+    )
+
     attributes = Column(JSONB, nullable=True)
     condition = Column(
-        SAEnum(ProductConditionEnum, name="product_condition_enum", create_type=False),
+        SAEnum(
+            ProductConditionEnum,
+            name="product_condition_enum",
+            create_type=False,
+        ),
         nullable=True,
     )
 
     price = Column(Float, nullable=False)
     currency = Column(
-        String(3), nullable=False, default="USD"
+        String(3),
+        nullable=False,
+        default="USD",
     )  # e.g., ISO 4217 code, set a default
 
     image_url = Column(String, nullable=True)  # URL from GCS
@@ -77,7 +110,6 @@ class Product(Base):
     min_acceptable_price = Column(Float, nullable=True)
     negotiation_notes_for_ai = Column(Text, nullable=True)
 
-    # If you want a direct link from Product to its conversations (optional, but can be useful)
     conversations = relationship("Conversation", back_populates="product")
 
 

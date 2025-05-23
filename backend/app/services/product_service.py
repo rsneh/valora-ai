@@ -4,7 +4,7 @@ from sqlalchemy import or_
 from fastapi import HTTPException, status
 from app.db import models
 from app.schemas import product as product_schema
-from . import gcp_services, location_service
+from . import gcp_services, location_service, category_service
 
 
 async def create_product(
@@ -33,12 +33,22 @@ async def create_product(
             location_text=product_in.location_text
         )
 
+    # Convert category_key to category_id
+    category_obj = category_service.get_category_by_key(db, product_in.category)
+    if not category_obj:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid category key: {product_in.category}",
+        )
+
+    final_category_id = category_obj.id
+
     # 2. Create Product DB entry
     db_product = models.Product(
         title=product_in.title,
         price=product_in.price,
         description=product_in.description,
-        category=product_in.category,
+        category_id=final_category_id,
         image_url=permanent_image_url,
         condition=product_in.condition,
         seller_id=seller_id,
@@ -57,10 +67,9 @@ def get_products(
     db: Session,
     skip: int = 0,
     limit: int = 100,
-    category: Optional[
-        str
-    ] = None,  # This can now be a parent category key like "electronics"
+    category: Optional[str] = None,
     seller_id: Optional[str] = None,
+    locale: str = "en",
     # Add other filters like location, price_range etc. as needed
     # user_latitude: Optional[float] = None,
     # user_longitude: Optional[float] = None,
@@ -72,35 +81,22 @@ def get_products(
     OR products whose category key starts with the provided key followed by an underscore
     (e.g., category="electronics" will fetch "electronics", "electronics_laptops", "electronics_phones_smartphones").
     """
-    query = db.query(models.Product).filter(
-        # models.Product.is_active == True
-    )  # Need to add is_active field
+    query = db.query(models.Product)
+
+    if seller_id:
+        query = query.filter(models.Product.seller_id == seller_id)
 
     if category:
-        # Filter for exact match OR for sub-categories (prefix matching)
-        # Example: if category = "electronics", match "electronics" OR "electronics_..."
-        # Ensure your category keys are structured consistently (e.g., parent_child_grandchild)
-        query = query.filter(
-            or_(
-                models.Product.category == category,
-                models.Product.category.like(
-                    f"{category}_%"
-                ),  # Matches "category_anything"
-            )
+        target_category_ids = category_service.get_all_descendant_category_ids(
+            db, category
         )
 
-    # TODO: Implement location-based filtering if lat/lon/distance are provided
-    # This would involve Haversine formula or PostGIS functions if using lat/lon from Product model.
-    # For example:
-    # if user_latitude is not None and user_longitude is not None and max_distance_km is not None:
-    #     # Add Haversine distance calculation and filtering here
-    #     # This is complex and DB-dependent without PostGIS.
-    #     # With PostGIS: func.ST_DWithin(models.Product.location_geom, func.ST_MakePoint(user_longitude, user_latitude), max_distance_km * 1000)
-    #     pass
+        if target_category_ids:
+            query = query.filter(models.Product.category_id.in_(target_category_ids))
+        else:
+            return []
 
-    # Add ordering, e.g., by most recent
     query = query.order_by(models.Product.time_created.desc())
-
     return query.offset(skip).limit(limit).all()
 
 

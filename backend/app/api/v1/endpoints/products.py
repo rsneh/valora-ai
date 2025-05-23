@@ -72,7 +72,11 @@ def read_products(
     Optionally filters by category.
     """
     products = product_service.get_products(
-        db, skip=skip, limit=limit, category=category, seller_id=seller_id
+        db,
+        skip=skip,
+        limit=limit,
+        category=category,
+        seller_id=seller_id,
     )
     return products
 
@@ -80,6 +84,7 @@ def read_products(
 @router.get("/{product_id}", response_model=product_schema.Product)
 def read_product(
     product_id: int,
+    locale: str = Query("en", description="Locale for category names."),
     db: Session = Depends(database.get_db),
 ):
     """

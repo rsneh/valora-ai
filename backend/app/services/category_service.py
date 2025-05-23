@@ -5,6 +5,55 @@ from app.schemas import category as category_schema
 from app.db import models
 
 
+def get_all_descendant_category_ids(db: Session, parent_category_key: str) -> List[int]:
+    """
+    Recursively fetches all category IDs that are descendants of the given parent_category_key,
+    including the ID of the parent_category_key itself.
+    """
+    all_category_ids = set()
+
+    initial_parent_category = (
+        db.query(models.Category.id, models.Category.category_key)
+        .filter(
+            models.Category.category_key == parent_category_key,
+            models.Category.is_active == True,
+        )
+        .first()
+    )
+
+    if not initial_parent_category:
+        return []
+
+    keys_to_process = [initial_parent_category.category_key]
+    # Add the ID of the initial parent if it's a valid category to assign products to
+    # (e.g., if "electronics" itself can have products, not just its children)
+    all_category_ids.add(initial_parent_category.id)
+
+    processed_keys = set()
+
+    while keys_to_process:
+        current_parent_key = keys_to_process.pop(0)
+        if current_parent_key in processed_keys:
+            continue
+        processed_keys.add(current_parent_key)
+
+        children = (
+            db.query(models.Category.id, models.Category.category_key)
+            .filter(
+                models.Category.parent_category_key == current_parent_key,
+                models.Category.is_active == True,
+            )
+            .all()
+        )
+
+        for child_id, child_key in children:
+            all_category_ids.add(child_id)
+            if child_key:
+                keys_to_process.append(child_key)
+
+    return list(all_category_ids)
+
+
 def get_all_active_categories_for_ai(db: Session) -> List[Dict[str, str]]:
     """
     Fetches all active categories with their keys and AI descriptions.
@@ -29,6 +78,17 @@ def get_all_active_categories_for_ai(db: Session) -> List[Dict[str, str]]:
                 }
             )
     return categories_for_ai
+
+
+def get_category_by_id(db: Session, category_id: int) -> Optional[models.Category]:
+    """
+    Fetches a single category by its primary key ID.
+    """
+    return (
+        db.query(models.Category)
+        .filter(models.Category.id == category_id, models.Category.is_active == True)
+        .first()
+    )
 
 
 def get_category_by_key(db: Session, category_key: str) -> Optional[models.Category]:
@@ -134,32 +194,37 @@ def get_all_categories(
 
 
 def get_category_breadcrumbs(
-    db: Session, category_key: str, locale: str = "en"
-) -> List[category_schema.CategoryUI]:  # Or your full Category schema
+    db: Session, category_id: int, locale: str = "en"
+) -> List[category_schema.CategoryUI]:
     """
-    Fetches the breadcrumb path for a given category key.
+    Fetches the breadcrumb path for a given category ID.
     The list is ordered from the top-level parent to the given category.
     """
     breadcrumbs: List[category_schema.CategoryUI] = []
-    current_key: Optional[str] = category_key
+    current_category_db = get_category_by_id(db, category_id)
 
-    while current_key:
-        category_db = get_category_by_key(db, current_key)
-        if not category_db:
-            break  # Category not found or inactive, stop building breadcrumbs
-
+    while current_category_db:
         name_column_label = f"name_{locale}"
-        name_column_value = getattr(category_db, name_column_label, category_db.name_en)
+        name_column_value = getattr(
+            current_category_db, name_column_label, current_category_db.name_en
+        )
 
         breadcrumbs.append(
             category_schema.CategoryUI(
-                id=category_db.id,
-                category_key=category_db.category_key,
+                id=current_category_db.id,
+                category_key=current_category_db.category_key,
                 name=name_column_value,
-                path=category_db.category_key.replace("_", "-"),
-                parent_category_key=category_db.parent_category_key,
+                path=current_category_db.category_key.replace("_", "-"),
+                parent_category_key=current_category_db.parent_category_key,
             )
         )
-        current_key = category_db.parent_category_key
+
+        if current_category_db.parent_category_key:
+            # Fetch the parent category by its key
+            current_category_db = get_category_by_key(
+                db, current_category_db.parent_category_key
+            )
+        else:
+            current_category_db = None  # Reached top-level parent
 
     return list(reversed(breadcrumbs))  # Reverse to get top-down order

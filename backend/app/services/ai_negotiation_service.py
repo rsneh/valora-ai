@@ -67,8 +67,8 @@ async def generate_ai_response(
     prompt_parts.append("\n--- Product Information ---")
     prompt_parts.append(f"Item: {product.title}")
     prompt_parts.append(f"Listed Price: ${product.price:.2f}")
-    if product.category:
-        prompt_parts.append(f"Category: {product.category}")
+    if product.category.category_key:
+        prompt_parts.append(f"Category: {product.category.category_key}")
     if product.description:
         prompt_parts.append(f"Description: {product.description}")
     if product.location_text:

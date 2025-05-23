@@ -7,7 +7,7 @@ class ImageUploadResponse(BaseModel):
     image_key: str
     image_url: str
     suggested_title: str
-    suggested_category_key: Optional[str] = None
+    suggested_category_id: Optional[int] = None
     suggested_attributes: Optional[Dict[str, Any]] = None
     suggested_description: Optional[str] = None
     suggested_condition: Optional[ProductConditionEnum] = None

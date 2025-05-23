@@ -21,6 +21,7 @@ class AISuggestions(BaseModel):  # Pydantic model for clarity
     image_url: str
     suggested_title: str
     suggested_category_key: Optional[str] = None
+    suggested_category_id: Optional[int] = None
     suggested_attributes: Optional[Dict[str, Any]] = None
     suggested_description: Optional[str] = None
     suggested_condition: Optional[ProductConditionEnum] = None
@@ -427,6 +428,7 @@ async def get_ai_title(
     attributes: Optional[Dict[str, Any]],
     image_features: List[str],
     web_entities: List[str],
+    locale: str = "en",
 ) -> Optional[str]:
 
     context_parts = []
@@ -475,11 +477,14 @@ async def get_ai_title(
     else:
         context_str = ", ".join(context_parts)
 
+    lang = "Hebrew" if locale == "he" else "English"
+
     prompt = f"""Based on the following information about an item: "{context_str}".
         Generate a short, clear, and marketable title for an item.
         The title should be concise (ideally 3-7 words).
         Include key identifying information like brand, model, and important specifications if applicable.
         Respond with ONLY the title.
+        Response in language: {lang}.
 
         Examples:
         "iPhone 16 Pro 256GB"

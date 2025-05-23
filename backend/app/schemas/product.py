@@ -2,7 +2,8 @@
 from pydantic import BaseModel, HttpUrl
 from typing import Any, Dict, Optional
 from datetime import datetime
-from app.db.models import ProductConditionEnum
+from app.db.models import ProductConditionEnum, ProductStatusEnum
+from app.schemas.category import Category
 
 
 # Properties to receive on item creation
@@ -30,16 +31,18 @@ class ProductUpdate(BaseModel):
     description: Optional[str] = None
     price: Optional[float] = None
     category: Optional[str] = None
+    status: ProductStatusEnum = ProductStatusEnum.DRAFT
 
 
 class ProductInDBBase(BaseModel):
     id: int
     title: str
+    category_id: int
     description: Optional[str] = None
     price: float
     currency: str
-    category: str
     condition: Optional[ProductConditionEnum] = None
+    status: ProductStatusEnum = ProductStatusEnum.DRAFT
     image_url: Optional[str] = None
     seller_id: str
     time_created: datetime
@@ -58,7 +61,8 @@ class ProductInDBBase(BaseModel):
 
 # Properties to return to client
 class Product(ProductInDBBase):
-    pass
+    # Relationships
+    category: Optional[Category] = None
 
 
 # Properties stored in DB
