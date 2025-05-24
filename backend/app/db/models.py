@@ -110,6 +110,14 @@ class Product(Base):
     min_acceptable_price = Column(Float, nullable=True)
     negotiation_notes_for_ai = Column(Text, nullable=True)
 
+    # Relationships
+    images = relationship(
+        "ProductImage",
+        back_populates="product",
+        cascade="all, delete-orphan",
+        order_by="ProductImage.id",
+    )
+
     conversations = relationship("Conversation", back_populates="product")
 
 
@@ -119,6 +127,24 @@ class Product(Base):
 # If you needed to store additional app-specific user profile information
 # not suitable for Firebase's own user profile, you might create a User model here
 # linked by the Firebase UID as a primary or foreign key.
+
+
+class ProductImage(Base):
+    __tablename__ = "product_images"
+
+    id = Column(Integer, primary_key=True, index=True)
+    product_id = Column(
+        Integer,
+        ForeignKey("products.id", name="fk_product_images_product_id_products"),
+        nullable=False,
+        index=True,
+    )
+    image_url = Column(String, nullable=False)
+
+    product = relationship("Product", back_populates="images")
+
+    def __repr__(self):
+        return f"<ProductImage(id={self.id}, product_id={self.product_id}, image_url='{self.image_url}')>"
 
 
 class Conversation(Base):

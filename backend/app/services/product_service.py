@@ -202,3 +202,66 @@ def delete_product(db: Session, product_id: int, seller_id: str) -> bool:
     db.delete(db_product)
     db.commit()
     return True
+
+
+async def add_product_images(
+    db: Session,
+    product_id: int,
+    temp_image_keys: List[str],
+    seller_id: str,
+) -> List[models.ProductImage]:
+    """
+    Adds multiple images to an existing product.
+
+    Args:
+        db: Database session
+        product_id: ID of the product to add images to
+        temp_image_keys: List of temporary image keys from GCS
+        seller_id: ID of the seller (for authorization)
+
+    Returns:
+        List of created ProductImage objects
+
+    Raises:
+        HTTPException: If product not found or user not authorized
+    """
+    # Check if product exists and belongs to seller
+    db_product = (
+        db.query(models.Product).filter(models.Product.id == product_id).first()
+    )
+    if not db_product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
+        )
+
+    if db_product.seller_id != seller_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to modify this product",
+        )
+
+    created_images = []
+
+    for temp_key in temp_image_keys:
+        # Move image from temporary to permanent storage
+        permanent_image_url = await gcp_services.move_gcs_image_to_permanent(
+            temp_image_key=temp_key, seller_id=seller_id
+        )
+
+        if not permanent_image_url:
+            continue  # Skip if moving fails
+
+        # Create ProductImage entry
+        db_image = models.ProductImage(
+            product_id=product_id, image_url=permanent_image_url
+        )
+
+        db.add(db_image)
+        db.flush()  # Get the ID without committing transaction
+        created_images.append(db_image)
+
+    # Only commit once for all successful images
+    if created_images:
+        db.commit()
+
+    return created_images

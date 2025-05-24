@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional
 from datetime import datetime
 from app.db.models import ProductConditionEnum, ProductStatusEnum
 from app.schemas.category import Category
+from app.schemas.product_image import ProductImage
 
 
 # Properties to receive on item creation
@@ -63,6 +64,7 @@ class ProductInDBBase(BaseModel):
 class Product(ProductInDBBase):
     # Relationships
     category: Optional[Category] = None
+    images: Optional[list[ProductImage]] = None
 
 
 # Properties stored in DB

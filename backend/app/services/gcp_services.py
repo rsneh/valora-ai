@@ -46,7 +46,8 @@ except Exception as e:
 
 
 async def upload_image_to_gcs_temp(
-    file: UploadFile, filename: str
+    file: UploadFile,
+    filename: str,
 ) -> Tuple[Optional[str], Optional[str]]:
     """
     Uploads an image, analyzes it, and returns (key, url).
