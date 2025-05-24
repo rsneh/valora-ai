@@ -6,6 +6,8 @@ import { ProductProvider } from '@/components/product/product-context';
 import { Gallery } from '@/components/product/gallery';
 import { ProductBreadcrumbs } from '@/components/product/product-breadcrumbs';
 import { ProductDescription } from '@/components/product/product-description';
+import { getCategoryBreadcrumbs } from '@/services/api/categories';
+import { getLocaleFromRequest } from '@/lib/dictionaries';
 
 export async function generateMetadata(props: {
   params: Promise<{ productId: string }>;
@@ -46,8 +48,11 @@ export async function generateMetadata(props: {
 export default async function ProductPage(props: { params: Promise<{ productId: string }> }) {
   const params = await props.params;
   const product = await getProductById(params.productId);
+  const locale = await getLocaleFromRequest()
 
   if (!product) return notFound();
+
+  const breadcrumbCategories = await getCategoryBreadcrumbs(locale, product.category_id.toString());
 
   const productJsonLd = {
     '@context': 'https://schema.org',
@@ -72,7 +77,7 @@ export default async function ProductPage(props: { params: Promise<{ productId: 
         }}
       />
       <div className="container mx-auto px-4">
-        <ProductBreadcrumbs product={product} />
+        <ProductBreadcrumbs product={product} categories={breadcrumbCategories} />
         <Suspense fallback={<div className="animate-pulse">Loading...</div>}>
           <div className="bg-white p-6 md:p-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">

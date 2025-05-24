@@ -66,7 +66,7 @@ export default async function RootLayout({
 }) {
   const locale = await getLocaleFromRequest();
   const dictionary = await getDictionary(locale);
-  const categories = await getCategories();
+  const categories = await getCategories(locale);
 
   return (
     <html lang={locale} dir={locale === "he" ? "rtl" : "ltr"} suppressHydrationWarning>

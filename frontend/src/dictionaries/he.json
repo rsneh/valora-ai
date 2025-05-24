@@ -192,7 +192,8 @@
     "categoryLabel": "קטגוריה",
     "categoryRequired": "קטגוריה היא שדה חובה.",
     "submitButton": "שלח",
-    "submittingButton": "שולח..."
+    "submittingButton": "שולח...",
+    "conditionLabel": "מצב המוצר"
   },
   "my": {
     "ads": {

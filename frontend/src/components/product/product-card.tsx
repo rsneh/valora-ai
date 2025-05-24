@@ -1,12 +1,12 @@
 "use client"
 
 import { Product } from "@/types/product";
+import { Category } from "@/types/category";
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "../ui/badge";
-import { useMemo } from "react";
-import { cn, getCategoryByValue } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useI18nContext } from "../locale-context";
+import { getCurrencySymbol } from "@/lib/currency";
 
 interface ProductCardProps {
   product: Product;
@@ -15,19 +15,19 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, className, sizes }) => {
-  const { t } = useI18nContext();
-  const category = useMemo(
-    () => product.category ? getCategoryByValue(product.category) : null,
-    [product.category]
-  );
+  const { locale } = useI18nContext();
+  const category: Category | null = product.category ? (product.category as Category) : null;
+  const categoryName = category ? (category[`name_${locale}` as keyof Category]) : null;
+  const currencySign = getCurrencySymbol(product.currency!);
   return (
-    <div className={cn("border rounded-lg shadow-lg bg-white animate-fadeIn", className)}>
+    <div className={cn("relative animate-fadeIn", className)}>
       <Link href={`/product/${product.id}`}>
         {product.image_url && (
           <div className="relative inline-block h-48 w-full">
             <Image
               src={product.image_url}
-              className="relative h-full w-full object-contain"
+              // className="relative h-full w-full object-contain"
+              className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-80"
               loading="lazy"
               alt={product.title}
               fill
@@ -36,23 +36,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className, si
           </div>
         )}
       </Link>
-      <div className="p-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-1 truncate" title={product.title}>
-          <Link href={`/product/${product.id}`} className="hover:text-blue-600 transition-colors">
-            {product.title}
-          </Link>
-        </h3>
-        <p className="text-sm text-gray-600 mb-2 h-10 overflow-hidden">
-          {product.description ? (product.description.length > 60 ? product.description.substring(0, 60) + "..." : product.description) : "No description."}
-        </p>
-        {category && (
-          <Badge className="px-3 py-1.5" variant="secondary">
-            {t(`categories.${category.value}.title`)}
-          </Badge>
-        )}
-        <div className="flex justify-between items-center mt-3">
-          <p className="text-xl font-bold text-blue-600">${product.price.toFixed(2)}</p>
+      <div className="mt-2 flex justify-between">
+        <div>
+          <h3 className="text-sm text-gray-500">
+            <Link href={`/product/${product.id}`}>
+              <span aria-hidden="true" className="absolute inset-0" />
+              {categoryName}
+            </Link>
+          </h3>
+          <p className="mt-1 text-sm text-gray-900">{product.title}</p>
         </div>
+        <p className="font-medium text-gray-900 flex">
+          {`${currencySign}${product.price}`}
+        </p>
       </div>
     </div>
   );

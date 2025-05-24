@@ -1,19 +1,18 @@
 "use client"
 
-import { getCategoryByValue } from "@/lib/utils";
 import { Product } from "@/types/product";
-import { useMemo } from "react";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from "../ui/breadcrumb";
 import { HomeIcon } from "lucide-react";
 import Link from "next/link";
-import { useI18nContext } from "../locale-context";
+import { Category } from "@/types/category";
+import React from "react";
 
-export const ProductBreadcrumbs = ({ product }: { product: Product }) => {
-  const { t } = useI18nContext();
-  const category = useMemo(
-    () => product.category ? getCategoryByValue(product.category) : null,
-    [product.category]
-  );
+interface ProductBreadcrumbsProps {
+  product: Product;
+  categories: Category[];
+}
+
+export const ProductBreadcrumbs = ({ product, categories }: ProductBreadcrumbsProps) => {
   return (
     <Breadcrumb className="flex list-none space-x-2 rtl:space-x-reverse text-sm text-gray-400 mb-4 items-center">
       <BreadcrumbItem className="">
@@ -24,20 +23,20 @@ export const ProductBreadcrumbs = ({ product }: { product: Product }) => {
         </BreadcrumbLink>
       </BreadcrumbItem>
       <BreadcrumbSeparator className="text-gray-400" />
+      {categories && categories.slice(0, 1).map((category, index) => (
+        <React.Fragment key={index}>
+          <BreadcrumbItem key={index} className="text-gray-500">
+            <BreadcrumbLink asChild className="hover:text-gray-800">
+              <Link href={`/browse/${category.path}`} className="flex items-center">
+                {category.name}
+              </Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator className="text-gray-400" />
+        </React.Fragment>
+      ))}
       <BreadcrumbItem className="text-gray-500">
-        {category && (
-          <BreadcrumbLink asChild className="hover:text-gray-800">
-            <Link href={`/browse/${category.value}`} className="flex items-center">
-              {t(`categories.${category.value}.title`)}
-            </Link>
-          </BreadcrumbLink>
-        )}
-      </BreadcrumbItem>
-      <BreadcrumbSeparator className="text-gray-400" />
-      <BreadcrumbItem className="text-gray-500">
-        <BreadcrumbLink href="/" className="hover:text-gray-800">
-          {product.title}
-        </BreadcrumbLink>
+        {product.title}
       </BreadcrumbItem>
     </Breadcrumb>
   );

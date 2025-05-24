@@ -1,3 +1,5 @@
+import { Category } from "./category";
+
 export const productConditionEnum = [
   "NEW",
   "LIKE_NEW",
@@ -9,11 +11,11 @@ export const productConditionEnum = [
 export interface Product {
   id: number;
   title: string;
+  category_id: number;
   description?: string;
   price: number;
-  condition?: typeof productConditionEnum;
+  condition?: typeof productConditionEnum[number];
   currency?: string;
-  category?: string;
   image_url?: string;
   seller_id: string;
   time_created: string;
@@ -21,6 +23,8 @@ export interface Product {
   location_text: string;
   min_acceptable_price?: number;
   negotiation_notes_for_ai?: string;
+  category?: Category;
+  attributes?: Record<string, string>;
 }
 
 export interface ProductFormData {
@@ -29,7 +33,7 @@ export interface ProductFormData {
   description?: string;
   price: number;
   condition?: typeof productConditionEnum[number];
-  category: string;
+  category?: number;
   currency?: string;
   image_url?: string;
   image_key?: string;
@@ -39,4 +43,5 @@ export interface ProductFormData {
   location_source?: string;
   min_acceptable_price?: number;
   negotiation_notes_for_ai?: string;
+  attributes?: Record<string, string>;
 }

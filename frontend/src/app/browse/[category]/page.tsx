@@ -35,8 +35,8 @@ export default async function CategoryPage(props: {
   // const searchParams = await props.searchParams;
   // const { sort } = searchParams as { [key: string]: string };
   // const { sortKey, reverse } = sorting.find((item) => item.slug === sort) || defaultSort;
-  const products = await getCategoryProducts(params.category);
-  const category = await getCategoriesBySlug(params.category);
+  const products = await getCategoryProducts(locale, params.category);
+  const category = await getCategoriesBySlug(locale, params.category);
 
   return (
     <div className="container mx-auto px-4">

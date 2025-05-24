@@ -1,5 +1,6 @@
 "use client"
 
+import { useCategories } from '@/components/categories-context';
 import { useI18nContext } from '@/components/locale-context';
 import { Navigation } from '@/components/navigation'
 import { Button } from '@/components/ui/button'
@@ -7,9 +8,10 @@ import Link from 'next/link'
 
 export default function PageNotFound() {
   const { t } = useI18nContext();
+  const { categories } = useCategories();
   return (
     <div className="min-h-screen flex flex-col">
-      <Navigation />
+      <Navigation categories={categories} />
 
       <main className="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
         <div className="text-center">

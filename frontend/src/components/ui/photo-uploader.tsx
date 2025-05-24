@@ -1,12 +1,10 @@
 "use client"
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import Image from 'next/image';
 import { ImageIcon } from 'lucide-react';
 import { uploadImage } from '@/services/api/images';
 import { useAuth } from '@/components/auth/auth-context';
 import { SpinnerLoader } from './spinner-loader';
-import { Progress } from './progress';
 import { type Image as ImageData } from '@/types/image';
 import { useI18nContext } from '../locale-context';
 

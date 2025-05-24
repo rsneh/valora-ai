@@ -4,13 +4,15 @@ import { IntelligentFeatures } from "@/components/intelligent-features"
 import { Footer } from "@/components/footer"
 import { CategoriesSection } from "@/components/categories-section"
 import { getCategories } from "@/services/api/categories"
+import { getLocaleFromRequest } from "@/lib/dictionaries"
 
 export default async function HomePage() {
-  const categories = await getCategories();
+  const locale = await getLocaleFromRequest();
+  const categories = await getCategories(locale);
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navigation />
+      <Navigation categories={categories} />
       <main className="flex-1">
         <Hero />
         <IntelligentFeatures />

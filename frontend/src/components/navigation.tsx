@@ -15,8 +15,13 @@ import { Logo } from "./ui/logo"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useI18nContext } from "./locale-context"
+import { Category } from "@/types/category"
 
-export function Navigation() {
+interface NavigationProps {
+  categories: Category[];
+}
+
+export function Navigation({ categories = [] }: NavigationProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
@@ -52,9 +57,20 @@ export function Navigation() {
               <Logo />
             </Link>
             <nav className="flex items-center space-x-6 text-sm mx-auto font-medium rtl:space-x-reverse">
-              <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground hidden lg:inline-block">
-                {t("navigation.browse")}
-              </Link>
+              {categories.filter((category) => category.image_path).map((category, index) => (
+                <Link
+                  key={category.id}
+                  href={`/browse/${category.path}`}
+                  className={cn(
+                    "transition-colors hover:text-foreground/80 text-foreground",
+                    {
+                      "hidden lg:block": index > 2,
+                    }
+                  )}
+                >
+                  {category.name}
+                </Link>
+              ))}
             </nav>
           </div>
           <Sheet>
@@ -72,8 +88,23 @@ export function Navigation() {
                 <Logo />
               </SheetTitle>
               <nav className="grid gap-6 px-2 py-6">
-                <Link href="/browse" className="transition-colors hover:text-foreground/80 text-foreground ">
-                  {t("navigation.browse")}
+                {categories.filter((category) => category.image_path).map((category) => (
+                  <Link
+                    key={category.id}
+                    href={`/browse/${category.path}`}
+                    className="transition-colors hover:text-foreground/80 text-foreground"
+                  >
+                    {category.name}
+                  </Link>
+                ))}
+                <Link
+                  passHref
+                  href="/sell"
+                  className="mt-2"
+                >
+                  <Button className="w-[90%]">
+                    {t("navigation.createAd")}
+                  </Button>
                 </Link>
               </nav>
             </SheetContent>
@@ -155,7 +186,7 @@ export function Navigation() {
             )}
           </div>
         </div >
-      </header>
+      </header >
       <RegisterDialog
         {...registerDialogDetails}
         open={showRegisterDialog}

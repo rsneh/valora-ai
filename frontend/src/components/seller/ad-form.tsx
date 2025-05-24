@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { useEffect, useState } from "react";
 import { useI18nContext } from "../locale-context";
 import { Category } from "@/types/category";
-import { getCategories } from "@/services/api/categories";
+import { getCategories, getCategoryBreadcrumbs } from "@/services/api/categories";
 import { productConditionEnum, ProductFormData } from "@/types/product";
 import PriceInput from "../ui/price-input";
 import { getLocalCurrency } from "@/lib/utils";
@@ -31,8 +31,9 @@ const productFormSchema = z.object({
   description: z.string().min(1, { message: "Description is required." }),
   price: z.number({ required_error: "Price is required." }).positive({ message: "Price must be a positive number." }),
   condition: z.enum(productConditionEnum).optional(),
-  category: z.string().min(1, { message: "Category is required." }),
+  category: z.number({ required_error: "Category is required." }),
   currency: z.string(),
+  attributes: z.object({}).optional(),
 });
 
 interface SellerAdFormProps {
@@ -43,25 +44,29 @@ interface SellerAdFormProps {
   onSubmit: (data: ProductFormData) => void;
 }
 
-export function SellerAdForm({ defaultValues, topCategories, categoryBreadcrumbs, loading = false, onSubmit }: SellerAdFormProps) {
-  const [initParentCategory, initSubCategory] = categoryBreadcrumbs || [null, null];
+export function SellerAdForm({ defaultValues, topCategories, loading = false, onSubmit }: SellerAdFormProps) {
   const [subCategories, setSubCategories] = useState<Category[]>([]);
-  const [parentCategory, setParentCategory] = useState<Category | null>(initParentCategory);
+  const [parentCategory, setParentCategory] = useState<Category>();
   const { t, locale } = useI18nContext();
 
   const form = useForm({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
       ...defaultValues,
-      category: initSubCategory?.category_key || "",
       currency: getLocalCurrency(locale),
     }
   });
 
   const selectedCurrencyCode = form.watch('currency');
 
+  const handleSetCurrency = (key: string, value: string) => {
+    if (key === 'currency') {
+      form.setValue(key as any, value);
+    }
+  };
+
   async function fetchSubCategories(categoryKey: string) {
-    const subCategoriesResponse = await getCategories(categoryKey);
+    const subCategoriesResponse = await getCategories(locale, categoryKey);
     if (subCategoriesResponse) {
       setSubCategories(subCategoriesResponse);
     }
@@ -71,17 +76,28 @@ export function SellerAdForm({ defaultValues, topCategories, categoryBreadcrumbs
 
   const handleParentCategoryChange = (value: string) => {
     const selectedCategory = topCategories.find((category) => category.category_key === value) || null;
-    setParentCategory(selectedCategory);
     if (selectedCategory) {
+      setParentCategory(selectedCategory);
       fetchSubCategories(selectedCategory.category_key);
     }
   };
 
   useEffect(() => {
-    if (parentCategory) {
-      fetchSubCategories(parentCategory.category_key);
-    }
-  }, [parentCategory]);
+    const fetchBreadcrumbs = async () => {
+      if (defaultValues?.category) {
+        const categoryBreadcrumbs = await getCategoryBreadcrumbs(locale, defaultValues.category.toString());
+        if (categoryBreadcrumbs) {
+          const [initParentCategory,] = categoryBreadcrumbs;
+
+          if (initParentCategory) {
+            setParentCategory(initParentCategory);
+            fetchSubCategories(initParentCategory.category_key);
+          }
+        }
+      }
+    };
+    fetchBreadcrumbs();
+  }, [defaultValues?.category, locale]);
 
   return (
     <Form {...form}>
@@ -101,7 +117,7 @@ export function SellerAdForm({ defaultValues, topCategories, categoryBreadcrumbs
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage /> {/* Displays validation errors */}
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -109,7 +125,7 @@ export function SellerAdForm({ defaultValues, topCategories, categoryBreadcrumbs
               <FormItem>
                 <FormLabel>{t("adForm.categoryLabel")}</FormLabel>
                 <div className="grid grid-cols-2 gap-2">
-                  <Select value={parentCategory?.category_key} onValueChange={handleParentCategoryChange}>
+                  <Select defaultValue={parentCategory?.category_key} onValueChange={handleParentCategoryChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
@@ -124,18 +140,21 @@ export function SellerAdForm({ defaultValues, topCategories, categoryBreadcrumbs
                     control={form.control}
                     name="category"
                     render={({ field }) => (
-                      <FormControl>
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {subCategories.map((category, i) => (
-                              <SelectItem key={i} value={category.category_key}>{category.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
+                      <>
+                        <FormControl>
+                          <Select value={field.value.toString()} onValueChange={field.onChange}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {subCategories.map((category, i) => (
+                                <SelectItem key={i} value={category.id.toString()}>{category.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </>
                     )}
                   />
                 </div>
@@ -159,7 +178,6 @@ export function SellerAdForm({ defaultValues, topCategories, categoryBreadcrumbs
               />
 
               <div className="grid grid-cols-2 gap-2">
-
                 <FormItem>
                   <FormLabel>{t("adForm.priceLabel")}</FormLabel>
                   <div className="relative">
@@ -174,15 +192,19 @@ export function SellerAdForm({ defaultValues, topCategories, categoryBreadcrumbs
                         },
                       }}
                       render={({ field }) => (
-                        <PriceInput
-                          {...field}
-                          setValue={form.setValue}
-                          placeholder={t("adForm.pricePlaceholder")}
-                          selectedCurrencyCode={selectedCurrencyCode}
-                        />
+                        <>
+                          <FormControl>
+                            <PriceInput
+                              {...field}
+                              setValue={handleSetCurrency}
+                              placeholder={t("adForm.pricePlaceholder")}
+                              selectedCurrencyCode={selectedCurrencyCode}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </>
                       )}
                     />
-
                   </div>
                 </FormItem>
 

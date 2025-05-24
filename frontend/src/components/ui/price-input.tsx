@@ -1,35 +1,22 @@
-import { DollarSign, Euro, PoundSterling } from 'lucide-react';
-import ShekelSymbol from "@/assets/icons/shekel-symbol";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './dropdown-menu';
 import { Input } from './input';
-import { Separator } from './separator';
-
-// Define a list of common currency options with their codes, names, and corresponding Lucide icons
-const currencyOptions = [
-  { code: 'USD', name: 'US Dollar', icon: DollarSign },
-  { code: 'EUR', name: 'Euro', icon: Euro },
-  { code: 'GBP', name: 'British Pound', icon: PoundSterling },
-  { code: 'ILS', name: 'Israeli Shekel', icon: ShekelSymbol },
-];
+import { currencyOptions, getCurrencySymbol } from '@/lib/currency';
 
 interface PriceInputProps {
   value?: number;
   placeholder?: string;
   selectedCurrencyCode: string;
   onChange: (value?: number) => void;
-  setValue: Function;
+  setValue: (key: string, value: string) => void;
 }
 
 function PriceInput({ selectedCurrencyCode, setValue, onChange, value, ...props }: PriceInputProps) {
-  const SelectedCurrencyIcon = currencyOptions.find(
-    (opt) => opt.code === selectedCurrencyCode
-  )?.icon || DollarSign;
-
+  const selectedCurrencySign = getCurrencySymbol(selectedCurrencyCode);
   return (
     <div className="relative">
       <DropdownMenu>
-        <DropdownMenuTrigger className="absolute start-3 top-3">
-          <SelectedCurrencyIcon className="h-4 w-4" /> {/* Display selected currency icon */}
+        <DropdownMenuTrigger className="absolute start-3 top-2 px-1">
+          <span className="h-4 w-4">{selectedCurrencySign}</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           {currencyOptions.map((option) => (
@@ -38,7 +25,7 @@ function PriceInput({ selectedCurrencyCode, setValue, onChange, value, ...props 
               onSelect={() => setValue("currency", option.code)}
               className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
             >
-              <option.icon className="h-4 w-4 me-2" />
+              <span className="h-4 w-4 me-2">{getCurrencySymbol(option.code)}</span>
               {option.name} ({option.code})
             </DropdownMenuItem>
           ))}

@@ -9,7 +9,7 @@ import { useCategories } from "@/components/categories-context";
 
 function CategoryList({ categories }: { categories: Category[] }) {
   const { t } = useI18nContext();
-  const listItems = categories.map<PathFilterItem>((category) => ({
+  const listItems = categories.map<PathFilterItem>((category: Category) => ({
     path: `/browse/${category.path}/`,
     name: category.name,
   }));
@@ -26,7 +26,6 @@ const items = 'bg-neutral-400 dark:bg-neutral-700';
 
 export default function Categories() {
   const { categories } = useCategories();
-
   return (
     <Suspense
       fallback={

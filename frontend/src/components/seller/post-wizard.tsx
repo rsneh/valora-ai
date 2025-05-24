@@ -30,7 +30,7 @@ export default function SellerPostWizard() {
   const [error, setError] = useState<Error | null>(null);
   const [productFormData, setProductFormData] = useState({} as ProductFormData);
   const [categoryBreadcrumbs, setCategoryBreadcrumbs] = useState<Category[]>([]);
-  const { t } = useI18nContext();
+  const { locale, t } = useI18nContext();
 
   const {
     currentUser,
@@ -47,7 +47,11 @@ export default function SellerPostWizard() {
         description: t("postWizard.unlockSellingDescription"),
         onSuccess: () => {
           setShowRegisterDialog(false);
-          toast({ title: t("postWizard.registrationSuccessTitle"), description: t("postWizard.registrationSuccessDescription"), variant: "primary", });
+          toast({
+            title: t("postWizard.registrationSuccessTitle"),
+            description: t("postWizard.registrationSuccessDescription"),
+            variant: "primary",
+          });
         }
       });
     }
@@ -71,10 +75,8 @@ export default function SellerPostWizard() {
   // const progressPercentage = ((currentStep + 1) / totalSteps) * 100;
 
   async function handleUploadComplete(imageData: ImageData): Promise<void> {
-    console.log("Image upload complete:", imageData);
-
-    if (imageData.suggested_category_key) {
-      const categoryResponse = await getCategoryBreadcrumbs(imageData.suggested_category_key);
+    if (imageData.suggested_category_id) {
+      const categoryResponse = await getCategoryBreadcrumbs(locale, imageData.suggested_category_id.toString());
       if (categoryResponse) {
         setCategoryBreadcrumbs(categoryResponse);
       }
@@ -86,6 +88,7 @@ export default function SellerPostWizard() {
       image_key: imageData.image_key,
       title: imageData.suggested_title,
       condition: imageData.suggested_condition,
+      attributes: imageData.suggested_attributes,
       description: imageData.suggested_description,
     });
     nextStep();
@@ -96,7 +99,7 @@ export default function SellerPostWizard() {
     setError(null);
 
     try {
-      const newProduct = await createProduct(formData, firebaseIdToken!);
+      await createProduct(formData, firebaseIdToken!);
       toast({
         title: t("postWizard.productCreatedTitle"),
         description: t("postWizard.productCreatedDescription"),

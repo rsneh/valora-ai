@@ -20,8 +20,14 @@ export const getProducts = async (token?: string, params?: Record<string, string
   return response.data;
 };
 
-export const getCategoryProducts = async (category: string): Promise<Product[]> => {
-  const response = await apiClient.get<Product[]>('/products/?category=' + category);
+export const getCategoryProducts = async (locale: string, category: string): Promise<Product[]> => {
+  const response = await apiClient.get<Product[]>('/products/', {
+    params: {
+      locale,
+      category,
+    },
+  });
+  console.log('Category Products:', response.data);
   return response.data;
 };
 
