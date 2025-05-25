@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx"
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { twMerge } from "tailwind-merge"
 import { Dictionary } from "./dictionaries";
+import { AppLocale } from "@/locales/config";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -35,12 +36,11 @@ export const translate = (dictionary: Dictionary | null, key: string, scope?: st
   return typeof result === 'string' ? result : key;
 };
 
-export const getLocalCurrency = (locale?: string) => {
+export const getLocalCurrency = (locale?: AppLocale) => {
   if (!locale) return "USD";
-  const country = locale?.split('-')[1];
-  if (!country) return "USD"; // Default to USD if no country code is found
-  switch (country) {
-    case "IL":
+
+  switch (locale) {
+    case "he":
       return "ILS";
     default:
       return "USD";

@@ -56,11 +56,13 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
   const [parentCategory, setParentCategory] = useState<Category>();
   const { t, locale } = useI18nContext();
 
+  const initCurrency = defaultValues?.currency || getLocalCurrency(locale);
+
   const form = useForm({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
       ...defaultValues,
-      currency: defaultValues?.currency || getLocalCurrency(locale),
+      currency: defaultValues?.currency || initCurrency,
       images: defaultValues?.images || [],
       attributes: defaultValues?.attributes || {},
     }
