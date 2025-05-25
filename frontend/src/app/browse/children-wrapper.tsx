@@ -36,13 +36,13 @@ export default function ChildrenWrapper({ children }: { children: React.ReactNod
   return (
     <Fragment key={searchParams.get('q')}>
       <TooltipProvider>
-        <div className="flex justify-between items-baseline mb-8">
+        <div className="flex flex-col justify-between mb-8 md:flex-row md:items-baseline">
           {category && (
-            <h2 className="text-2xl font-bold md:text-4xl">
+            <h2 className="text-2xl font-bold mb-2 md:mb-0 md:text-4xl">
               {category.name}
             </h2>
           )}
-          <div className="ms-auto">
+          <div className="md:ms-auto">
             <Locations />
           </div>
         </div>

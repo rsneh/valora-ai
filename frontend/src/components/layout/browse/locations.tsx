@@ -13,10 +13,10 @@ function LocationFilter() {
   const { t } = useI18nContext();
   const [showSearch, setShowSearch] = useState(false);
   return (
-    <div className="flex">
-      <div className={cn("transition-all duration-600 ease-out z-99 animate-width overflow-hidden mx-2", {
-        "w-72": showSearch,
-        "w-0": !showSearch,
+    <div className="flex flex-col-reverse md:flex-row">
+      <div className={cn("transition-all duration-600 ease-out z-40 animate-width overflow-hidden mt-2 md:mt-0 md:mx-2", {
+        "w-full md:w-72": showSearch,
+        "w-0 h-0": !showSearch,
       })}>
         <AutoComplete
           placeholder={t("locationFilter.inputPlaceholder")}
