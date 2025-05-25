@@ -155,3 +155,21 @@ body {
   content: "";
   @apply absolute -z-10 w-full h-full top-0 left-0 blur-3xl opacity-30 bg-gradient-to-r from-primary/50 to-purple-500/50 rounded-full;
 }
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}

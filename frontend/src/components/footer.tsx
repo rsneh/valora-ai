@@ -19,9 +19,7 @@ export function Footer() {
       <div className="container py-10">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
           <div className="col-span-2">
-            <Link href="/" className="flex items-center space-x-2 rtl:space-x-reverse">
-              <Logo />
-            </Link>
+            <Logo />
             <p className="mt-4 text-sm text-gray-600 max-w-xs">
               {t("footer.aboutDescription")}
             </p>
@@ -58,21 +56,11 @@ export function Footer() {
             <div>
               <h3 className="text-lg font-semibold mb-4">{t("footer.company")}</h3>
               <ul className="space-y-2">
-                <li>
+                {/* <li>
                   <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground">
                     {t("footer.about")}
                   </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground">
-                    {t("footer.contact")}
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">{t("footer.legal")}</h3>
-              <ul className="space-y-2">
+                </li> */}
                 <li>
                   <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
                     {t("footer.privacy")}
@@ -81,6 +69,11 @@ export function Footer() {
                 <li>
                   <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">
                     {t("footer.terms")}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground">
+                    {t("footer.contact")}
                   </Link>
                 </li>
               </ul>

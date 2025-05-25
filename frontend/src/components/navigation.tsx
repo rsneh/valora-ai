@@ -53,9 +53,7 @@ export function Navigation({ categories = [] }: NavigationProps) {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="px-4 flex h-16 items-center justify-between">
           <div className="hidden md:flex space-x-6 rtl:space-x-reverse">
-            <Link href="/" className="flex items-center space-x-2 rtl:space-x-reverse">
-              <Logo />
-            </Link>
+            <Logo />
             <nav className="flex items-center space-x-6 text-sm mx-auto font-medium rtl:space-x-reverse">
               {categories.filter((category) => category.image_path).map((category, index) => (
                 <Link
@@ -84,7 +82,7 @@ export function Navigation({ categories = [] }: NavigationProps) {
               </Button>
             </SheetTrigger>
             <SheetContent side="start" className="pe-0" aria-describedby={undefined}>
-              <SheetTitle className="flex items-center space-x-2 rtl:space-x-reverse">
+              <SheetTitle>
                 <Logo />
               </SheetTitle>
               <nav className="grid gap-6 px-2 py-6">
@@ -110,9 +108,7 @@ export function Navigation({ categories = [] }: NavigationProps) {
             </SheetContent>
           </Sheet>
           <div className="flex-1 grow flex justify-center md:hidden">
-            <Link href="/" className="flex items-center space-x-2 rtl:space-x-reverse">
-              <Logo />
-            </Link>
+            <Logo />
           </div>
           <div className="flex justify-end md:space-x-4 rtl:space-x-reverse md:flex md:items-center">
             {!currentUser && (

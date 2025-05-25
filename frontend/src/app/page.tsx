@@ -1,10 +1,10 @@
 import { Navigation } from "@/components/navigation"
-import { Hero } from "@/components/hero"
 import { IntelligentFeatures } from "@/components/intelligent-features"
 import { Footer } from "@/components/footer"
 import { CategoriesSection } from "@/components/categories-section"
 import { getCategories } from "@/services/api/categories"
 import { getLocaleFromRequest } from "@/lib/dictionaries"
+import HeroTwo from "@/components/hero-two"
 
 export default async function HomePage() {
   const locale = await getLocaleFromRequest();
@@ -14,7 +14,7 @@ export default async function HomePage() {
     <div className="min-h-screen flex flex-col">
       <Navigation categories={categories} />
       <main className="flex-1">
-        <Hero />
+        <HeroTwo />
         <IntelligentFeatures />
         <CategoriesSection categories={categories} />
       </main>
