@@ -124,11 +124,15 @@
     "allRightsReserved": "valora.ai. All rights reserved."
   },
   "locationFilter": {
-    "title": "Location",
+    "title": "Results fore",
     "description": "Find items near you.",
     "change": "Change",
     "inputPlaceholder": "Search your location...",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "tooltipText": "The location is used to show you the most relevant results.",
+    "typeToSearch": "Type to search for a location",
+    "loadingSuggestions": "Loading suggestions..",
+    "notFound": "No locations found for"
   },
   "productDescription": {
     "description": "Description",

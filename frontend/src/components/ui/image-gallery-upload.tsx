@@ -4,6 +4,7 @@ import React, { useRef, useState } from 'react';
 import { useI18nContext } from '../locale-context';
 import { useFieldArray } from 'react-hook-form';
 import { ImageItem, ProductFormData } from '@/types/product';
+import Image from 'next/image';
 
 interface SortableItemProps {
   image: ImageItem;
@@ -12,11 +13,14 @@ interface SortableItemProps {
 }
 const SortableItem = ({ index, image, onRemove }: SortableItemProps) => (
   <div className="relative">
-    <img
-      src={image.src}
-      alt=""
-      className="w-full h-20 object-cover rounded-md"
-    />
+    <div className="relative h-20">
+      <Image
+        src={image.src}
+        className="w-full h-20 object-cover rounded-md"
+        fill
+        alt=""
+      />
+    </div>
     <button
       className="absolute inset-1 bg-gray-200 hover:bg-gray-300 rounded-full w-5 h-5 flex items-center justify-center text-gray-700 text-xs"
       onClick={() => onRemove(index)}

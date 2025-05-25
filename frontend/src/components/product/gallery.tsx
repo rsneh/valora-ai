@@ -19,8 +19,8 @@ export const Gallery = ({ product }: GalleryProps) => {
 
   return (
     <div className="grid gap-4 lg:col-span-4 lg:row-end-1">
-      <div className="relative aspect-square w-full overflow-hidden rounded-lg">
-        <div className="duration-300 ease-in-out">
+      <div className="rounded-lg">
+        <div className="relative aspect-square w-full overflow-hidden duration-300 ease-in-out">
           <Image
             className="rounded-lg object-cover transition-transform duration-500 ease-in-out"
             src={selectedImage || product.image_url || ''}
@@ -42,6 +42,7 @@ export const Gallery = ({ product }: GalleryProps) => {
               alt={product.title || "Product thumbnail"}
               fill
               sizes="(max-width: 768px) 20vw, 10vw"
+              priority
             />
           </div>
         )}

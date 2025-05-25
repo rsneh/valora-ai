@@ -21,7 +21,7 @@ export default function ProfileForm() {
       setAds(data)
     }
     fetchAds()
-  }, [])
+  }, [firebaseIdToken, currentUser?.uid])
 
   return (
     <div>

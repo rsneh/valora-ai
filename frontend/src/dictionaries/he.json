@@ -132,11 +132,15 @@
     "allRightsReserved": "valora.ai. כל הזכויות שמורות."
   },
   "locationFilter": {
-    "title": "מיקום",
+    "title": "תוצאות לגבי",
     "description": "בחר את המיקום שלך כדי למצוא את המוצרים הקרובים ביותר אליך.",
     "change": "שינוי",
     "inputPlaceholder": "הזן את המיקום שלך",
-    "unknown": "לא ידוע"
+    "unknown": "לא ידוע",
+    "tooltipText": "המיקום משמש כדי להציג בפניך את התוצאות הרלוונטיות ביותר.",
+    "typeToSearch": "חיפוש לפי מיקום",
+    "loadingSuggestions": "מחפש...",
+    "notFound": "לא נמצאו תוצאות עבור"
   },
   "productDescription": {
     "description": "תיאור",

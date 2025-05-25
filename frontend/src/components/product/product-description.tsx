@@ -78,19 +78,19 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
       <div className="mt-10 pt-10 border-t border-gray-200">
         {attributeEntries && (
           <div>
-            <h2 className="text-sm font-medium mb-2">
+            <h2 className="font-medium mb-2">
               {t("productDescription.attributes")}
             </h2>
             <dl className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
               {product.condition && (
                 <div>
-                  <dt className="font-medium text-gray-900">{t("productDescription.conditionLabel")}</dt>
+                  <dt className="font-medium text-sm text-gray-900">{t("productDescription.conditionLabel")}</dt>
                   <dd className="mt-2 text-sm text-gray-500">{t(`condition.${product.condition.toLowerCase()}`)}</dd>
                 </div>
               )}
               {attributeEntries.map(([key, value], index) => (
                 <div key={index} className="">
-                  <dt className="font-medium text-gray-900">{t(`productAttributes.${key.toLowerCase()}`)}</dt>
+                  <dt className="font-medium text-sm text-gray-900">{t(`productAttributes.${key.toLowerCase()}`)}</dt>
                   <dd className="mt-2 text-sm text-gray-500">{value}</dd>
                 </div>
               ))}

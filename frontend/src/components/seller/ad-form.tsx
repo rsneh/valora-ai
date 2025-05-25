@@ -127,7 +127,7 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
       }
     };
     fetchBreadcrumbs();
-  }, [defaultValues?.category_id, locale]);
+  }, [fetchSubCategories, defaultValues?.category_id, locale]);
 
   return (
     <Form {...form}>

@@ -3,69 +3,47 @@
 import { Suspense, useState } from "react"
 import { cn } from "@/lib/utils"
 import { useLocation } from "@/components/location-context"
-import { PenLineIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { LocationEditIcon } from "lucide-react";
 import AutoComplete from "@/components/ui/autocomplete-location";
 import { useI18nContext } from "@/components/locale-context";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 function LocationFilter() {
   const { location, setLocation } = useLocation();
   const { t } = useI18nContext();
   const [showSearch, setShowSearch] = useState(false);
   return (
-    <div className="relative">
-      <h3 className="hidden text-xs text-neutral-500 md:block dark:text-neutral-400">
-        {t("locationFilter.title")}
-      </h3>
-      <div className="flex flex-col justify-between items-center text-sm text-black dark:text-white">
-        <div className={cn(
-          "flex justify-between items-center w-full",
-          "transition-all duration-300 ease-out",
-          {
-            "mb-8": showSearch
-          })}>
-          {location?.location_text ? (
-            <p className="w-full">
-              {location.location_text}
-            </p>
-          ) : (
-            <div className="italic">
-              {t("locationFilter.unknown")}
-            </div>
-          )}
-          <div className="text-black dark:text-white">
-            <Button
-              className="font-light text-xs p-0 gap-1"
-              size="sm"
-              variant="clean"
-              onClick={() => setShowSearch(!showSearch)}
-            >
-              {t("locationFilter.change")}
-              <PenLineIcon />
-            </Button>
-          </div>
-        </div>
-        <div
-          className={cn(
-            "absolute start-0 top-10 md:top-14 transition-all duration-300 ease-out z-99",
-            showSearch
-              ? "opacity-100 translate-y-0 w-full md:w-96"
-              : "opacity-0 -translate-y-2 pointer-events-none w-48"
-          )}
-        >
-          <AutoComplete
-            placeholder={t("locationFilter.inputPlaceholder")}
-            onLocationSelect={(location) => {
-              setLocation({
-                location_text: location?.name,
-                latitude: location?.latitude,
-                longitude: location?.longitude,
-              });
-              setShowSearch(false);
-            }}
-          />
-        </div>
+    <div className="flex">
+      <div className={cn("transition-all duration-600 ease-out z-99 animate-width overflow-hidden mx-2", {
+        "w-72": showSearch,
+        "w-0": !showSearch,
+      })}>
+        <AutoComplete
+          placeholder={t("locationFilter.inputPlaceholder")}
+          onLocationSelect={(location) => {
+            setLocation({
+              location_text: location?.name,
+              latitude: location?.latitude,
+              longitude: location?.longitude,
+            });
+            setShowSearch(false);
+          }}
+        />
       </div>
+      <Tooltip>
+        <TooltipTrigger>
+          <div className="text-xs flex items-center gap-1" onClick={() => setShowSearch(!showSearch)}>
+            <LocationEditIcon className="text-gray-500" size={16} strokeWidth={2} />
+            <span className="text-neutral-500">{t("locationFilter.title")}</span>
+            <span>
+              {location?.location_text ?? t("locationFilter.unknown")}
+            </span>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="text-xs text-gray-500">{t("locationFilter.tooltipText")}</p>
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 }

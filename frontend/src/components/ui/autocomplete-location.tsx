@@ -3,10 +3,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import * as Popover from '@radix-ui/react-popover';
 import * as ScrollArea from '@radix-ui/react-scroll-area';
-import { CheckIcon, ChevronDownIcon, SearchIcon, Loader2Icon } from 'lucide-react'; // Added Loader2Icon
-import { queryLocation } from '@/services/api/location'; // Assuming your configured axios instance is here
+import { CheckIcon, ChevronDownIcon, SearchIcon, Loader2Icon } from 'lucide-react';
+import { queryLocation } from '@/services/api/location';
 import { LocationSuggestion } from '@/types/location';
 import { Input } from './input';
+import { useI18nContext } from '../locale-context';
 
 interface AutoCompleteProps {
   label?: string;
@@ -29,9 +30,10 @@ const AutoCompleteLocation: React.FC<AutoCompleteProps> = ({
   const [filteredLocations, setFilteredLocations] = useState<LocationSuggestion[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<LocationSuggestion | null>(initialValue || null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state for API calls
-  const [error, setError] = useState<string | null>(null); // Error state for API calls
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { locale, t } = useI18nContext();
 
   const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) => {
     let timeout: ReturnType<typeof setTimeout> | null = null;
@@ -121,7 +123,7 @@ const AutoCompleteLocation: React.FC<AutoCompleteProps> = ({
     setSelectedLocation(location);
     onLocationSelect(location);
     setIsOpen(false);
-    setFilteredLocations([]); // Clear suggestions after selection
+    setFilteredLocations([]);
   };
 
   return (
@@ -177,9 +179,9 @@ const AutoCompleteLocation: React.FC<AutoCompleteProps> = ({
             }}
           >
             <ScrollArea.Root className="max-h-60 overflow-hidden">
-              <ScrollArea.Viewport id="location-suggestions-list" className="p-1" role="listbox">
+              <ScrollArea.Viewport id="location-suggestions-list" className="p-1" role="listbox" dir={locale === "he" ? "rtl" : "ltr"}>
                 {isLoading && filteredLocations.length === 0 && ( // Show loading only if no results yet
-                  <div className="px-3 py-2 text-sm text-gray-500 text-center">Loading suggestions...</div>
+                  <div className="px-3 py-2 text-sm text-gray-500 text-center">{t("locationFilter.loadingSuggestions")}</div>
                 )}
                 {error && (
                   <div className="px-3 py-2 text-sm text-red-600">{error}</div>
@@ -204,10 +206,10 @@ const AutoCompleteLocation: React.FC<AutoCompleteProps> = ({
                   ))
                 )}
                 {!isLoading && !error && filteredLocations.length === 0 && inputValue && (
-                  <div className="px-3 py-2 text-sm text-gray-500">No locations found for {`"${inputValue}"`}.</div>
+                  <div className="px-3 py-2 text-sm text-gray-500">{t("locationFilter.notFound")} {`"${inputValue}"`}.</div>
                 )}
                 {!isLoading && !error && filteredLocations.length === 0 && !inputValue && (
-                  <div className="px-3 py-2 text-sm text-gray-500">Type to search for a location.</div>
+                  <div className="px-3 py-2 text-sm text-gray-500">{t("locationFilter.typeToSearch")}</div>
                 )}
               </ScrollArea.Viewport>
               <ScrollArea.Scrollbar orientation="vertical" className="flex select-none touch-none p-0.5 bg-gray-100 transition-colors duration-200 ease-out hover:bg-gray-200 data-[orientation=vertical]:w-2.5">

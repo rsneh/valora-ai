@@ -3,9 +3,7 @@
 import { ProductList } from '@/components/product/product-list';
 import { getDictionary, getLocaleFromRequest } from '@/lib/dictionaries';
 import { translate } from '@/lib/utils';
-import { getCategoriesBySlug } from '@/services/api/categories';
 import { getCategoryProducts } from '@/services/api/products';
-// import { Metadata } from 'next';
 
 // export async function generateMetadata(
 //   props: { params: { category: string } },
@@ -28,23 +26,17 @@ export default async function CategoryPage(props: {
 }) {
   const locale = await getLocaleFromRequest();
   const dictionary = await getDictionary(locale);
+  const params = await props.params;
 
   const t = (key: string, scope?: string): string => translate(dictionary, key, scope);
 
-  const params = await props.params;
   // const searchParams = await props.searchParams;
   // const { sort } = searchParams as { [key: string]: string };
   // const { sortKey, reverse } = sorting.find((item) => item.slug === sort) || defaultSort;
   const products = await getCategoryProducts(locale, params.category);
-  const category = await getCategoriesBySlug(locale, params.category);
 
   return (
-    <div>
-      {category && (
-        <h2 className="text-2xl font-bold mb-8 md:text-4xl">
-          {category.name}
-        </h2>
-      )}
+    <>
       {products.length === 0 ? (
         <p className="py-3 md:py-6 text-lg text-center">{t("browse.noProductsFound")}</p>
       ) : (
@@ -52,6 +44,6 @@ export default async function CategoryPage(props: {
           <ProductList products={products} />
         </div>
       )}
-    </div>
+    </>
   );
 }

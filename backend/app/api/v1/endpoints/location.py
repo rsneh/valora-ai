@@ -1,8 +1,9 @@
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, Query, Request, status
+from fastapi import APIRouter, HTTPException, Query, Request, status, Depends
 from app.services import location_service
 from app.schemas.location import LocationResponse, LocationSuggestion
 from app.core.utils import get_client_ip
+from app.lib.locale import AppLocale, get_locale_from_header
 
 
 router = APIRouter()
@@ -83,7 +84,8 @@ async def get_location(
 
 @router.get("/suggest", response_model=List[LocationSuggestion])
 async def suggest_locations(
-    q: str = Query(..., min_length=1, description="Search query for location")
+    q: str = Query(..., min_length=1, description="Search query for location"),
+    locale: AppLocale = Depends(get_locale_from_header),
 ):
     """
     Provides location suggestions based on the user's query.
@@ -92,8 +94,7 @@ async def suggest_locations(
     if not q:
         return []
     try:
-        suggestions = await location_service.get_location_suggestions(q)
-        print(f"Suggestions for '{q}': {suggestions}")
+        suggestions = await location_service.get_location_suggestions(q, locale)
         return suggestions
     except Exception as e:
         # Log the error

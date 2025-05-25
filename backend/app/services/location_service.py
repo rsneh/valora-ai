@@ -96,7 +96,7 @@ async def geocode_ip_address(
     return None, None, None
 
 
-async def get_location_suggestions(query: str) -> list[dict]:
+async def get_location_suggestions(query: str, locale: str = "en") -> list[dict]:
     """
     Provides location suggestions based on the user's query.
     This would typically call a geocoding service or query your own location database.
@@ -107,7 +107,7 @@ async def get_location_suggestions(query: str) -> list[dict]:
             query,
             exactly_one=False,
             addressdetails=True,
-            language="en",  # Prefer English results
+            language=locale,
             limit=5,
             timeout=10,
         )
