@@ -106,7 +106,8 @@
     "signInLink": "Sign In.",
     "signUpLink": "Sign Up.",
     "registerButton": "Register",
-    "backgroundImageAlt": "Background Image with items"
+    "backgroundImageAlt": "Background Image with items",
+    "emailRequired": "Email is required."
   },
   "notFound": {
     "title": "Page Not Found",

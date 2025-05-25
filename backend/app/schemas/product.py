@@ -63,7 +63,21 @@ class ProductInDBBase(BaseModel):
 
 
 # Properties to return to client
-class Product(ProductInDBBase):
+class Product(BaseModel):
+    id: int
+    title: str
+    category_id: int
+    description: Optional[str] = None
+    price: float
+    currency: str
+    condition: Optional[ProductConditionEnum] = None
+    status: ProductStatusEnum = ProductStatusEnum.DRAFT
+    image_url: Optional[str] = None
+    seller_id: str
+    time_created: datetime
+    time_updated: Optional[datetime] = None
+    attributes: Optional[Dict[str, Any]] = None
+
     # Relationships
     category: Optional[Category] = None
     images: Optional[list[ProductImage]] = None

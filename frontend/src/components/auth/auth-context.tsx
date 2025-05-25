@@ -9,6 +9,7 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
   type User as FirebaseUser,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { auth, googleProvider, twitterProvider, facebookProvider } from '@/services/firebase';
 
@@ -29,6 +30,7 @@ interface AuthContextType {
   setShowRegisterDialog: (value: boolean) => void;
   setRegisterDialogDetails: (details: RegisterDialogDetails) => void;
   setShowLoginDialog: (value: boolean) => void;
+  resetPassword: (email: string) => void;
   signInWithGoogle: () => Promise<UserCredential>;
   signInWithFacebook: () => Promise<UserCredential>;
   signInWithTwitter: () => Promise<UserCredential>;
@@ -94,6 +96,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signInWithGoogle = async (): Promise<UserCredential> => signInWithPopup(auth, googleProvider);
   const signInWithFacebook = async (): Promise<UserCredential> => signInWithPopup(auth, facebookProvider);
   const signInWithTwitter = async (): Promise<UserCredential> => signInWithPopup(auth, twitterProvider);
+  const resetPassword = async (email: string): Promise<void> => sendPasswordResetEmail(auth, email);
   const signInEmailAndPassword = async (
     email: string,
     password: string
@@ -112,6 +115,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     signInWithFacebook,
     signInWithTwitter,
     signInEmailAndPassword,
+    resetPassword,
     setRegisterDialogDetails,
     setShowRegisterDialog,
     setShowLoginDialog

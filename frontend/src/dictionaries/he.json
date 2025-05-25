@@ -81,16 +81,6 @@
       "description": "פריטים שונים שאינם מתאימים לקטגוריות אחרות."
     }
   },
-  "loginDialog": {
-    "signInToAccount": "נדרשת התחברות לחשבון שלך להמשך שימוש.",
-    "emailPlaceholder": "כתובת אימייל",
-    "passwordPlaceholder": "סיסמה",
-    "submitButton": "שליחה",
-    "forgotPassword": "שכחת סיסמה?",
-    "noAccount": "אין לך חשבון?",
-    "signUpLink": "הרשמה.",
-    "backgroundImageAlt": "תמונת רקע עם פריטים"
-  },
   "authDialog": {
     "registerDialog": {
       "title": "יצירת חשבון חדש",
@@ -100,6 +90,7 @@
       "title": "כמה טוב שבאתם!",
       "description": "התחברות לחשבון שלך לרכוש או לפרסם את הפריט הבא שלך."
     },
+    "emailRequired": "חובה להזין כתובת אימייל.",
     "passwordMinLength": "סיסמה צריכה להכיל לפחות 6 תווים.",
     "emailAlreadyRegistered": "כתובת אימייל זו כבר רשומה.",
     "invalidCredentials": "אימייל או סיסמה שגויים.",
