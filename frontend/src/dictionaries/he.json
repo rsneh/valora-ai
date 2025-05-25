@@ -98,6 +98,7 @@
     "emailPlaceholder": "כתובת אימייל",
     "passwordPlaceholder": "סיסמה",
     "submitButton": "שליחה",
+    "submitForgetPassword": "איפוס סיסמה",
     "forgotPassword": "שכחת סיסמה?",
     "noAccount": "אין לך חשבון?",
     "signUpLink": "הרשמה כאן.",
@@ -105,7 +106,8 @@
     "confirmPasswordPlaceholder": "אימות סיסמה",
     "alreadyHaveAccount": "כבר יש לך חשבון?",
     "signInLink": "התחברות כאן.",
-    "registerButton": "הרשמה"
+    "registerButton": "הרשמה",
+    "resetPasswordSuccess": "איפוס הסיסמה בוצע בהצלחה. בדוק את האימייל שלך להוראות נוספות."
   },
   "notFound": {
     "title": "הדף לא נמצא",

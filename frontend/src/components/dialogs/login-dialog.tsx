@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/auth-context";
 import Link from "next/link";
 import { useI18nContext } from "../locale-context";
+import { useToast } from "@/hooks/use-toast";
 
 interface LoginDialogProps {
   open: boolean;
@@ -22,15 +23,27 @@ interface LoginDialogProps {
 export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog }: LoginDialogProps) => {
   const { t } = useI18nContext();
   const router = useRouter();
-  const { signInWithGoogle, signInWithFacebook, signInWithTwitter, signInEmailAndPassword } = useAuth();
+  const { toast } = useToast();
+  const {
+    signInWithGoogle,
+    signInWithFacebook,
+    signInWithTwitter,
+    signInEmailAndPassword,
+    resetPassword,
+  } = useAuth();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [forgetPassword, setForgetPassword] = useState<boolean>(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    if (forgetPassword) {
+      handleResetPassword();
+      return;
+    }
 
     if (password.length < 6) {
       setError(t("authDialog.passwordMinLength"));
@@ -75,6 +88,28 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
       setLoading(false);
     }
   };
+
+  const handleResetPassword = async () => {
+    if (!email) {
+      setError(t("authDialog.emailRequired"));
+      return;
+    }
+    setLoading(true);
+    try {
+      resetPassword(email);
+      toast({
+        description: t("authDialog.resetPasswordSuccess"),
+        variant: "success",
+      });
+      setEmail('');
+      setForgetPassword(false);
+    } catch (err: Error | any) {
+      // Handle errors (e.g., user not found, invalid email)
+      setError(err.message || t("authDialog.resetPasswordFailed"));
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -128,24 +163,28 @@ export const LoginDialog = ({ open, onOpenChange, openSignUpDialog, closeDialog 
                         required
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Input
-                        type="password"
-                        name="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder={t("authDialog.passwordPlaceholder")}
-                        required
-                      />
-                    </div>
+                    {!forgetPassword && (
+                      <div className="space-y-2">
+                        <Input
+                          type="password"
+                          name="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder={t("authDialog.passwordPlaceholder")}
+                          required
+                        />
+                      </div>
+                    )}
                     {error && <p className="text-red-500 text-sm">{error}</p>}
                     <div className="flex flex-col items-center">
                       <Button type="submit" className="w-full" disabled={loading}>
-                        {t("authDialog.submitButton")}
+                        {t(forgetPassword ? "authDialog.submitForgetPassword" : "authDialog.submitButton")}
                       </Button>
-                      <Button variant="link" className="text-xs">
-                        {t("authDialog.forgotPassword")}
-                      </Button>
+                      {!forgetPassword && (
+                        <Button type="button" variant="link" className="text-xs" disabled={loading} onClick={() => setForgetPassword(true)}>
+                          {t("authDialog.forgotPassword")}
+                        </Button>
+                      )}
                     </div>
                   </form>
                   <div className="text-center text-sm">

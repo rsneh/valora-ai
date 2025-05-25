@@ -100,6 +100,7 @@
     "passwordPlaceholder": "Password",
     "confirmPasswordPlaceholder": "Confirm Password",
     "submitButton": "Submit",
+    "submitForgetPassword": "Reset Password",
     "forgotPassword": "Forgot Password?",
     "noAccount": "Don't have an account?",
     "alreadyHaveAccount": "Already have an account?",
@@ -107,7 +108,8 @@
     "signUpLink": "Sign Up.",
     "registerButton": "Register",
     "backgroundImageAlt": "Background Image with items",
-    "emailRequired": "Email is required."
+    "emailRequired": "Email is required.",
+    "resetPasswordSuccess": "Password reset link sent to your email."
   },
   "notFound": {
     "title": "Page Not Found",
