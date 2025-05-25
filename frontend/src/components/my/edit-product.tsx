@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useI18nContext } from "../locale-context";
 import { useCategories } from "../categories-context";
+import { uploadProductImages } from "@/services/api/images";
 
 interface MyEditProductPageProps {
   product: Product;
@@ -41,7 +42,10 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
     setLoading(true);
 
     try {
-      await updateProduct(productId.toString(), formData, firebaseIdToken!);
+      const updatedData = await updateProduct(productId.toString(), formData, firebaseIdToken!);
+      if (formData.images && formData.images.length > 0) {
+        await uploadProductImages(updatedData.id, formData.images || [], firebaseIdToken!);
+      }
       toast({
         title: t("my.ads.adUpdated"),
         description: t("my.ads.adUpdatedDescription"),
