@@ -18,7 +18,6 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
   const router = useRouter();
   const productId = product.id;
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
   const { categories } = useCategories();
   const { firebaseIdToken } = useAuth();
   const { toast } = useToast();
@@ -40,7 +39,6 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
 
   async function handleUpdateProduct(formData: ProductFormData): Promise<void> {
     setLoading(true);
-    setError(null);
 
     try {
       await updateProduct(productId.toString(), formData, firebaseIdToken!);
@@ -51,19 +49,24 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
       });
       router.push("/my/ads/");
     } catch (err: any) {
-      setError(err);
+      console.log("Error updating product:", err);
+      toast({
+        title: t("my.ads.errorUpdatingAd"),
+        description: err.message || t("my.ads.errorUpdatingAdDescription"),
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   }
+  console.log({ defaultValues });
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center">
       <div className="animate-fadeInSlideUp w-full flex-1 lg:max-w-6xl xl:max-w-7xl">
         <h1 className="text-2xl font-bold mb-4">{t("my.ads.editTitle")}</h1>
-        {error && <p className="text-red-500 text-sm">{error.message}</p>}
         <SellerAdForm
-          defaultValues={{ ...defaultValues }}
+          defaultValues={defaultValues}
           topCategories={categories}
           onSubmit={handleUpdateProduct}
           loading={loading}

@@ -4,6 +4,7 @@ import { Product } from "@/types/product";
 import { HeartIcon } from "lucide-react";
 import { StartChatButton } from "./start-chat-button";
 import { useI18nContext } from "../locale-context";
+import { getCurrencySymbol } from "@/lib/currency";
 
 interface ProductDescriptionProps {
   product: Product;
@@ -11,6 +12,7 @@ interface ProductDescriptionProps {
 
 export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product }) => {
   const { t } = useI18nContext();
+  const currencySign = getCurrencySymbol(product.currency!);
   return (
     <div className="flex flex-col justify-between shrink-1 lg:col-span-3">
       <div>
@@ -18,7 +20,7 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
         {/* <p className="text-md text-gray-500 mb-4">Special Black Edition</p> // Example Subtitle, not in Valora's model */}
 
         <div className="flex items-center justify-between mb-4">
-          <p className="text-3xl font-bold text-blue-600">${product.price.toFixed(2)}</p>
+          <p className="text-3xl font-bold text-blue-600">{`${currencySign}${product.price}`}</p>
           {/* Wishlist Icon - Functionality to be implemented */}
           <button className="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-100">
             <HeartIcon className="h-7 w-7" />
