@@ -1,16 +1,14 @@
 "use client"
 
 import { useAuth } from "@/components/auth/auth-context"
-import Image from "next/image"
 import { getProducts } from "@/services/api/products"
 import { Product } from "@/types/product"
 import { Suspense, useEffect, useState } from "react"
-import { Card, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { SquarePenIcon } from "lucide-react"
 import Link from "next/link"
 import { useI18nContext } from "@/components/locale-context"
-import { getCurrencySymbol } from "@/lib/currency"
+import { ProductCard } from "@/components/product/product-card"
 
 export default function ProfileForm() {
   const { currentUser, firebaseIdToken } = useAuth()
@@ -26,56 +24,35 @@ export default function ProfileForm() {
   }, [])
 
   return (
-    <div className="p-8 min-h-screen container mx-auto">
+    <div>
       <h2 className="text-2xl font-bold mb-8">{t("my.ads.title")}</h2>
-      <div className="w-full space-y-8 p-6 bg-white/50 backdrop-blur-xs shadow-xs">
-        <Suspense fallback={<div className="flex justify-center items-center h-full">{t("my.ads.loading")}</div>}>
-          <div className="flex flex-col items-center justify-center">
-            {ads.length === 0 ? (
-              <p className="text-sm text-gray-500">{t("my.ads.noAds")}</p>
-            ) : (
-              <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-                {ads.map((ad) => {
-                  const currencySign = getCurrencySymbol(ad.currency!);
-                  return (
-                    <Card key={ad.id}>
-                      <div className="flex justify-end p-2">
-                        <Button size="icon" variant="ghost" title="Edit Ad" asChild>
-                          <Link href={`/my/ads/${ad.id}/edit`}>
-                            <SquarePenIcon className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </div>
-                      <div className="p-5">
-                        {ad.image_url && (
-                          <div className="relative inline-block h-48 w-full">
-                            <Image
-                              src={ad.image_url}
-                              className="relative h-full w-full object-contain"
-                              loading="lazy"
-                              alt={ad.title}
-                              fill
-                              sizes="(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
-                            />
-                          </div>
-                        )}
-                        <CardTitle className="text-lg font-semibold mb-2">
-                          {ad.title}
-                        </CardTitle>
-                        <div className="flex justify-between items-center mt-3">
-                          <p className="text-xl font-bold text-blue-600">
-                            {`${currencySign}${ad.price}`}
-                          </p>
-                        </div>
-                      </div>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
+      <Suspense fallback={<div className="flex justify-center items-center h-full">{t("my.ads.loading")}</div>}>
+        {ads.length === 0 ? (
+          <p className="text-sm text-gray-500">{t("my.ads.noAds")}</p>
+        ) : (
+          <div className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+              {ads.map((ad) => {
+                return (
+                  <div key={ad.id} className="relative group">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="absolute top-2 end-2 p-2 bg-white bg-opacity-70 rounded-full w-8 h-8 shadow-md hover:bg-opacity-100 transition-all z-10"
+                      asChild
+                    >
+                      <Link href={`/my/ads/${ad.id}/edit`}>
+                        <SquarePenIcon className="text-gray-500" />
+                      </Link>
+                    </Button>
+                    <ProductCard product={ad} showFavorite={false} />
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </Suspense>
-      </div>
+        )}
+      </Suspense>
     </div>
   )
 }

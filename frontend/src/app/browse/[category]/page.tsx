@@ -39,7 +39,7 @@ export default async function CategoryPage(props: {
   const category = await getCategoriesBySlug(locale, params.category);
 
   return (
-    <div className="container mx-auto px-4">
+    <div>
       {category && (
         <h2 className="text-2xl font-bold mb-8 md:text-4xl">
           {category.name}

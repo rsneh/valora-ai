@@ -16,9 +16,10 @@ interface ProductCardProps {
   product: Product;
   sizes?: string;
   className?: string;
+  showFavorite?: boolean;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, className, sizes }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, className, sizes, showFavorite = true }) => {
   const { locale, t } = useI18nContext();
   const { toast } = useToast();
   const { toggleFavorite, isFavorite } = useFavorites();
@@ -41,6 +42,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className, si
       variant: "default",
     });
   };
+
   return (
     <div className={cn("relative animate-fadeIn", className)}>
       <Link href={`/product/${product.id}`}>
@@ -55,13 +57,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className, si
               fill
               sizes={sizes || "(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"}
             />
-            <button
-              onClick={handleToggleFavorite}
-              className="absolute top-2 right-2 p-2 bg-white bg-opacity-70 rounded-full shadow-md hover:bg-opacity-100 transition-all z-10"
-              aria-label={isFavorited ? t("productCard.removeFromFavorites") : t("productCard.addToFavorites")}
-            >
-              <Heart className={`h-5 w-5 ${isFavorited ? "fill-current text-red-500" : "text-gray-600"}`} />
-            </button>
+            {showFavorite && (
+              <button
+                onClick={handleToggleFavorite}
+                className="absolute top-2 right-2 p-2 bg-white bg-opacity-70 rounded-full shadow-md hover:bg-opacity-100 transition-all z-10"
+                aria-label={isFavorited ? t("productCard.removeFromFavorites") : t("productCard.addToFavorites")}
+              >
+                <Heart className={`h-5 w-5 ${isFavorited ? "fill-current text-red-500" : "text-gray-600"}`} />
+              </button>
+            )}
           </div>
         )}
       </Link>

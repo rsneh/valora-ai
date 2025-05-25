@@ -25,7 +25,7 @@ export function Navigation({ categories = [] }: NavigationProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
-  const { t } = useI18nContext();
+  const { locale, t } = useI18nContext();
   const {
     logout,
     currentUser,
@@ -156,7 +156,7 @@ export function Navigation({ categories = [] }: NavigationProps) {
             {currentUser && (
               <>
                 <Separator orientation="vertical" className="hidden md:block h-8" />
-                <DropdownMenu>
+                <DropdownMenu dir={locale === "he" ? "rtl" : "ltr"}>
                   <DropdownMenuTrigger asChild className="flex items-center">
                     <div className="flex items-center justify-center text-sm font-medium text-foreground hover:ring-foreground/80">
                       <span className="hidden lg:inline-block">{currentUser.displayName}</span>

@@ -131,7 +131,7 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="p-4">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)}>
         {Object.keys(errors).length > 0 && (
           <div className="mb-4">
             <Message
@@ -153,7 +153,7 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <div className="p-4 space-y-6">
+            <div className="px-4 space-y-6">
               <FormField
                 control={form.control}
                 name="title"

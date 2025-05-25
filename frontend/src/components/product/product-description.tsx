@@ -46,7 +46,7 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
           </div>
         )}
 
-        <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <div className="mt-10 grid grid-cols-2 gap-4 sm:gap-8">
           <StartChatButton
             productId={product.id.toString()}
             buttonTxt={t("productDescription.startChat")}

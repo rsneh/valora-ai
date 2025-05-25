@@ -10,12 +10,8 @@ export default async function AdEditPage(props: { params: Promise<{ productId: s
   if (!product) return notFound();
 
   return (
-    <div className="p-8 min-h-screen">
-      <div className="container mx-auto px-4">
-        <Suspense fallback={<div className="animate-pulse">Loading...</div>}>
-          <MyEditProductPage product={product} />
-        </Suspense>
-      </div>
-    </div>
+    <Suspense fallback={<div className="animate-pulse">Loading...</div>}>
+      <MyEditProductPage product={product} />
+    </Suspense>
   );
 }

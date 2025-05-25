@@ -11,31 +11,16 @@ interface GalleryProps {
 
 export const Gallery = ({ product }: GalleryProps) => {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(product.image_url);
-  const [isChanging, setIsChanging] = useState(false);
 
   // Ensure the main image is always set, even if product.image_url changes
   useEffect(() => {
     setSelectedImage(product.image_url);
   }, [product.image_url]);
 
-  // Function to handle image change with animation
-  const handleImageChange = (imageUrl: string | undefined) => {
-    if (!imageUrl || selectedImage === imageUrl) return;
-
-    setIsChanging(true);
-    setTimeout(() => {
-      setSelectedImage(imageUrl);
-      setIsChanging(false);
-    }, 300); // Match this duration with CSS transition time
-  };
-
   return (
     <div className="grid gap-4 lg:col-span-4 lg:row-end-1">
       <div className="relative aspect-square w-full overflow-hidden rounded-lg">
-        <div className={cn(
-          "absolute inset-0 transition-opacity duration-300 ease-in-out",
-          isChanging ? "opacity-0" : "opacity-100"
-        )}>
+        <div className="duration-300 ease-in-out">
           <Image
             className="rounded-lg object-cover transition-transform duration-500 ease-in-out"
             src={selectedImage || product.image_url || ''}
@@ -49,14 +34,8 @@ export const Gallery = ({ product }: GalleryProps) => {
       <div className="grid grid-cols-5 gap-4">
         {product.image_url && (
           <div
-            onClick={() => handleImageChange(product.image_url)}
-            className={cn(
-              "cursor-pointer transition-all duration-200 relative aspect-square overflow-hidden rounded-lg",
-              selectedImage === product.image_url ?
-                "ring-2 ring-offset-2 ring-blue-500 opacity-100 scale-100" :
-                "opacity-70 hover:opacity-100"
-            )}
-          >
+            onClick={() => setSelectedImage(product.image_url)}
+            className="cursor-pointer transition-all duration-200 relative aspect-square overflow-hidden rounded-lg">
             <Image
               className="rounded-lg object-cover"
               src={product.image_url}
@@ -71,7 +50,7 @@ export const Gallery = ({ product }: GalleryProps) => {
         {product.images?.map((image) => (
           <div
             key={image.id}
-            onClick={() => handleImageChange(image.image_url)}
+            onClick={() => setSelectedImage(image.image_url)}
             className={cn(
               "cursor-pointer transition-all duration-200 relative aspect-square overflow-hidden rounded-lg",
               selectedImage === image.image_url ?
