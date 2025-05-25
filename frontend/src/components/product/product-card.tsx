@@ -50,12 +50,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className, si
           <div className="relative inline-block h-48 w-full">
             <Image
               src={product.image_url}
-              // className="relative h-full w-full object-contain"
               className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-80"
               loading="lazy"
               alt={product.title}
-              fill
               sizes={sizes || "(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"}
+              fill
             />
             {showFavorite && (
               <button
