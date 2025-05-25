@@ -21,14 +21,12 @@ export default function SellerPostWizard() {
   const router = useRouter();
   const { toast } = useToast();
   const { location } = useLocation();
-
   const { categories } = useCategories();
-
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
   const [productFormData, setProductFormData] = useState({} as ProductFormData);
-  const { locale, t } = useI18nContext();
+  const { t } = useI18nContext();
 
   const {
     currentUser,

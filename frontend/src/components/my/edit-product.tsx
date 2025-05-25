@@ -2,14 +2,13 @@
 
 import { Product, productConditionEnum, ProductFormData } from "@/types/product";
 import { SellerAdForm } from "../seller/ad-form";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { updateProduct } from "@/services/api/products";
 import { useAuth } from "../auth/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useI18nContext } from "../locale-context";
 import { useCategories } from "../categories-context";
-import { Category } from "@/types/category";
 
 interface MyEditProductPageProps {
   product: Product;
