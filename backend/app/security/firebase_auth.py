@@ -78,12 +78,11 @@ async def get_current_user(
         # firebase_user = auth.get_user(uid)
         return User(uid=uid, email=email)
     except auth.InvalidIdTokenError as e:
-        return None
-        # raise HTTPException(
-        #     status_code=status.HTTP_401_UNAUTHORIZED,
-        #     detail=f"Invalid Firebase ID token: {e}",
-        #     headers={"WWW-Authenticate": "Bearer"},
-        # )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid Firebase ID token: {e}",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     except auth.ExpiredIdTokenError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

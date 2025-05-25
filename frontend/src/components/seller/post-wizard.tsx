@@ -13,9 +13,8 @@ import { Image as ImageData } from '@/types/image'
 import { Dialog, DialogContent, DialogTitle } from '../ui/dialog'
 import { useLocation } from '../location-context'
 import { useI18nContext } from '../locale-context'
-import { Category } from '@/types/category'
-import { getCategoryBreadcrumbs } from '@/services/api/categories'
 import { useCategories } from '../categories-context'
+import { uploadProductImages } from '@/services/api/images'
 
 
 export default function SellerPostWizard() {
@@ -29,7 +28,6 @@ export default function SellerPostWizard() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
   const [productFormData, setProductFormData] = useState({} as ProductFormData);
-  const [categoryBreadcrumbs, setCategoryBreadcrumbs] = useState<Category[]>([]);
   const { locale, t } = useI18nContext();
 
   const {
@@ -75,18 +73,13 @@ export default function SellerPostWizard() {
   // const progressPercentage = ((currentStep + 1) / totalSteps) * 100;
 
   async function handleUploadComplete(imageData: ImageData): Promise<void> {
-    if (imageData.suggested_category_id) {
-      const categoryResponse = await getCategoryBreadcrumbs(locale, imageData.suggested_category_id.toString());
-      if (categoryResponse) {
-        setCategoryBreadcrumbs(categoryResponse);
-      }
-    }
     setProductFormData({
       ...productFormData,
       ...location,
       image_url: imageData.image_url,
       image_key: imageData.image_key,
       title: imageData.suggested_title,
+      category: imageData.suggested_category_id,
       condition: imageData.suggested_condition,
       attributes: imageData.suggested_attributes,
       description: imageData.suggested_description,
@@ -95,11 +88,28 @@ export default function SellerPostWizard() {
   }
 
   async function handleCreateProduct(formData: ProductFormData): Promise<void> {
+    if (!currentUser) {
+      return;
+    }
+
+    const newData = {
+      ...productFormData,
+      ...formData,
+    };
+    setProductFormData(newData);
+
+    // Split this into a separate function to handle the actual product creation
+    // and the gallery upload
+
     setLoading(true);
     setError(null);
 
     try {
-      await createProduct(formData, firebaseIdToken!);
+      const newProduct = await createProduct(newData, firebaseIdToken!);
+      // Update progress bar or any other UI elements if needed
+      if (newData.images && newData.images.length > 0) {
+        await uploadProductImages(newProduct.id, newData.images || [], firebaseIdToken!);
+      }
       toast({
         title: t("postWizard.productCreatedTitle"),
         description: t("postWizard.productCreatedDescription"),
@@ -113,8 +123,11 @@ export default function SellerPostWizard() {
     }
   }
 
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center">
+      {/* {true && (
+      )} */}
       {/* Progress Bar
         <div className="mb-8">
           <div className="flex justify-between mb-1">
@@ -163,19 +176,8 @@ export default function SellerPostWizard() {
               <SellerAdForm
                 defaultValues={productFormData}
                 topCategories={categories}
-                categoryBreadcrumbs={categoryBreadcrumbs}
                 loading={loading}
-                onSubmit={(data) => {
-                  if (!currentUser) {
-                    return;
-                  }
-                  const newData = {
-                    ...productFormData,
-                    ...data,
-                  };
-                  setProductFormData(newData);
-                  handleCreateProduct(newData);
-                }}
+                onSubmit={handleCreateProduct}
               />
               <Dialog open={!!error} onOpenChange={() => setError(null)}>
                 <DialogContent>

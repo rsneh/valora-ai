@@ -11,7 +11,7 @@ from app.schemas.product_image import ProductImage
 class ProductCreate(BaseModel):
     title: str
     description: str = None
-    category: str = None
+    category: int = None
     attributes: Optional[Dict[str, Any]] = None
     condition: Optional[ProductConditionEnum] = None
     price: float
@@ -31,7 +31,7 @@ class ProductUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     price: Optional[float] = None
-    category: Optional[str] = None
+    category: Optional[int] = None
     status: ProductStatusEnum = ProductStatusEnum.DRAFT
 
 

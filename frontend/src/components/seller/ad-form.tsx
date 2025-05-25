@@ -23,6 +23,7 @@ import { productConditionEnum, ProductFormData } from "@/types/product";
 import PriceInput from "../ui/price-input";
 import { getLocalCurrency } from "@/lib/utils";
 import Image from "next/image";
+import ImageGalleryUpload from "../ui/image-gallery-upload";
 
 // Define the Zod schema for ProductFormData
 const productFormSchema = z.object({
@@ -34,6 +35,10 @@ const productFormSchema = z.object({
   category: z.number({ required_error: "Category is required." }),
   currency: z.string(),
   attributes: z.object({}).optional(),
+  images: z.array(z.object({
+    src: z.string(),
+    file: z.instanceof(File),
+  })).optional(),
 });
 
 interface SellerAdFormProps {
@@ -54,6 +59,7 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
     defaultValues: {
       ...defaultValues,
       currency: getLocalCurrency(locale),
+      images: [],
     }
   });
 
@@ -125,13 +131,13 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
               <FormItem>
                 <FormLabel>{t("adForm.categoryLabel")}</FormLabel>
                 <div className="grid grid-cols-2 gap-2">
-                  <Select defaultValue={parentCategory?.category_key} onValueChange={handleParentCategoryChange}>
+                  <Select value={parentCategory?.id.toString() ?? ""} onValueChange={handleParentCategoryChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
                     <SelectContent>
                       {topCategories.map((category, i) => (
-                        <SelectItem key={i} value={category.category_key}>{category.name}</SelectItem>
+                        <SelectItem key={i} value={category.id.toString()}>{category.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -142,7 +148,7 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
                     render={({ field }) => (
                       <>
                         <FormControl>
-                          <Select value={field.value.toString()} onValueChange={field.onChange}>
+                          <Select value={field.value?.toString() ?? ""} onValueChange={field.onChange}>
                             <SelectTrigger>
                               <SelectValue placeholder="Select Category" />
                             </SelectTrigger>
@@ -237,7 +243,7 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
           <div>
             <div className="p-4 space-y-6">
               <FormItem>
-                <h3 className="text-lg font-semibold mb-3">Feature Image</h3>
+                <h3 className="text-lg font-semibold mb-3">{t("adForm.featureImage")}</h3>
                 {defaultValues?.image_url && (
                   <div className="relative">
                     <Image
@@ -257,51 +263,16 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
                 )}
               </FormItem>
               <FormItem>
-                <h3 className="text-lg font-semibold mb-3">Image Gallery</h3>
-                <div
-                  className="border-2 border-dashed border-gray-400 rounded-md p-6 text-center cursor-pointer"
-                >
-                  <label htmlFor="imageUpload" className="block text-gray-600 text-sm">
-                    Drag & Drop files here or <span className="text-blue-500 hover:underline">Click to Upload</span>
-                  </label>
-                  <input
-                    type="file"
-                    id="imageUpload"
-                    className="hidden"
-                    multiple
-                    accept="image/*"
-                  />
-                  {[1].length > 0 && (
-                    <div className="mt-4 grid grid-cols-3 gap-2">
-                      {[0, 0, 0, 0, 5].map((image, index) => (
-                        <div key={index} className="relative">
-                          <img
-                            src={`https://flowbite.s3.amazonaws.com/docs/gallery/square/image-${index + 1}.jpg`}
-                            alt={`Product Image ${index + 1}`}
-                            className="w-full h-20 object-cover rounded-md"
-                          />
-                          <button
-                            className="absolute top-0 right-0 bg-gray-200 hover:bg-gray-300 rounded-full w-5 h-5 flex items-center justify-center text-gray-700 text-xs"
-                          >
-                            &times;
-                          </button>
-                        </div>
-                      ))}
-                      {[].length < 5 && (
-                        <div className="border-2 border-gray-300 border-dashed rounded-md h-20 flex items-center justify-center text-gray-400">
-                          {/* Placeholder for adding more images */}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  <p className="text-gray-500 text-xs mt-2">Recommended size: 1000x1000px, Max 5MB, JPG, PNG</p>
-                </div>
+                <h3 className="text-lg font-semibold mb-3">{t("adForm.imageGalleryTitle")}</h3>
+                <ImageGalleryUpload
+                  control={form.control}
+                />
               </FormItem>
             </div>
           </div>
         </div>
         <div className="flex justify-end mt-6">
-          <Button type="reset" size="lg" className="font-bold me-2" variant="secondary">Cancel</Button>
+          <Button type="reset" size="lg" className="font-bold me-2" variant="secondary">{t("cancel")}</Button>
           <Button type="submit" size="lg" className="font-bold" disabled={loading}>{loading ? t("adForm.submittingButton") : t("adForm.submitButton")}</Button>
         </div>
       </form>

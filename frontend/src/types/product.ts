@@ -8,6 +8,11 @@ export const productConditionEnum = [
   "FAIR",
 ] as const;
 
+export type ImageItem = {
+  src: string;
+  file?: File;
+}
+
 export interface Product {
   id: number;
   title: string;
@@ -44,4 +49,5 @@ export interface ProductFormData {
   min_acceptable_price?: number;
   negotiation_notes_for_ai?: string;
   attributes?: Record<string, string>;
+  images?: ImageItem[];
 }

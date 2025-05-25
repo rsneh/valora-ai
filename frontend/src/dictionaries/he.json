@@ -180,6 +180,11 @@
     "uploadFailed": "העלאת התמונה נכשלה.",
     "tryAgain": "נסה שוב"
   },
+  "galleryUpload": {
+    "recommededToUpload": "מומלץ לעלות 3-5 תמונות מזוויות שונות בתאורה טובה.",
+    "dragAndDrop": "ניתן לגרור ולשחרר תמונה או",
+    "clickToUpload": "ללחוץ לעלאה"
+  },
   "adForm": {
     "titleLabel": "כותרת",
     "titlePlaceholder": "לדוגמה, Nintendo Switch",
@@ -193,7 +198,9 @@
     "categoryRequired": "קטגוריה היא שדה חובה.",
     "submitButton": "שלח",
     "submittingButton": "שולח...",
-    "conditionLabel": "מצב המוצר"
+    "conditionLabel": "מצב המוצר",
+    "featureImage": "תמונה ראשית",
+    "imageGalleryTitle": "גלריית תמונות"
   },
   "my": {
     "ads": {
@@ -205,12 +212,13 @@
       "adUpdatedDescription": "המודעה שלך עודכנה בהצלחה."
     }
   },
-  "aiSuggestionTooltip": "מוצע על ידי Valora AI",
   "condition": {
     "new": "חדש",
     "like_new": "כמו חדש",
     "very_good": "מצוין",
     "good": "טוב",
     "fair": "סביר"
-  }
+  },
+  "aiSuggestionTooltip": "מוצע על ידי Valora AI",
+  "cancel": "ביטול"
 }

@@ -33,22 +33,12 @@ async def create_product(
             location_text=product_in.location_text
         )
 
-    # Convert category_key to category_id
-    category_obj = category_service.get_category_by_key(db, product_in.category)
-    if not category_obj:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid category key: {product_in.category}",
-        )
-
-    final_category_id = category_obj.id
-
     # 2. Create Product DB entry
     db_product = models.Product(
         title=product_in.title,
         price=product_in.price,
         description=product_in.description,
-        category_id=final_category_id,
+        category_id=product_in.category,
         image_url=permanent_image_url,
         condition=product_in.condition,
         seller_id=seller_id,

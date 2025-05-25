@@ -24,6 +24,11 @@ async def create_product(
     Create new product using a pre-uploaded image_key.
     Expects a JSON body with title, price, and image_key.
     """
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not authenticated.",
+        )
     try:
         created_product = await product_service.create_product(
             db=db,

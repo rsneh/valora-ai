@@ -172,6 +172,11 @@
     "uploadFailed": "Failed to upload the image.",
     "tryAgain": "Try again"
   },
+  "galleryUpload": {
+    "dragAndDrop": "Drag & Drop files here or",
+    "clickToUpload": "Click to Upload",
+    "recommededToUpload": "Recommended to add 3-5 photos from different angles in good lighting conditions."
+  },
   "adForm": {
     "titleLabel": "Title",
     "titlePlaceholder": "e.g., Nintendo Switch",
@@ -185,7 +190,9 @@
     "categoryRequired": "Category is required.",
     "submitButton": "Submit",
     "submittingButton": "Submitting...",
-    "conditionLabel": "Condition"
+    "conditionLabel": "Condition",
+    "featureImage": "Feature Image",
+    "imageGalleryTitle": "Image Gallery"
   },
   "my": {
     "ads": {
@@ -197,12 +204,13 @@
       "adUpdatedDescription": "Your ad has been successfully updated."
     }
   },
-  "aiSuggestionTooltip": "Suggested by Valora AI",
   "condition": {
     "new": "New",
     "like_new": "Like New",
     "very_good": "Very Good",
     "good": "Good",
     "fair": "Fair"
-  }
+  },
+  "aiSuggestionTooltip": "Suggested by Valora AI",
+  "cancel": "Cancel"
 }
