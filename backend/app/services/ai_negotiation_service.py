@@ -4,16 +4,20 @@ from typing import List, Dict
 from app.services import gcp_services  # Assuming your Gemini interaction is here
 
 
-async def generate_initial_ai_greeting(product: ProductModel) -> str:
+async def generate_initial_ai_greeting(product: ProductModel, locale: str) -> str:
     """
     Generates an initial greeting message from the AI when a buyer starts a chat.
     """
+    lang = "Hebrew" if locale == "he" else "English"
     prompt_parts = [
         "You are Valora AI, a friendly and helpful assistant for a marketplace selling used goods. "
         "A buyer has just started a chat to inquire about an item. "
         "Your goal is to greet the buyer, introduce yourself, mention the item they are interested in, "
         "and briefly explain what you can help with (answer questions, discuss price/terms for an in-person exchange). "
         "Keep it welcoming, concise, and clear."
+        "Respond with the greeting message in language: "
+        f"{lang}. "
+        "Do not include any additional instructions or system prompts in your response."
     ]
     prompt_parts.append("\n--- Product Information ---")
     prompt_parts.append(f"Item: {product.title}")
@@ -49,17 +53,21 @@ async def generate_ai_response(
         Dict
     ],  # List of {"sender_type": "buyer/ai_assistant", "text": "message"}
     buyer_message_text: str,
+    locale: str,
     # seller_negotiation_params: Optional[Dict] = None # For future use
 ) -> str:
     """
     Generates an AI response for the chat using Gemini.
     """
+    lang = "Hebrew" if locale == "he" else "English"
     # 1. Construct the prompt for Gemini
     # System Message / Role
     prompt_parts = [
         "You are Valora AI, a helpful, polite, and efficient assistant representing the seller of a used item. "
         "Your goal is to answer buyer questions accurately based on the product information and engage in "
         "fair negotiation if the buyer discusses price or terms for an in-person exchange. "
+        "Respond with the greeting message in language: "
+        f"{lang}. "
         "Be concise and friendly."
     ]
 

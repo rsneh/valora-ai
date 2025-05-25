@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-
 from app.db import database, models
-from app.schemas import chat as chat_schemas
-from app.schemas import user as user_schemas
-from app.services import chat_service  # Import your new chat service
+from app.schemas import chat as chat_schemas, user as user_schemas
+from app.services import chat_service
 from app.security.firebase_auth import get_current_active_user
+from app.lib.locale import AppLocale, get_locale_from_header
 
 router = APIRouter()
 
@@ -15,6 +14,7 @@ router = APIRouter()
 async def send_chat_message(
     message_in: chat_schemas.ChatMessageCreate,
     db: Session = Depends(database.get_db),
+    locale: AppLocale = Depends(get_locale_from_header),
     current_user: user_schemas.User = Depends(get_current_active_user),
 ):
     try:
@@ -24,6 +24,7 @@ async def send_chat_message(
                 product_id=message_in.product_id,
                 buyer_id=current_user.uid,
                 buyer_message_text=message_in.message_text,
+                locale=locale,
             )
         )
         return ai_response_message
@@ -41,6 +42,7 @@ async def send_chat_message(
 async def get_conversation_history(  # Made async to align with service
     product_id: int,
     db: Session = Depends(database.get_db),
+    locale: AppLocale = Depends(get_locale_from_header),
     current_user: user_schemas.User = Depends(get_current_active_user),
 ):
     product = db.query(models.Product).filter(models.Product.id == product_id).first()
@@ -61,5 +63,6 @@ async def get_conversation_history(  # Made async to align with service
         product_id=product_id,
         buyer_id=current_user.uid,
         seller_id=product.seller_id,
+        locale=locale,
     )
     return history

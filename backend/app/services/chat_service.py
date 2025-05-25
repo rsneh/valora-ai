@@ -6,7 +6,11 @@ from app.services import ai_negotiation_service
 
 
 async def get_or_create_conversation_with_greeting(
-    db: Session, product_id: int, buyer_id: str, seller_id: str
+    db: Session,
+    product_id: int,
+    buyer_id: str,
+    seller_id: str,
+    locale: str = "en",
 ) -> models.Conversation:
     """
     Retrieves an existing conversation or creates a new one if it doesn't exist.
@@ -40,7 +44,8 @@ async def get_or_create_conversation_with_greeting(
 
         # Add initial AI greeting message
         ai_greeting_text = await ai_negotiation_service.generate_initial_ai_greeting(
-            product
+            product,
+            locale,
         )
         add_message_to_conversation(
             db=db,
@@ -86,7 +91,11 @@ def add_message_to_conversation(
 
 
 async def process_buyer_message_and_get_ai_response(
-    db: Session, product_id: int, buyer_id: str, buyer_message_text: str
+    db: Session,
+    product_id: int,
+    buyer_id: str,
+    buyer_message_text: str,
+    locale: str = "en",
 ) -> models.ChatMessage:
     """
     Processes a buyer's message, gets an AI response, and saves both.
@@ -96,7 +105,11 @@ async def process_buyer_message_and_get_ai_response(
         raise ValueError("Product not found")  # Or a specific HTTPException
 
     conversation = await get_or_create_conversation_with_greeting(
-        db=db, product_id=product_id, buyer_id=buyer_id, seller_id=product.seller_id
+        db=db,
+        product_id=product_id,
+        buyer_id=buyer_id,
+        seller_id=product.seller_id,
+        locale=locale,
     )
 
     # Save buyer's message
@@ -125,6 +138,7 @@ async def process_buyer_message_and_get_ai_response(
         product=product,
         conversation_history=conversation_history_for_ai,
         buyer_message_text=buyer_message_text,
+        locale=locale,
     )
 
     ai_message_db = add_message_to_conversation(
@@ -138,14 +152,22 @@ async def process_buyer_message_and_get_ai_response(
 
 
 async def get_chat_history_with_greeting(  # Renamed for clarity
-    db: Session, product_id: int, buyer_id: str, seller_id: str
+    db: Session,
+    product_id: int,
+    buyer_id: str,
+    seller_id: str,
+    locale: str,
 ) -> List[models.ChatMessage]:
     """
     Retrieves chat history. If conversation is new, it creates it with an AI greeting.
     """
     # This function ensures the conversation (and greeting) exists
     conversation = await get_or_create_conversation_with_greeting(
-        db=db, product_id=product_id, buyer_id=buyer_id, seller_id=seller_id
+        db=db,
+        product_id=product_id,
+        buyer_id=buyer_id,
+        seller_id=seller_id,
+        locale=locale,
     )
 
     # Fetch all messages for the conversation, ordered
