@@ -72,6 +72,7 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
     if (!Object.keys(errors).length) return [];
 
     return Object.entries(errors)
+      /* eslint-disable @typescript-eslint/no-unused-vars */
       .filter(([_, error]) => error && error.message)
       .map(([field, error]) => ({
         field: field.charAt(0).toUpperCase() + field.slice(1),

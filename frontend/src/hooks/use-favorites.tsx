@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect, useMemo, createContext, ReactNode, useContext } from 'react';
-import { useAuth } from '@/components/auth/auth-context';
+import { useState, useEffect, createContext, ReactNode, useContext } from 'react';
 
 const FAVORITES_STORAGE_KEY = 'user_favorites';
+const initialFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY) ? JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)!) : []
 
 interface FavoritesContextType {
   favorites: number[];
@@ -14,36 +14,15 @@ interface FavoritesContextType {
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
-  const { currentUser } = useAuth();
-
-  const storageKey = useMemo(() => currentUser
-    ? `${FAVORITES_STORAGE_KEY}_${currentUser.uid}`
-    : FAVORITES_STORAGE_KEY, [currentUser]);
-
-  const [favorites, setFavorites] = useState<number[]>([]);
+  const [favorites, setFavorites] = useState<number[]>(initialFavorites);
 
   useEffect(() => {
     try {
-      const savedFavorites = localStorage.getItem(storageKey);
-      console.log({ savedFavorites });
-
-      if (savedFavorites) {
-        setFavorites(JSON.parse(savedFavorites));
-      } else {
-        setFavorites([]);
-      }
-    } catch (error) {
-      console.error('Error loading favorites from localStorage:', error);
-    }
-  }, [storageKey]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(favorites));
+      localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
     } catch (error) {
       console.error('Error saving favorites to localStorage:', error);
     }
-  }, [favorites, storageKey]);
+  }, [favorites]);
 
   const toggleFavorite = (productId: number) => {
     const oldFavorites = [...favorites];

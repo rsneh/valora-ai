@@ -77,7 +77,7 @@ export default function SellerPostWizard() {
       image_url: imageData.image_url,
       image_key: imageData.image_key,
       title: imageData.suggested_title,
-      category: imageData.suggested_category_id,
+      category_id: imageData.suggested_category_id,
       condition: imageData.suggested_condition,
       attributes: imageData.suggested_attributes,
       description: imageData.suggested_description,

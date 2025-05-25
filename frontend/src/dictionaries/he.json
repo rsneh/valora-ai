@@ -146,7 +146,7 @@
     "posted": "פורסם",
     "updated": "עודכן",
     "addToFavorites": "הוסף למועדפים",
-    "removeFromFavorites": "הסר מהמועדפים",
+    "removeFromFavorites": "הסרה מהמועדפים",
     "addedToFavorites": "התווסף למועדפים!",
     "attributes": "פרטים נוספים",
     "conditionLabel": "מצב המוצר"
@@ -235,11 +235,11 @@
     "title": "המועדפים שלי",
     "noFavorites": "אין פריטים במועדפים שלך.",
     "addFavoritesMessage": "הוסף פריטים למועדפים שלך כדי לשמור אותם לעיון מאוחר יותר.",
-    "removeFromFavorites": "הסר מהמועדפים"
+    "removeFromFavorites": "הסרה מהמועדפים"
   },
   "productCard": {
     "addToFavorites": "הוסף למועדפים",
-    "removeFromFavorites": "הסר מהמועדפים"
+    "removeFromFavorites": "הסרה מהמועדפים"
   },
   "condition": {
     "new": "חדש",
