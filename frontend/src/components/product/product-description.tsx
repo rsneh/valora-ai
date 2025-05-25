@@ -1,10 +1,14 @@
 "use client"
 
 import { Product } from "@/types/product";
-import { HeartIcon } from "lucide-react";
 import { StartChatButton } from "./start-chat-button";
 import { useI18nContext } from "../locale-context";
 import { getCurrencySymbol } from "@/lib/currency";
+import { Button } from "../ui/button";
+import { Heart } from "lucide-react";
+import { useFavorites } from "@/hooks/use-favorites";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProductDescriptionProps {
   product: Product;
@@ -12,53 +16,87 @@ interface ProductDescriptionProps {
 
 export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product }) => {
   const { t } = useI18nContext();
+  const { toast } = useToast();
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const [isFavorited, setIsFavorited] = useState(isFavorite(product.id));
   const currencySign = getCurrencySymbol(product.currency!);
+  const attributeEntries = Object.entries(product.attributes ?? {});
   return (
-    <div className="flex flex-col justify-between shrink-1 lg:col-span-3">
+    <div className="lg:col-span-3">
       <div>
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">{product.title}</h1>
-        {/* <p className="text-md text-gray-500 mb-4">Special Black Edition</p> // Example Subtitle, not in Valora's model */}
-
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-3xl font-bold text-blue-600">{`${currencySign}${product.price}`}</p>
-          {/* Wishlist Icon - Functionality to be implemented */}
-          <button className="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-100">
-            <HeartIcon className="h-7 w-7" />
-          </button>
+        <div className="mt-4">
+          <div className="flex items-center justify-between space-x-4 rtl:space-x-reverse">
+            <p className="text-xl text-gray-700">{`${currencySign}${product.price}`}</p>
+          </div>
         </div>
 
-        {/* Stats - Adapt for Valora (e.g., Posted Date, Seller Info) */}
-        <div className="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-600 mb-6 border-t border-b border-gray-200 py-3">
-          {/* <span>⭐ 4.8 (1624 Reviews)</span> // Not applicable for PoC */}
+        {/* <div className="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-600 mb-6 border-t border-b border-gray-200 py-3">
           <span>{t("productDescription.posted")}: {new Date(product.time_created).toLocaleDateString()}</span>
           {product.time_updated && product.time_updated !== product.time_created && (
             <span>{t("productDescription.updated")}: {new Date(product.time_updated).toLocaleDateString()}</span>
           )}
+        </div> */}
+
+        {product.description && (
+          <div className="mt-4">
+            <p className="text-gray-400 leading-relaxed whitespace-pre-line font-light">
+              {product.description}
+            </p>
+          </div>
+        )}
+
+        <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2">
+          <StartChatButton
+            productId={product.id.toString()}
+            buttonTxt={t("productDescription.startChat")}
+          />
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={() => {
+              toggleFavorite(product.id);
+              const newFavState = !isFavorited;
+              setIsFavorited(newFavState);
+              toast({
+                title: newFavState
+                  ? t("productDescription.addedToFavorites")
+                  : t("productDescription.removedFromFavorites"),
+                description: product.title,
+                variant: "default",
+              });
+            }}
+          >
+            <Heart className={`h-5 w-5 me-2 ${isFavorited ? "fill-current text-red-500" : ""}`} />
+            {isFavorited
+              ? t("productDescription.removeFromFavorites")
+              : t("productDescription.addToFavorites")}
+          </Button>
         </div>
-
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">{t("productDescription.description")}</h3>
-          <p className="text-gray-600 leading-relaxed whitespace-pre-line">
-            {product.description || t("productDescription.noDescription")}
-          </p>
-        </div>
-
-        {/* <div className="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                    <h3 className="text-md font-semibold text-gray-700 mb-2">Seller Information</h3>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <UserCircleIcon className="h-6 w-6 mr-2 text-gray-400" />
-                      <span>Seller ID: {product.seller_id}</span>
-                    </div>
-                  </div> */}
-
       </div>
 
-      {/* Action Buttons */}
-      <div className="mt-auto">
-        <StartChatButton
-          productId={product.id.toString()}
-          buttonTxt={t("productDescription.startChat")}
-        />
+      <div className="mt-10 pt-10 border-t border-gray-200">
+        {attributeEntries && (
+          <div>
+            <h2 className="text-sm font-medium mb-2">
+              {t("productDescription.attributes")}
+            </h2>
+            <dl className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+              {product.condition && (
+                <div>
+                  <dt className="font-medium text-gray-900">{t("productDescription.conditionLabel")}</dt>
+                  <dd className="mt-2 text-sm text-gray-500">{t(`condition.${product.condition.toLowerCase()}`)}</dd>
+                </div>
+              )}
+              {attributeEntries.map(([key, value], index) => (
+                <div key={index} className="">
+                  <dt className="font-medium text-gray-900">{t(`productAttributes.${key.toLowerCase()}`)}</dt>
+                  <dd className="mt-2 text-sm text-gray-500">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -46,6 +46,8 @@ async def create_product(
         longitude=longitude,
         location_text=product_in.location_text,
         location_source=product_in.location_source,
+        attributes=product_in.attributes,
+        currency=product_in.currency,
     )
     db.add(db_product)
     db.commit()

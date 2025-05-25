@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useI18nContext } from "../locale-context";
 import { Category } from "@/types/category";
 import { getCategories, getCategoryBreadcrumbs } from "@/services/api/categories";
@@ -24,6 +24,8 @@ import PriceInput from "../ui/price-input";
 import { getLocalCurrency } from "@/lib/utils";
 import Image from "next/image";
 import ImageGalleryUpload from "../ui/image-gallery-upload";
+import AttributesInput from "../ui/attributes-input";
+import Message from "../ui/message";
 
 // Define the Zod schema for ProductFormData
 const productFormSchema = z.object({
@@ -32,9 +34,9 @@ const productFormSchema = z.object({
   description: z.string().min(1, { message: "Description is required." }),
   price: z.number({ required_error: "Price is required." }).positive({ message: "Price must be a positive number." }),
   condition: z.enum(productConditionEnum).optional(),
-  category: z.number({ required_error: "Category is required." }),
+  category_id: z.number({ required_error: "Category is required." }),
   currency: z.string(),
-  attributes: z.object({}).optional(),
+  attributes: z.record(z.string(), z.string()).optional().default({}),
   images: z.array(z.object({
     src: z.string(),
     file: z.instanceof(File),
@@ -58,10 +60,31 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
     resolver: zodResolver(productFormSchema),
     defaultValues: {
       ...defaultValues,
-      currency: getLocalCurrency(locale),
-      images: [],
+      currency: defaultValues?.currency || getLocalCurrency(locale),
+      images: defaultValues?.images || [],
+      attributes: defaultValues?.attributes || {},
     }
   });
+
+  const { formState: { errors } } = form;
+
+  const formErrorMessages = useMemo(() => {
+    if (!Object.keys(errors).length) return [];
+
+    return Object.entries(errors)
+      .filter(([_, error]) => error && error.message)
+      .map(([field, error]) => ({
+        field: field.charAt(0).toUpperCase() + field.slice(1),
+        message: error?.message as string
+      }));
+  }, [errors]);
+
+  // Extract field names with errors for the summary
+  const errorFieldNames = useMemo(() => {
+    return Object.keys(errors)
+      .map(field => field.charAt(0).toUpperCase() + field.slice(1))
+      .join(', ');
+  }, [errors]);
 
   const selectedCurrencyCode = form.watch('currency');
 
@@ -90,8 +113,8 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
 
   useEffect(() => {
     const fetchBreadcrumbs = async () => {
-      if (defaultValues?.category) {
-        const categoryBreadcrumbs = await getCategoryBreadcrumbs(locale, defaultValues.category.toString());
+      if (defaultValues?.category_id) {
+        const categoryBreadcrumbs = await getCategoryBreadcrumbs(locale, defaultValues.category_id.toString());
         if (categoryBreadcrumbs) {
           const [initParentCategory,] = categoryBreadcrumbs;
 
@@ -103,11 +126,30 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
       }
     };
     fetchBreadcrumbs();
-  }, [defaultValues?.category, locale]);
+  }, [defaultValues?.category_id, locale]);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="p-4">
+        {Object.keys(errors).length > 0 && (
+          <div className="mb-4">
+            <Message
+              type="error"
+              message={`${t("adForm.errorMessage")} ${errorFieldNames}`}
+              title={t("adForm.errorTitle")}
+            />
+            {formErrorMessages.length > 0 && (
+              <ul className="mt-2 list-disc list-inside pl-4 text-sm text-red-600">
+                {formErrorMessages.map((error, index) => (
+                  <li key={index}>
+                    <strong>{error.field}:</strong> {error.message}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <div className="p-4 space-y-6">
@@ -144,7 +186,7 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
                   {/* Sub-Category Field */}
                   <FormField
                     control={form.control}
-                    name="category"
+                    name="category_id"
                     render={({ field }) => (
                       <>
                         <FormControl>
@@ -190,13 +232,6 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
                     <FormField
                       control={form.control}
                       name="price"
-                      rules={{
-                        required: 'Price is required', // Validation rule: price is mandatory
-                        pattern: {
-                          value: /^\d+(\.\d{1,2})?$/, // Validation rule: allows integers or decimals with up to 2 decimal places
-                          message: 'Invalid price format. e.g., 123 or 123.45', // Error message for invalid format
-                        },
-                      }}
                       render={({ field }) => (
                         <>
                           <FormControl>
@@ -235,7 +270,30 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
                     )}
                   />
                 </FormItem>
+
               </div>
+
+              {/* Attributes Section */}
+              <FormItem>
+                <FormLabel>{t("adForm.attributesLabel") || "Attributes"}</FormLabel>
+                <FormField
+                  control={form.control}
+                  name="attributes"
+                  render={({ field }) => (
+                    <FormControl>
+                      <AttributesInput
+                        value={field.value || {}}
+                        onChange={field.onChange}
+                        placeholder={{
+                          key: t("adForm.attributeKeyPlaceholder") || "Brand, Size, Model...",
+                          value: t("adForm.attributeValuePlaceholder") || "Value..."
+                        }}
+                      />
+                    </FormControl>
+                  )}
+                />
+                <FormMessage />
+              </FormItem>
             </div>
           </div>
 

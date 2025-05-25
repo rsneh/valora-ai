@@ -94,10 +94,8 @@ export default function SellerPostWizard() {
       ...productFormData,
       ...formData,
     };
-    setProductFormData(newData);
 
-    // Split this into a separate function to handle the actual product creation
-    // and the gallery upload
+    setProductFormData(newData);
 
     setLoading(true);
     setError(null);

@@ -28,7 +28,7 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
     title: product.title,
     description: product.description,
     price: product.price,
-    category: product.category_id,
+    category_id: product.category_id,
     currency: product.currency,
     image_url: product.image_url,
     min_acceptable_price: product.min_acceptable_price,
@@ -59,7 +59,6 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
       setLoading(false);
     }
   }
-  console.log({ defaultValues });
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center">

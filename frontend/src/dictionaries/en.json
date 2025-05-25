@@ -17,6 +17,7 @@
     "createAd": "Create Ad",
     "profile": "Profile",
     "ads": "Ads",
+    "favorites": "Favorites",
     "logout": "Log out",
     "toggleMenu": "Toggle Menu",
     "logoutSuccess": "You've been logged out."
@@ -135,7 +136,13 @@
     "noDescription": "No description available for this product.",
     "startChat": "Start AI Chat",
     "posted": "Posted",
-    "updated": "Updated"
+    "updated": "Updated",
+    "addToFavorites": "Add to Favorites",
+    "removeFromFavorites": "Remove from Favorites",
+    "addedToFavorites": "Added to Favorites",
+    "removedFromFavorites": "Removed from Favorites",
+    "attributes": "Attributes",
+    "conditionLabel": "Condition"
   },
   "chat": {
     "valoraAIAlt": "Valora AI",
@@ -192,7 +199,18 @@
     "submittingButton": "Submitting...",
     "conditionLabel": "Condition",
     "featureImage": "Feature Image",
-    "imageGalleryTitle": "Image Gallery"
+    "imageGalleryTitle": "Image Gallery",
+    "attributesLabel": "Product Attributes",
+    "attributeKeyPlaceholder": "Brand, Size, Model...",
+    "attributeValuePlaceholder": "Value...",
+    "attributeKeyRequired": "Attribute name is required",
+    "attributeValueRequired": "Attribute value is required",
+    "attributeKeyExists": "This attribute already exists",
+    "noAttributes": "No attributes added yet",
+    "addAttribute": "Add Attribute",
+    "removeAttribute": "Remove Attribute",
+    "errorMessage": "Please fix the errors in the following fields:",
+    "errorTitle": "Form Validation Error"
   },
   "my": {
     "ads": {
@@ -201,8 +219,20 @@
       "loading": "Loading...",
       "editTitle": "Edit Ad",
       "adUpdated": "Ad Updated!",
-      "adUpdatedDescription": "Your ad has been successfully updated."
+      "adUpdatedDescription": "Your ad has been successfully updated.",
+      "errorUpdatingAd": "Error updating ad.",
+      "errorUpdatingAdDescription": "There was an issue updating your ad. Please check the form for errors and try again."
     }
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "noFavorites": "You haven't added any favorites yet.",
+    "addFavoritesMessage": "Click the heart icon on products you like to add them to your favorites.",
+    "removeFromFavorites": "Remove from favorites"
+  },
+  "productCard": {
+    "addToFavorites": "Add to Favorites",
+    "removeFromFavorites": "Remove from Favorites"
   },
   "condition": {
     "new": "New",
@@ -210,6 +240,17 @@
     "very_good": "Very Good",
     "good": "Good",
     "fair": "Fair"
+  },
+  "productAttributes": {
+    "brand": "Brand",
+    "model": "Model",
+    "size": "Size",
+    "color": "Color",
+    "storage": "Storage",
+    "year": "Year",
+    "condition": "Condition",
+    "features": "Features",
+    "warranty": "Warranty"
   },
   "aiSuggestionTooltip": "Suggested by Valora AI",
   "cancel": "Cancel"

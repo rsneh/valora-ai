@@ -45,7 +45,7 @@ export interface ProductFormData {
   description?: string;
   price: number;
   condition?: typeof productConditionEnum[number];
-  category?: number;
+  category_id?: number;
   currency?: string;
   image_url?: string;
   image_key?: string;

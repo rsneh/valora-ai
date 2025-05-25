@@ -13,6 +13,7 @@ from app.services import gcp_services, category_service, product_service
 from app.schemas import image as image_schema, user as user_schema
 from app.db.database import get_db
 from app.security.firebase_auth import get_current_active_user
+from app.lib.locale import AppLocale, get_locale_from_header
 
 
 router = APIRouter()
@@ -27,6 +28,7 @@ async def upload_image_and_get_suggestions(
     image: UploadFile = File(...),
     db: Session = Depends(get_db),  # NEW: Add DB session dependency
     current_user: user_schema.User = Depends(get_current_active_user),
+    locale: AppLocale = Depends(get_locale_from_header),
 ):
     if not current_user:
         raise HTTPException(
@@ -41,7 +43,10 @@ async def upload_image_and_get_suggestions(
         )
 
     suggestions = await gcp_services.process_image_for_suggestions(
-        db=db, file=image, filename=image.filename
+        db=db,
+        file=image,
+        filename=image.filename,
+        locale=locale,
     )
 
     if suggestions.image_key == "error_upload" or not suggestions.image_url:

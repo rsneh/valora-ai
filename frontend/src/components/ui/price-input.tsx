@@ -40,9 +40,8 @@ function PriceInput({ selectedCurrencyCode, setValue, onChange, value, ...props 
         min="0.01"
         value={value === undefined ? '' : String(value)}
         onChange={(e) => {
-          const value = e.target.value;
-          const numberValue = parseFloat(value);
-          onChange(isNaN(numberValue) ? undefined : numberValue);
+          const value = +e.target.value;
+          onChange(value);
         }}
       />
     </div>

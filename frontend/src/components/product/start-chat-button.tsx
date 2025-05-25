@@ -29,7 +29,8 @@ export function StartChatButton({ productId, buttonTxt }: StartChatButtonProps) 
   return (
     <form onSubmit={handleStartChat}>
       <Button
-        className="w-full text-lg py-3"
+        className="w-full"
+        size="lg"
         variant="default"
         type="submit"
       >

@@ -17,6 +17,7 @@
     "createAd": "מודעה חדשה",
     "profile": "פרופיל",
     "ads": "המודעות שלי",
+    "favorites": "המועדפים שלי",
     "logout": "התנתק",
     "toggleMenu": "פתח/סגור תפריט",
     "logoutSuccess": "התנתקות בוצעה בהצלחה."
@@ -143,7 +144,12 @@
     "noDescription": "אין תיאור זמין למוצר זה.",
     "startChat": "התחל שיחה",
     "posted": "פורסם",
-    "updated": "עודכן"
+    "updated": "עודכן",
+    "addToFavorites": "הוסף למועדפים",
+    "removeFromFavorites": "הסר מהמועדפים",
+    "addedToFavorites": "התווסף למועדפים!",
+    "attributes": "פרטים נוספים",
+    "conditionLabel": "מצב המוצר"
   },
   "chat": {
     "valoraAIAlt": "Valora AI",
@@ -200,7 +206,18 @@
     "submittingButton": "שולח...",
     "conditionLabel": "מצב המוצר",
     "featureImage": "תמונה ראשית",
-    "imageGalleryTitle": "גלריית תמונות"
+    "imageGalleryTitle": "גלריית תמונות",
+    "attributesLabel": "מאפייני המוצר",
+    "attributeKeyPlaceholder": "מותג, גודל, דגם...",
+    "attributeValuePlaceholder": "ערך...",
+    "attributeKeyRequired": "נדרש שם מאפיין",
+    "attributeValueRequired": "נדרש ערך למאפיין",
+    "attributeKeyExists": "מאפיין זה כבר קיים",
+    "noAttributes": "לא נוספו עדיין מאפיינים",
+    "addAttribute": "הוספת מאפיין",
+    "removeAttribute": "הסרת מאפיין",
+    "errorMessage": "יש לתקן את השגיאות בשדות הבאים:",
+    "errorTitle": "שגיאות בטופס"
   },
   "my": {
     "ads": {
@@ -209,8 +226,20 @@
       "loading": "טוען מודעות...",
       "editTitle": "עריכת מודעה",
       "adUpdated": "מודעה עודכנה!",
-      "adUpdatedDescription": "המודעה שלך עודכנה בהצלחה."
+      "adUpdatedDescription": "המודעה שלך עודכנה בהצלחה.",
+      "errorUpdatingAd": "אירעה שגיאה בעדכון המודעה.",
+      "errorUpdatingAdDescription": "הייתה בעיה בעדכון המודעה שלך. אנא בדוק את הטופס לתקלות ונסה שוב."
     }
+  },
+  "favorites": {
+    "title": "המועדפים שלי",
+    "noFavorites": "אין פריטים במועדפים שלך.",
+    "addFavoritesMessage": "הוסף פריטים למועדפים שלך כדי לשמור אותם לעיון מאוחר יותר.",
+    "removeFromFavorites": "הסר מהמועדפים"
+  },
+  "productCard": {
+    "addToFavorites": "הוסף למועדפים",
+    "removeFromFavorites": "הסר מהמועדפים"
   },
   "condition": {
     "new": "חדש",
@@ -218,6 +247,21 @@
     "very_good": "מצוין",
     "good": "טוב",
     "fair": "סביר"
+  },
+  "productAttributes": {
+    "brand": "מותג",
+    "size": "גודל",
+    "model": "דגם",
+    "color": "צבע",
+    "year": "שנה",
+    "type": "סוג",
+    "platform": "פלטפורמה",
+    "features": "תכונות",
+    "material": "חומר",
+    "dimensions": "מידות",
+    "storage": "אחסון",
+    "warranty": "אחריות",
+    "game_title": "שם המשחק"
   },
   "aiSuggestionTooltip": "מוצע על ידי Valora AI",
   "cancel": "ביטול"

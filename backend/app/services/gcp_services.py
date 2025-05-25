@@ -331,6 +331,8 @@ async def get_ai_attributes(
         {attribute_examples_prompt}
         Extract relevant attributes for this item based on its category and features.
         Respond with a JSON object of key-value pairs. If an attribute is not determinable, omit it.
+        Do not include known attributes such as 'category', 'condition' or 'type' unless they are specific to the item.
+        Example attributes to include: brand, model, type, material, color, size, storage, processor, etc.
         Example JSON: {{"brand": "Apple", "model": "MacBook Pro", "condition": "Used - Good"}}
         Attributes JSON:"""
 
@@ -482,20 +484,9 @@ async def get_ai_title(
 
     prompt = f"""Based on the following information about an item: "{context_str}".
         Generate a short, clear, and marketable title for an item.
-        The title should be concise (ideally 3-7 words).
+        The title should be concise (ideally 3-7 words) and must be in {lang}.
         Include key identifying information like brand, model, and important specifications if applicable.
-        Respond with ONLY the title.
-        Response in language: {lang}.
-
-        Examples:
-        "iPhone 16 Pro 256GB"
-        "Sony Noise Cancelling Headphones WH-1000XM5"
-        "AirPods Max Silver"
-        "Samsung Galaxy S25 Ultra 512GB"
-        "Chicco NextFit Baby Stroller"
-        "Wooden Dining Table with 6 Chairs"
-        "Vintage Leather Armchair"
-        "Dell XPS 15 Laptop i7 16GB RAM"
+        Respond with ONLY the title in language: {lang}.
         Suggested Title:"""
 
     title = await generate_text_with_gemini(prompt)
@@ -515,6 +506,7 @@ async def get_ai_description_from_structured_data(
     attributes: Optional[Dict[str, Any]],
     condition: Optional[str],
     image_features: List[str],
+    locale: str = "en",
 ) -> Optional[str]:
 
     prompt_context = f"Item Title: {title or 'Used Item'}\n"
@@ -533,18 +525,24 @@ async def get_ai_description_from_structured_data(
         features_str = ", ".join(image_features[:5])
         prompt_context += f"Observed Visual Features: {features_str}\n"
 
+    lang = "Hebrew" if locale == "he" else "English"
+
     prompt = f"""Based on the following item details:
         {prompt_context}
-        Write a compelling and informative product description (2-4 sentences) suitable for a marketplace listing for a used item.
+        Write a compelling and informative product description (2-4 sentences) suitable someone who want to sell this used item.
         Make sure to mention the condition if it's notable (e.g., "like new", "good with some wear").
         Highlight key selling points. Maintain a friendly and trustworthy tone.
+        Respond with ONLY the description in language: {lang}.
         Description:"""
 
     return await generate_text_with_gemini(prompt)
 
 
 async def process_image_for_suggestions(
-    db: Session, file: UploadFile, filename: str
+    db: Session,
+    file: UploadFile,
+    filename: str,
+    locale: str = "en",
 ) -> AISuggestions:
     image_key, temp_image_url = await upload_image_to_gcs_temp(file, filename)
     if not image_key or not temp_image_url:
@@ -567,6 +565,7 @@ async def process_image_for_suggestions(
         suggested_attributes,
         all_image_features,
         web_entities,
+        locale,
     )
 
     suggested_condition = await get_ai_condition(
@@ -578,8 +577,9 @@ async def process_image_for_suggestions(
         title=suggested_title,
         category_key=suggested_category_key,
         attributes=suggested_attributes,
-        image_features=all_image_features,
         condition=suggested_condition,
+        image_features=all_image_features,
+        locale=locale,
     )
 
     return AISuggestions(

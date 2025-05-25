@@ -13,6 +13,7 @@ import { I18nProvider } from "@/components/locale-context"
 import { translate } from '@/lib/utils';
 import { getCategories } from '@/services/api/categories';
 import { CategoriesProvider } from '@/components/categories-context';
+import { FavoritesProvider } from '@/hooks/use-favorites';
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.valorra.net"
 
@@ -80,7 +81,9 @@ export default async function RootLayout({
             <AuthProvider>
               <LocationProvider>
                 <CategoriesProvider categories={categories}>
-                  {children}
+                  <FavoritesProvider>
+                    {children}
+                  </FavoritesProvider>
                 </CategoriesProvider>
               </LocationProvider>
             </AuthProvider>

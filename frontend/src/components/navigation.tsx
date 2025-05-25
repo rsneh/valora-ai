@@ -178,6 +178,7 @@ export function Navigation({ categories = [] }: NavigationProps) {
                   <DropdownMenuContent>
                     <DropdownMenuItem onSelect={() => router.push("/my/profile")}>{t("navigation.profile")}</DropdownMenuItem>
                     <DropdownMenuItem onSelect={() => router.push("/my/ads")}>{t("navigation.ads")}</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => router.push("/my/favorites")}>{t("navigation.favorites")}</DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onSelect={handleLogout}><LogOutIcon />{t("navigation.logout")}</DropdownMenuItem>
                   </DropdownMenuContent>

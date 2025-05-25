@@ -7,6 +7,10 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useI18nContext } from "../locale-context";
 import { getCurrencySymbol } from "@/lib/currency";
+import { useFavorites } from "@/hooks/use-favorites";
+import { Heart } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
   product: Product;
@@ -15,10 +19,28 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, className, sizes }) => {
-  const { locale } = useI18nContext();
+  const { locale, t } = useI18nContext();
+  const { toast } = useToast();
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const [isFavorited, setIsFavorited] = useState(isFavorite(product.id));
   const category: Category | null = product.category ? (product.category as Category) : null;
   const categoryName = category ? (category[`name_${locale}` as keyof Category]) : null;
   const currencySign = getCurrencySymbol(product.currency!);
+
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleFavorite(product.id);
+    const newFavState = !isFavorited;
+    setIsFavorited(newFavState);
+    toast({
+      title: newFavState
+        ? t("productDescription.addedToFavorites")
+        : t("productDescription.removedFromFavorites"),
+      description: product.title,
+      variant: "default",
+    });
+  };
   return (
     <div className={cn("relative animate-fadeIn", className)}>
       <Link href={`/product/${product.id}`}>
@@ -33,6 +55,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className, si
               fill
               sizes={sizes || "(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"}
             />
+            <button
+              onClick={handleToggleFavorite}
+              className="absolute top-2 right-2 p-2 bg-white bg-opacity-70 rounded-full shadow-md hover:bg-opacity-100 transition-all z-10"
+              aria-label={isFavorited ? t("productCard.removeFromFavorites") : t("productCard.addToFavorites")}
+            >
+              <Heart className={`h-5 w-5 ${isFavorited ? "fill-current text-red-500" : "text-gray-600"}`} />
+            </button>
           </div>
         )}
       </Link>

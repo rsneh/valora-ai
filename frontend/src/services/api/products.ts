@@ -27,7 +27,6 @@ export const getCategoryProducts = async (locale: string, category: string): Pro
       category,
     },
   });
-  console.log('Category Products:', response.data);
   return response.data;
 };
 
