@@ -148,7 +148,7 @@ export default function ChatPage() {
               autoComplete="off"
             />
             <Button type="submit" className="rounded-full w-10 h-10" disabled={isSendingMessage || !newMessage.trim()}>
-              {isSendingMessage && <Loader className="animate-spin mr-2" />}
+              {isSendingMessage && <Loader className="animate-spin" />}
               {!isSendingMessage && <SendHorizonalIcon className="rtl:rotate-180" />}
             </Button>
           </div>
