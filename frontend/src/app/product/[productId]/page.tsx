@@ -80,7 +80,7 @@ export default async function ProductPage(props: { params: Promise<{ productId: 
         <ProductBreadcrumbs product={product} categories={breadcrumbCategories} />
         <Suspense fallback={<div className="animate-pulse">Loading...</div>}>
           <div className="bg-white p-6 md:p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-7 gap-8 md:gap-12 lg:gap-x-16 lg:gap-y-10">
               <Gallery product={product} />
               <Suspense fallback={null}>
                 <ProductDescription product={product} />

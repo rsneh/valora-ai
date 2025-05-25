@@ -12,7 +12,7 @@ interface ProductDescriptionProps {
 export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product }) => {
   const { t } = useI18nContext();
   return (
-    <div className="flex flex-col justify-between shrink-1">
+    <div className="flex flex-col justify-between shrink-1 lg:col-span-3">
       <div>
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">{product.title}</h1>
         {/* <p className="text-md text-gray-500 mb-4">Special Black Edition</p> // Example Subtitle, not in Valora's model */}

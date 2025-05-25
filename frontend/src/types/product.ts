@@ -13,6 +13,12 @@ export type ImageItem = {
   file?: File;
 }
 
+export type ImageGallery = {
+  id: number;
+  product_id: number;
+  image_url: string;
+}
+
 export interface Product {
   id: number;
   title: string;
@@ -30,6 +36,7 @@ export interface Product {
   negotiation_notes_for_ai?: string;
   category?: Category;
   attributes?: Record<string, string>;
+  images?: ImageGallery[];
 }
 
 export interface ProductFormData {

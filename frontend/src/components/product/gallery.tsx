@@ -10,62 +10,84 @@ interface GalleryProps {
 }
 
 export const Gallery = ({ product }: GalleryProps) => {
-  const [mainImage, setMainImage] = useState<string | undefined>(undefined);
-  const [thumbnails, setThumbnails] = useState<string[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(product.image_url);
+  const [isChanging, setIsChanging] = useState(false);
 
+  // Ensure the main image is always set, even if product.image_url changes
   useEffect(() => {
-    if (product) {
-      setMainImage(product.image_url);
-      if (product.image_url) {
-        setThumbnails([
-          product.image_url,
-        ]); //.filter(img => img !== product.image_url).slice(0, 3)); // Show up to 3 other dummy thumbnails
-      }
-    }
-  }, [product]);
+    setSelectedImage(product.image_url);
+  }, [product.image_url]);
+
+  // Function to handle image change with animation
+  const handleImageChange = (imageUrl: string | undefined) => {
+    if (!imageUrl || selectedImage === imageUrl) return;
+
+    setIsChanging(true);
+    setTimeout(() => {
+      setSelectedImage(imageUrl);
+      setIsChanging(false);
+    }, 300); // Match this duration with CSS transition time
+  };
 
   return (
-    <div className="flex flex-col-reverse md:flex-row grow">
-      {thumbnails.length > 0 && (
-        <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto md:max-h-[450px] pe-4">
-          {thumbnails.map((thumbUrl, index) => (
-            <div
-              key={index}
-              onClick={() => setMainImage(thumbUrl)}
-              className={cn(
-                'group flex h-full w-full items-center justify-center overflow-hidden rounded-lg border bg-white hover:border-blue-600 dark:bg-black',
-                'w-20 h-20 cursor-pointer transition duration-300 ease-in-out',
-                {
-                  'border-2 border-blue-600': mainImage === thumbUrl,
-                  'border-neutral-200 dark:border-neutral-800': mainImage !== thumbUrl
-                }
-              )}
-            >
-              <Image
-                className={cn('relative h-full w-full object-contain', {
-                  'transition duration-300 ease-in-out group-hover:scale-105': mainImage === thumbUrl
-                })}
-                alt="Thumbnail"
-                width={80}
-                height={80}
-                src={thumbUrl}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden">
-        {mainImage && (
+    <div className="grid gap-4 lg:col-span-4 lg:row-end-1">
+      <div className="relative aspect-square w-full overflow-hidden rounded-lg">
+        <div className={cn(
+          "absolute inset-0 transition-opacity duration-300 ease-in-out",
+          isChanging ? "opacity-0" : "opacity-100"
+        )}>
           <Image
-            className="h-full w-full object-contain"
+            className="rounded-lg object-cover transition-transform duration-500 ease-in-out"
+            src={selectedImage || product.image_url || ''}
+            alt={product.title || "Product image"}
             fill
-            sizes="(min-width: 1024px) 66vw, 100vw"
-            alt={product.title}
-            src={mainImage as string}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority
           />
+        </div>
+      </div>
+      <div className="grid grid-cols-5 gap-4">
+        {product.image_url && (
+          <div
+            onClick={() => handleImageChange(product.image_url)}
+            className={cn(
+              "cursor-pointer transition-all duration-200 relative aspect-square overflow-hidden rounded-lg",
+              selectedImage === product.image_url ?
+                "ring-2 ring-offset-2 ring-blue-500 opacity-100 scale-100" :
+                "opacity-70 hover:opacity-100"
+            )}
+          >
+            <Image
+              className="rounded-lg object-cover"
+              src={product.image_url}
+              alt={product.title || "Product thumbnail"}
+              fill
+              sizes="(max-width: 768px) 20vw, 10vw"
+            />
+          </div>
         )}
+
+        {/* Additional product images */}
+        {product.images?.map((image) => (
+          <div
+            key={image.id}
+            onClick={() => handleImageChange(image.image_url)}
+            className={cn(
+              "cursor-pointer transition-all duration-200 relative aspect-square overflow-hidden rounded-lg",
+              selectedImage === image.image_url ?
+                "ring-2 ring-offset-2 ring-blue-500 opacity-100 scale-100" :
+                "opacity-70 hover:opacity-100 hover:scale-105"
+            )}
+          >
+            <Image
+              className="rounded-lg object-cover"
+              src={image.image_url}
+              alt={product.title || "Product thumbnail"}
+              fill
+              sizes="(max-width: 768px) 20vw, 10vw"
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
