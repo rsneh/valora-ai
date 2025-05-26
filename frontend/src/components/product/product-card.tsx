@@ -1,7 +1,6 @@
 "use client"
 
 import { Product } from "@/types/product";
-import { Category } from "@/types/category";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -20,12 +19,10 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, className, sizes, showFavorite = true }) => {
-  const { locale, t } = useI18nContext();
+  const { t } = useI18nContext();
   const { toast } = useToast();
   const { toggleFavorite, isFavorite } = useFavorites();
   const [isFavorited, setIsFavorited] = useState(isFavorite(product.id));
-  const category: Category | null = product.category ? (product.category as Category) : null;
-  const categoryName = category ? (category[`name_${locale}` as keyof Category]) : null;
   const currencySign = getCurrencySymbol(product.currency!);
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
