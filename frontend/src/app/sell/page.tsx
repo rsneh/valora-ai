@@ -15,7 +15,7 @@ export default async function SellPage() {
       <Navigation categories={categories} />
       <main className="bg-[url('/images/background-splash.png')] bg-center bg-cover flex-1 min-h-screen">
         <div className="relative py-8 md:py-12 overflow-hidden">
-          <div className="flex flex-col px-6 z-10">
+          <div className="flex flex-col z-10">
             <Suspense fallback={<SpinnerLoader />}>
               <SellerPostWizard />
             </Suspense>

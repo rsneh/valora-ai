@@ -192,6 +192,8 @@
   "adForm": {
     "titleLabel": "כותרת",
     "titlePlaceholder": "לדוגמה, Nintendo Switch",
+    "locationLabel": "מיקום",
+    "locationPlaceholder": "לדוגמה, רעננה, ישראל",
     "descriptionLabel": "תיאור",
     "descriptionPlaceholder": "לדוגמה, Nintendo Switch במצב מצוין.",
     "descriptionRequired": "תיאור הוא שדה חובה.",

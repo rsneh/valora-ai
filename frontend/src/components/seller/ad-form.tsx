@@ -26,8 +26,8 @@ import Image from "next/image";
 import ImageGalleryUpload from "../ui/image-gallery-upload";
 import AttributesInput from "../ui/attributes-input";
 import Message from "../ui/message";
+import AutoCompleteLocation from "../ui/autocomplete-location";
 
-// Define the Zod schema for ProductFormData
 const productFormSchema = z.object({
   id: z.number().optional(),
   title: z.string().min(1, { message: "Title is required." }),
@@ -37,6 +37,7 @@ const productFormSchema = z.object({
   category_id: z.number({ required_error: "Category is required." }),
   currency: z.string(),
   attributes: z.record(z.string(), z.string()).optional().default({}),
+  location_text: z.string().min(1, { message: "Location is required." }),
   images: z.array(z.object({
     src: z.string(),
     file: z.instanceof(File),
@@ -57,6 +58,7 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
   const { t, locale } = useI18nContext();
 
   const initCurrency = defaultValues?.currency || getLocalCurrency(locale);
+  console.log({ defaultValues });
 
   const form = useForm({
     resolver: zodResolver(productFormSchema),
@@ -210,6 +212,34 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
                   />
                 </div>
               </FormItem>
+
+              <FormField
+                control={form.control}
+                name="location_text"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("adForm.locationLabel")}</FormLabel>
+                    <FormControl>
+                      <AutoCompleteLocation
+                        placeholder={t("adForm.locationPlaceholder")}
+                        initialValue={defaultValues?.location_text || ""}
+                        onLocationSelect={(location) => {
+                          console.log({ location });
+
+                          field.onChange(location?.name || "");
+                          // setLocation({
+                          //   location_text: location?.name,
+                          //   latitude: location?.latitude,
+                          //   longitude: location?.longitude,
+                          // });
+                          // setShowSearch(false);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}

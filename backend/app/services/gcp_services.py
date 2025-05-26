@@ -506,34 +506,64 @@ async def get_ai_description_from_structured_data(
     attributes: Optional[Dict[str, Any]],
     condition: Optional[str],
     image_features: List[str],
+    web_entities: List[str],
     locale: str = "en",
 ) -> Optional[str]:
 
-    prompt_context = f"Item Title: {title or 'Used Item'}\n"
+    prompt_context_parts = []
+    if title:
+        prompt_context_parts.append(f"Item Title: {title}")
+
     if category_key:
         category_obj = category_service.get_category_by_key(db, category_key)
         category_desc_for_prompt = (
             category_obj.description_for_ai if category_obj else category_key
         )
-        prompt_context += f"Category: {category_desc_for_prompt}\n"
+        if category_desc_for_prompt:
+            prompt_context_parts.append(f"Category Context: {category_desc_for_prompt}")
+
     if condition:
-        prompt_context += f"Condition: {condition}\n"
+        # prompt_context_parts.append(f"Condition: {condition}")
+        pass
+
     if attributes:
-        attr_str = ", ".join([f"{k}: {v}" for k, v in attributes.items()])
-        prompt_context += f"Key Attributes: {attr_str}\n"
+        attr_str = ", ".join(
+            [
+                f"{k.replace('_', ' ').capitalize()}: {v}"
+                for k, v in attributes.items()
+                if v
+            ]
+        )  # Format attributes nicely
+        if attr_str:
+            prompt_context_parts.append(f"Key Attributes: {attr_str}")
+
+    # Combine image_features and web_entities for a richer visual summary
+    visual_summary_parts = []
     if image_features:
-        features_str = ", ".join(image_features[:5])
-        prompt_context += f"Observed Visual Features: {features_str}\n"
+        visual_summary_parts.extend(image_features[:3])  # Top 3 image labels/objects
+    if web_entities:
+        visual_summary_parts.extend(web_entities[:2])  # Top 2 web entities
+
+    if visual_summary_parts:
+        features_str = ", ".join(list(set(visual_summary_parts)))  # Unique visual cues
+        prompt_context_parts.append(f"Observed Visual Cues: {features_str}")
+
+    prompt_context = "\n".join(prompt_context_parts)
+    if not prompt_context.strip():  # Ensure there's some context
+        prompt_context = "Details about the item based on an image."
 
     lang = "Hebrew" if locale == "he" else "English"
 
-    prompt = f"""Based on the following item details:
+    prompt = f"""Based on the following item information:
         {prompt_context}
-        Write a compelling and informative product description (2-4 sentences) suitable someone who want to sell this used item.
-        Make sure to mention the condition if it's notable (e.g., "like new", "good with some wear").
-        Highlight key selling points. Maintain a friendly and trustworthy tone.
+        Write an objective and informative description (around 2-3 concise sentences) for this used item.
+        Focus on accurately describing what the item is, its main characteristics as observed or inferred, and its general state.
+        If the condition is particularly notable (e.g., 'Like New and hardly used', or 'Fair with some visible scuffs'), incorporate that naturally.
+        Avoid overly enthusiastic or "salesy" language (e.g., no "amazing deal!", "must-have!"). The goal is to provide clear, factual information to help a buyer understand the item.
+        Also avoid mentioning the category or title directly in the description, as it should be inferred from the context.
+        Emphasize details apparent from the provided information and visual cues.
         Respond with ONLY the description in language: {lang}.
-        Description:"""
+        Informative Description:"""
 
     return await generate_text_with_gemini(prompt)
 
@@ -568,9 +598,10 @@ async def process_image_for_suggestions(
         locale,
     )
 
-    suggested_condition = await get_ai_condition(
-        all_image_features, web_entities, suggested_category_key, suggested_attributes
-    )
+    # suggested_condition = await get_ai_condition(
+    #     all_image_features, web_entities, suggested_category_key, suggested_attributes
+    # )
+    suggested_condition = ProductConditionEnum.GOOD
 
     suggested_description = await get_ai_description_from_structured_data(
         db=db,
@@ -579,6 +610,7 @@ async def process_image_for_suggestions(
         attributes=suggested_attributes,
         condition=suggested_condition,
         image_features=all_image_features,
+        web_entities=web_entities,
         locale=locale,
     )
 

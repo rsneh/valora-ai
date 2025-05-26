@@ -13,7 +13,7 @@ interface AutoCompleteProps {
   label?: string;
   placeholder?: string;
   onLocationSelect: (location: LocationSuggestion | null) => void;
-  initialValue?: LocationSuggestion | null;
+  initialValue?: string | null;
   disabled?: boolean;
   required?: boolean;
 }
@@ -26,9 +26,9 @@ const AutoCompleteLocation: React.FC<AutoCompleteProps> = ({
   disabled = false,
   required = false,
 }) => {
-  const [inputValue, setInputValue] = useState<string>(initialValue?.name || '');
+  const [inputValue, setInputValue] = useState<string>(initialValue || '');
   const [filteredLocations, setFilteredLocations] = useState<LocationSuggestion[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<LocationSuggestion | null>(initialValue || null);
+  const [selectedLocation, setSelectedLocation] = useState<LocationSuggestion | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,8 +73,8 @@ const AutoCompleteLocation: React.FC<AutoCompleteProps> = ({
 
   useEffect(() => {
     if (initialValue) {
-      setInputValue(initialValue.name);
-      setSelectedLocation(initialValue);
+      setInputValue(initialValue);
+      setSelectedLocation(null);
     } else {
       // If initialValue is explicitly null or undefined, clear the input
       setInputValue('');

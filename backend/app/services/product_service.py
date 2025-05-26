@@ -38,7 +38,7 @@ async def create_product(
         title=product_in.title,
         price=product_in.price,
         description=product_in.description,
-        category_id=product_in.category,
+        category_id=product_in.category_id,
         image_url=permanent_image_url,
         condition=product_in.condition,
         seller_id=seller_id,

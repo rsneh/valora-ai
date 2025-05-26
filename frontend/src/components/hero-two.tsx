@@ -51,7 +51,7 @@ export default function HeroTwo() {
       </div>
 
       {/* Animated robot */}
-      <div className="absolute bottom-0 right-0 w-96 h-96">
+      <div className="absolute bottom-0 right-0 w-72 h-72 md:w-96 md:h-96">
         <RoboAnimation />
       </div>
     </div>

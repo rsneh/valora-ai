@@ -168,7 +168,7 @@ export default function SellerPostWizard() {
             <h3 className="w-full text-center font-bold text-2xl text-gray-900 mb-5 md:text-4xl">
               {t("postWizard.aiSuggestionsReadyTitle")}
             </h3>
-            <div className="bg-white p-6 rounded-md shadow-md">
+            <div className="bg-white">
               <SellerAdForm
                 defaultValues={productFormData}
                 topCategories={categories}
