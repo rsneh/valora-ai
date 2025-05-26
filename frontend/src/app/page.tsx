@@ -5,6 +5,7 @@ import { CategoriesSection } from "@/components/categories-section"
 import { getCategories } from "@/services/api/categories"
 import { getLocaleFromRequest } from "@/lib/dictionaries"
 import HeroTwo from "@/components/hero-two"
+import Faq02 from "@/components/faq"
 
 export default async function HomePage() {
   const locale = await getLocaleFromRequest();
@@ -17,6 +18,7 @@ export default async function HomePage() {
         <HeroTwo />
         <IntelligentFeatures />
         <CategoriesSection categories={categories} />
+        <Faq02 />
       </main>
       <Footer />
     </div>

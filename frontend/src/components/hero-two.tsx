@@ -12,7 +12,7 @@ export default function HeroTwo() {
   return (
     <div className="relative min-h-[calc(100vh-76px)] flex pt-48 md:items-center md:pt-0">
       {/* Floating papers background */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden" dir="ltr">
         <FloatingItems count={12} />
       </div>
 

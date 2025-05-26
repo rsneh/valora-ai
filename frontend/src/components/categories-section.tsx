@@ -16,7 +16,7 @@ export function CategoriesSection({ categories = [] }: CategoriesSectionProps) {
     <section id="categories" className="px-6 space-y-6 py-8 bg-gray-50 md:py-12 lg:py-24">
       <div className="mx-auto md:container">
         <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center mb-16">
-          <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl gradient-text">
+          <h2 className="font-heading text-3xl md:text-6xl gradient-text">
             {t("categoriesSection.title")}
           </h2>
         </div>

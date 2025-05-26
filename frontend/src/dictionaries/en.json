@@ -259,6 +259,51 @@
     "features": "Features",
     "warranty": "Warranty"
   },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subTitle": "Find your answers here. Can't find what you need? Contact us.",
+    "haveQuestions": "Still have questions?",
+    "weAreHere": "We're here to help you",
+    "contactUs": "Contact Us",
+    "questions": {
+      "1": {
+        "question": "What is Valora?",
+        "answer": "Valora is an intelligent platform designed to make selling your used goods incredibly simple and smart. We use advanced AI to help you create compelling ad posts quickly, suggest relevant details, and even assist with buyer communications. Our goal is to take the hassle out of selling your pre-owned items so you can connect with local buyers effortlessly, and for buyers to find great items with clear, reliable information."
+      },
+      "2": {
+        "question": "Is it free to use Valora?",
+        "answer": "Yes! During our current phase, all of Valora's AI-powered features for listing items, getting suggestions, using the AI Seller Assistant for buyer chats, and browsing items are completely free to use. We are focused on building a great community and refining our AI tools."
+      },
+      "3": {
+        "question": "How is my location used when I sell an item?",
+        "answer": "When you list an item, you'll provide your general location (e.g., \"Tel Aviv, Israel\"). We use this to help local buyers find your items. We do not display your exact address on the ad. The specific meetup point for a sale is something you arrange directly with the buyer (or through our AI assistant)."
+      },
+      "4": {
+        "question": "How do I find items on Valora?",
+        "answer": "You can browse items by category or search for specific things you're looking for. Valora also allows you to filter items by location, so you can easily find great deals on used goods near you. Our AI-assisted listings aim to provide clear and detailed information to help your search."
+      },
+      "5": {
+        "question": "What kind of items can I sell on Valora?",
+        "answer": "You can sell a wide variety of used goods! Popular categories include Electronics (phones, laptops, gaming consoles), Fashion & Apparel, Home Goods & Furniture, Kids & Babies items, Sports & Leisure equipment, Books & Media, Collectibles, and more. Our AI is trained to help you list items across many common categories."
+      },
+      "6": {
+        "question": "How does the \"Start AI Chat\" button work when I'm interested in an item?",
+        "answer": "When you are interested in a product, you'll begin a conversation with Valora's AI Seller Assistant. This AI represents the seller and can answer your questions about the item based on the ad details, discuss the price and terms for an in-person exchange."
+      },
+      "7": {
+        "question": "How do I purchase an item and arrange pickup?",
+        "answer": "Valora is currently designed for local, in-person transactions. Once you, the AI assistant, and potentially the human seller agree on the item's price and terms, yYou will coordinate a time and a place with the seller (often facilitated by the AI assistant). You inspect the item in person at the meetup. If you're happy with it, you complete the payment directly to the seller."
+      }
+    }
+  },
+  "locales": {
+    "en": {
+      "name": "English"
+    },
+    "he": {
+      "name": "עברית"
+    }
+  },
   "aiSuggestionTooltip": "Suggested by Valora AI",
   "cancel": "Cancel"
 }

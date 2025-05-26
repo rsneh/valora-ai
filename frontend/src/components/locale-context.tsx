@@ -2,8 +2,11 @@
 
 import { Dictionary } from '@/lib/dictionaries';
 import { translate } from '@/lib/utils';
-import { AppLocale, getSupportedLocales } from '@/locales/config';
+import { AppLocale, getLocaleCookieName, getSupportedLocales } from '@/locales/config';
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import { setCookie } from 'cookies-next/client';
+import { useRouter } from 'next/navigation';
+
 
 interface I18nContextType {
   locale: AppLocale;
@@ -33,28 +36,18 @@ export const I18nProvider: React.FC<I18nProviderProps> = ({
   initialLocale,
   initialDictionary,
 }) => {
+  const router = useRouter();
   const [locale, setLocaleState] = useState<AppLocale>(initialLocale);
   const [dictionary, setDictionary] = useState<Dictionary | null>(initialDictionary);
 
   const supportedLocales = getSupportedLocales();
+  const localeCookieParam = getLocaleCookieName();
 
-  // Function to change locale (e.g., called by a language switcher)
-  // This would typically involve navigating with a query param to trigger middleware
   const setLocale = (newLocale: AppLocale) => {
     if (supportedLocales.includes(newLocale)) {
-      // The actual navigation with query param will be handled by the switcher component
-      // This function is more for updating context if locale changes via other means
-      // or if you want to optimistically update and then navigate.
-      // For now, we assume navigation handles the cookie and server-side reload.
-      // On reload, initialLocale and initialDictionary will be updated.
-      console.log("Locale change requested in context to:", newLocale, "(actual change via navigation)");
-      // To reflect change immediately IF dictionary for newLocale is available client-side:
-      // async function loadNewDict() {
-      //   const newDict = await fetch(`/locales/${newLocale}.json`).then(res => res.json());
-      //   setDictionary(newDict);
-      //   setLocaleState(newLocale);
-      // }
-      // loadNewDict();
+      setCookie(localeCookieParam, newLocale, { path: '/' }); // Set cookie for client-side use
+      setLocaleState(newLocale); // Update context state immediately
+      router.refresh();
     }
   };
 
@@ -64,6 +57,10 @@ export const I18nProvider: React.FC<I18nProviderProps> = ({
     setLocaleState(initialLocale); // Ensure context locale matches server-provided initial locale
   }, [initialLocale, initialDictionary]);
 
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [locale]);
 
   const t = (key: string, scope?: string): string => translate(dictionary, key, scope);
 

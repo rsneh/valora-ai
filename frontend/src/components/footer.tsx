@@ -9,10 +9,14 @@ import { Logo } from "./ui/logo"
 import Image from "next/image"
 import { useI18nContext } from "./locale-context"
 import { useCategories } from "./categories-context"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu"
+import { DropdownMenuArrow, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
+import { getSupportedLocales } from "@/locales/config"
+import { ChevronsUpDownIcon, GlobeIcon } from "lucide-react"
 
 export function Footer() {
   const { categories } = useCategories();
-  const { t } = useI18nContext();
+  const { locale, setLocale, t } = useI18nContext();
 
   return (
     <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -50,6 +54,27 @@ export function Footer() {
                   />
                 </Button>
               </div>
+            </div>
+            <div className="mt-6">
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center py-2 px-4 border rounded-md bg-white text-gray-700 justify-between hover:bg-gray-100 transition-colors duration-150">
+                  <GlobeIcon className="h-4" />
+                  <span className="mx-2">{t(`locales.${locale}.name`)}</span>
+                  <ChevronsUpDownIcon className="h-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuArrow />
+                  {getSupportedLocales().map((_locale, index) => (
+                    <DropdownMenuItem
+                      key={index}
+                      onSelect={() => setLocale(_locale)}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+                    >
+                      {t(`locales.${_locale}.name`)}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
           <div className="flex flex-col space-y-8">
