@@ -41,7 +41,7 @@ export default function HeroTwo() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white px-8" asChild>
+            <Button size="lg" className="px-8" asChild>
               <Link href="/sell">
                 {t("hero.createAdButton")}
               </Link>
