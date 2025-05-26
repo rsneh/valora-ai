@@ -69,19 +69,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className, si
         )}
       </Link>
       <div className="mt-2 flex justify-between">
-        <div>
-          <h3 className="text-sm text-gray-500">
-            <Link href={`/product/${product.id}`}>
-              <span aria-hidden="true" className="absolute inset-0" />
-              {categoryName}
-            </Link>
-          </h3>
-          <p className="mt-1 text-sm text-gray-900">{product.title}</p>
-        </div>
-        <p className="font-medium text-gray-900 flex">
+        <p className="font-semibold text-gray-900 flex">
           {`${currencySign}${product.price}`}
         </p>
+        {product.location_text && (
+          <p className="mt-1 text-sm text-gray-500">
+            {product.location_text}
+          </p>
+        )}
       </div>
+      <h3 className="font-medium text-gray-900">
+        <Link href={`/product/${product.id}`}>
+          <span aria-hidden="true" className="absolute inset-0" />
+          {product.title}
+        </Link>
+      </h3>
     </div>
   );
 };

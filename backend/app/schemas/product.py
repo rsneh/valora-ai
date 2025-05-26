@@ -74,6 +74,7 @@ class Product(BaseModel):
     status: ProductStatusEnum = ProductStatusEnum.DRAFT
     image_url: Optional[str] = None
     seller_id: str
+    location_text: Optional[str] = None
     time_created: datetime
     time_updated: Optional[datetime] = None
     attributes: Optional[Dict[str, Any]] = None
