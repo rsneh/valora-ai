@@ -37,6 +37,7 @@ export interface Product {
   category?: Category;
   attributes?: Record<string, string>;
   images?: ImageGallery[];
+  distance_km?: number;
 }
 
 export interface ProductFormData {

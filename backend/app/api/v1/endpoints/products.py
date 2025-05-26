@@ -82,6 +82,9 @@ def read_products(
         limit=limit,
         category=category,
         seller_id=seller_id,
+        user_latitude=lat,
+        user_longitude=lng,
+        sort_by_distance=True,
     )
     return products
 

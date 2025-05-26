@@ -1,10 +1,39 @@
+import math
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import func
 from fastapi import HTTPException, status
 from app.db import models
 from app.schemas import product as product_schema
 from . import gcp_services, location_service, category_service
+
+
+def calculate_haversine_distance(lat1, lon1, lat2, lon2):
+    """
+    Calculate the great-circle distance in kilometers between two points
+    on the Earth's surface specified by latitude/longitude using the Haversine formula.
+
+    Args:
+        lat1, lon1: Latitude and longitude of point 1 (in decimal degrees)
+        lat2, lon2: Latitude and longitude of point 2 (in decimal degrees)
+
+    Returns:
+        Distance in kilometers between the two points
+    """
+    # Convert decimal degrees to radians
+    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+
+    # Haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    )
+    c = 2 * math.asin(math.sqrt(a))
+    # Radius of earth in kilometers
+    r = 6371
+    return c * r
 
 
 async def create_product(
@@ -61,11 +90,10 @@ def get_products(
     limit: int = 100,
     category: Optional[str] = None,
     seller_id: Optional[str] = None,
-    locale: str = "en",
     # Add other filters like location, price_range etc. as needed
-    # user_latitude: Optional[float] = None,
-    # user_longitude: Optional[float] = None,
-    # max_distance_km: Optional[float] = None
+    user_latitude: Optional[float] = None,  # NEW
+    user_longitude: Optional[float] = None,  # NEW
+    sort_by_distance: bool = False,  # NEW flag
 ) -> List[models.Product]:
     """
     Retrieves a list of products, with optional hierarchical category filtering.
@@ -88,8 +116,54 @@ def get_products(
         else:
             return []
 
-    query = query.order_by(models.Product.time_created.desc())
-    return query.offset(skip).limit(limit).all()
+    if sort_by_distance and user_latitude is not None and user_longitude is not None:
+        # Ensure products have latitude and longitude for distance sorting
+        query = query.filter(
+            models.Product.latitude.isnot(None), models.Product.longitude.isnot(None)
+        )
+
+        # Example using Haversine-like components for ordering (simplified for non-PostGIS)
+        # This is a rough approximation for ordering and not true distance.
+        # For accurate distance and filtering, a proper Haversine or PostGIS is needed.
+        # This simplified version orders by a proxy of distance.
+        # NOTE: For accurate distance sorting, especially with filtering by radius,
+        # using PostGIS ST_Distance is highly recommended for performance and accuracy.
+        # The expression below is a simplified way to get a sortable value roughly proportional to distance.
+        # It's not a true distance calculation.
+        delta_lat = models.Product.latitude - user_latitude
+        delta_lon = models.Product.longitude - user_longitude
+        # Order by squared Euclidean distance (cheaper than sqrt for sorting)
+        # This is NOT Haversine, but a simpler proxy for sorting.
+        distance_proxy = (delta_lat * delta_lat) + (
+            delta_lon
+            * delta_lon
+            * func.cos(func.radians(user_latitude))
+            * func.cos(func.radians(user_latitude))
+        )
+        query = query.order_by(distance_proxy.asc())
+    else:
+        # Default sorting if not by distance
+        query = query.order_by(models.Product.time_created.desc())
+
+    #
+    # Fetch products from the database
+    products = query.offset(skip).limit(limit).all()
+
+    # Calculate and add the distance to each product if user location is provided
+    if user_latitude is not None and user_longitude is not None:
+        for product in products:
+            if product.latitude is not None and product.longitude is not None:
+                # Calculate the precise distance using Haversine formula
+                distance = calculate_haversine_distance(
+                    user_latitude, user_longitude, product.latitude, product.longitude
+                )
+                # Add the distance as a dynamic attribute to the product
+                setattr(product, "distance_km", round(distance, 2))
+            else:
+                # Set distance to None if product doesn't have coordinates
+                setattr(product, "distance_km", None)
+
+    return products
 
 
 def get_product(db: Session, product_id: int) -> models.Product | None:

@@ -77,6 +77,7 @@ class Product(BaseModel):
     time_created: datetime
     time_updated: Optional[datetime] = None
     attributes: Optional[Dict[str, Any]] = None
+    distance_km: Optional[float] = None  # Distance in kilometers from user's location
 
     # Relationships
     category: Optional[Category] = None
