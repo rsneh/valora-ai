@@ -6,6 +6,7 @@ import { ChevronDown, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link";
 import { useI18nContext } from "./locale-context"
+import { Button } from "./ui/button"
 
 interface FAQItemProps {
   question: string
@@ -186,18 +187,13 @@ function Faq02() {
           </div>
           <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">{t("faq.haveQuestions")}</p>
           <p className="text-xs text-gray-600 dark:text-gray-400 mb-4">{t("faq.weAreHere")}</p>
-          <Link
-            href="mailto:contact@valoraai.net"
-            className={cn(
-              "px-4 py-2 text-sm rounded-md",
-              "bg-gray-900 dark:bg-white text-white dark:text-gray-900",
-              "hover:bg-gray-800 dark:hover:bg-gray-100",
-              "transition-colors duration-200",
-              "font-medium",
-            )}
-          >
-            {t("faq.contactUs")}
-          </Link>
+          <Button asChild size="lg">
+            <Link
+              href="mailto:contact@valoraai.net"
+            >
+              {t("faq.contactUs")}
+            </Link>
+          </Button>
         </motion.div>
       </div>
     </section>
