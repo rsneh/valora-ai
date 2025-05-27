@@ -176,7 +176,9 @@
     "photoToOfferTitleHighlight": " באופן מיידי",
     "photoToOfferDescription": "העלו תמונה של הפריט שלכם, והבינה המלאכותית החכמה שלנו תעזור לכם ליצור מודעה מתאימה שנועדה למכור במהירות וללא מאמץ.",
     "aiSuggestionsReadyTitle": "הצעות מוכנות! אנא בדקו ואשרו",
-    "errorCreateAdTitle": "לא ניתן ליצור את המודעה."
+    "errorCreateAdTitle": "לא ניתן ליצור את המודעה.",
+    "sellerContactFormTitle": "רק עוד שלב אחד אחרון",
+    "sellerContactFormDescription": "איפה נפגשים?"
   },
   "photoUploader": {
     "dragAndDrop": "ניתן לגרור ולשחרר תמונה או ללחוץ כאן",
@@ -191,9 +193,9 @@
   },
   "adForm": {
     "titleLabel": "כותרת",
-    "titlePlaceholder": "לדוגמה, Nintendo Switch",
+    "titlePlaceholder": "לדוגמה: Nintendo Switch",
     "locationLabel": "מיקום",
-    "locationPlaceholder": "לדוגמה, רעננה, ישראל",
+    "locationPlaceholder": "לדוגמה: רעננה, ישראל",
     "descriptionLabel": "תיאור",
     "descriptionPlaceholder": "לדוגמה, Nintendo Switch במצב מצוין.",
     "descriptionRequired": "תיאור הוא שדה חובה.",
@@ -216,6 +218,21 @@
     "noAttributes": "לא נוספו עדיין מאפיינים",
     "addAttribute": "הוספת מאפיין",
     "removeAttribute": "הסרת מאפיין",
+    "minPriceLabel": "מחיר מינימלי",
+    "minPricePlaceholder": "המחיר המינימלי הרצוי",
+    "minPriceHintText": "המחיר המינימלי הוא המחיר הנמוך ביותר עבור הפריט."
+  },
+  "contactForm": {
+    "emailLabel": "כתובת אימייל",
+    "nameLabel": "שם",
+    "phoneLabel": "טלפון",
+    "allowToShowContactLabel": "אפשר להציג לקונים את פרטי ההתקשרות שלי",
+    "contactDetails": "פרטי התקשרות",
+    "emailHintText": "כתובת האימייל לא מוצגת באתר, רק משמשת אותנו לשלוח לך עדכונים לגבי הפריט.",
+    "allowToShowContactHint": "אם אפשר להציג, קונים יוכלו ליצור איתך קשר ישירות במידה ויש הסכמה.",
+    "locationHintText": "המיקום משמש לדייק את התוצאות עבור קונים."
+  },
+  "form": {
     "errorMessage": "יש לתקן את השגיאות בשדות הבאים:",
     "errorTitle": "שגיאות בטופס"
   },

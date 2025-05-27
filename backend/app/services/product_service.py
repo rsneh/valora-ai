@@ -55,13 +55,6 @@ async def create_product(
             detail="Invalid image key or failed to process image.",
         )
 
-    latitude = product_in.latitude
-    longitude = product_in.longitude
-    if latitude is None or longitude is None:
-        latitude, longitude = await location_service.geocode_address(
-            location_text=product_in.location_text
-        )
-
     # 2. Create Product DB entry
     db_product = models.Product(
         title=product_in.title,
@@ -71,10 +64,7 @@ async def create_product(
         image_url=permanent_image_url,
         condition=product_in.condition,
         seller_id=seller_id,
-        latitude=latitude,
-        longitude=longitude,
-        location_text=product_in.location_text,
-        location_source=product_in.location_source,
+        min_acceptable_price=product_in.min_acceptable_price,
         attributes=product_in.attributes,
         currency=product_in.currency,
     )
@@ -197,6 +187,17 @@ async def update_product(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to update this product",
         )
+
+    latitude = product_in.latitude
+    longitude = product_in.longitude
+    if latitude is None or longitude is None:
+        latitude, longitude = await location_service.geocode_address(
+            location_text=product_in.location_text
+        )
+        product_in.latitude = latitude
+        product_in.longitude = longitude
+
+    product_in.status = models.ProductStatusEnum.ACTIVE
 
     update_data_dict = product_in.model_dump(exclude_unset=True)
     needs_commit = False

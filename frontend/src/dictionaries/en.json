@@ -178,7 +178,9 @@
     "photoToOfferTitleHighlight": " Instantly",
     "photoToOfferDescription": "Upload your item's photo, and our intelligent AI will help you create an optimized listing designed to sell quickly and effortlessly.",
     "aiSuggestionsReadyTitle": "Almost There! Finalize Your Smart Ad Details",
-    "errorCreateAdTitle": "Unable to create your ad."
+    "errorCreateAdTitle": "Unable to create your ad.",
+    "sellerContactFormTitle": "Just one more step",
+    "sellerContactFormDescription": "Please provide your contact details so buyers can reach you."
   },
   "photoUploader": {
     "dragAndDrop": "Drag and drop image or click here",
@@ -218,6 +220,21 @@
     "noAttributes": "No attributes added yet",
     "addAttribute": "Add Attribute",
     "removeAttribute": "Remove Attribute",
+    "minPriceLabel": "Minimum Price",
+    "minPricePlaceholder": "Enter minimum price",
+    "minPriceHintText": "This is the minimum price you are willing to accept for this item."
+  },
+  "contactForm": {
+    "emailLabel": "Email Address",
+    "nameLabel": "Name",
+    "phoneLabel": "Phone Number",
+    "allowToShowContactLabel": "Allow to show my contact information to buyers",
+    "contactDetails": "Contact Details",
+    "contactDetailsDescription": "Your contact details will be shared with potential buyers to facilitate communication.",
+    "allowToShowContactHint": "If you allow your contact details to be shown, buyers can reach you directly.",
+    "locationHintText": "Your location will be used to show your ad to buyers."
+  },
+  "form": {
     "errorMessage": "Please fix the errors in the following fields:",
     "errorTitle": "Form Validation Error"
   },

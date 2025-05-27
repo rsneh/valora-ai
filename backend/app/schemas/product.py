@@ -18,12 +18,7 @@ class ProductCreate(BaseModel):
     currency: str
     image_url: HttpUrl = None
     image_key: str
-    location_text: str
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
-    location_source: Optional[str] = None
     min_acceptable_price: Optional[float] = None
-    negotiation_notes_for_ai: Optional[str] = None
 
 
 # Properties to receive on item update
@@ -33,8 +28,16 @@ class ProductUpdate(BaseModel):
     price: Optional[float] = None
     category_id: Optional[int] = None
     status: ProductStatusEnum = ProductStatusEnum.DRAFT
-    currency: str
+    currency: Optional[float] = None
     condition: Optional[ProductConditionEnum] = None
+    seller_name: Optional[str] = None
+    seller_phone: Optional[str] = None
+    seller_allowed_to_contact: bool = False
+    location_text: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    location_source: Optional[str] = None
+    negotiation_notes_for_ai: Optional[str] = None
 
 
 class ProductInDBBase(BaseModel):
@@ -48,6 +51,9 @@ class ProductInDBBase(BaseModel):
     status: ProductStatusEnum = ProductStatusEnum.DRAFT
     image_url: Optional[str] = None
     seller_id: str
+    seller_name: Optional[str] = None
+    seller_phone: Optional[str] = None
+    seller_allowed_to_contact: bool = False
     time_created: datetime
     time_updated: Optional[datetime] = None
     location_text: Optional[str] = None

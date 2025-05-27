@@ -26,18 +26,17 @@ import Image from "next/image";
 import ImageGalleryUpload from "../ui/image-gallery-upload";
 import AttributesInput from "../ui/attributes-input";
 import Message from "../ui/message";
-import AutoCompleteLocation from "../ui/autocomplete-location";
 
 const productFormSchema = z.object({
   id: z.number().optional(),
   title: z.string().min(1, { message: "Title is required." }),
   description: z.string().min(1, { message: "Description is required." }),
   price: z.number({ required_error: "Price is required." }).positive({ message: "Price must be a positive number." }),
+  min_acceptable_price: z.number({ required_error: "Minimum acceptable price is required." }).positive({ message: "Minimum acceptable price must be a positive number." }),
   condition: z.enum(productConditionEnum).optional(),
   category_id: z.number({ required_error: "Category is required." }),
   currency: z.string(),
   attributes: z.record(z.string(), z.string()).optional().default({}),
-  location_text: z.string().min(1, { message: "Location is required." }),
   images: z.array(z.object({
     src: z.string(),
     file: z.instanceof(File),
@@ -58,7 +57,6 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
   const { t, locale } = useI18nContext();
 
   const initCurrency = defaultValues?.currency || getLocalCurrency(locale);
-  console.log({ defaultValues });
 
   const form = useForm({
     resolver: zodResolver(productFormSchema),
@@ -109,7 +107,7 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
   const handleFormSubmit = (data: ProductFormData) => onSubmit(data);
 
   const handleParentCategoryChange = (value: string) => {
-    const selectedCategory = topCategories.find((category) => category.category_key === value) || null;
+    const selectedCategory = topCategories.find((category) => category.id.toString() === value) || null;
     if (selectedCategory) {
       setParentCategory(selectedCategory);
       fetchSubCategories(selectedCategory.category_key);
@@ -140,8 +138,8 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
           <div className="mb-4">
             <Message
               type="error"
-              message={`${t("adForm.errorMessage")} ${errorFieldNames}`}
-              title={t("adForm.errorTitle")}
+              message={`${t("form.errorMessage")} ${errorFieldNames}`}
+              title={t("form.errorTitle")}
             />
             {formErrorMessages.length > 0 && (
               <ul className="mt-2 list-disc list-inside pl-4 text-sm text-red-600">
@@ -178,7 +176,7 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
               <FormItem>
                 <FormLabel>{t("adForm.categoryLabel")}</FormLabel>
                 <div className="grid grid-cols-2 gap-2">
-                  <Select value={parentCategory?.id.toString() ?? ""} onValueChange={handleParentCategoryChange}>
+                  <Select value={parentCategory?.id.toString() ?? ""} onValueChange={handleParentCategoryChange} dir={locale === "he" ? "rtl" : "ltr"}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
@@ -195,7 +193,7 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
                     render={({ field }) => (
                       <>
                         <FormControl>
-                          <Select value={field.value?.toString() ?? ""} onValueChange={field.onChange}>
+                          <Select value={field.value.toString()} onValueChange={(value) => field.onChange(parseInt(value))} dir={locale === "he" ? "rtl" : "ltr"}>
                             <SelectTrigger>
                               <SelectValue placeholder="Select Category" />
                             </SelectTrigger>
@@ -212,34 +210,6 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
                   />
                 </div>
               </FormItem>
-
-              <FormField
-                control={form.control}
-                name="location_text"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("adForm.locationLabel")}</FormLabel>
-                    <FormControl>
-                      <AutoCompleteLocation
-                        placeholder={t("adForm.locationPlaceholder")}
-                        initialValue={defaultValues?.location_text || ""}
-                        onLocationSelect={(location) => {
-                          console.log({ location });
-
-                          field.onChange(location?.name || "");
-                          // setLocation({
-                          //   location_text: location?.name,
-                          //   latitude: location?.latitude,
-                          //   longitude: location?.longitude,
-                          // });
-                          // setShowSearch(false);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               <FormField
                 control={form.control}
@@ -283,28 +253,52 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
                 </FormItem>
 
                 <FormItem>
-                  <FormLabel>{t("adForm.conditionLabel")}</FormLabel>
-                  <FormField
-                    control={form.control}
-                    name="condition"
-                    render={({ field }) => (
-                      <FormControl>
-                        <Select value={(field.value as unknown as string)} onValueChange={field.onChange}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Condition" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {productConditionEnum.map((cond, i) => (
-                              <SelectItem key={i} value={cond}>{t(`condition.${cond.toLowerCase()}`)}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                    )}
-                  />
+                  <FormLabel>{t("adForm.minPriceLabel")}</FormLabel>
+                  <div className="relative">
+                    <FormField
+                      control={form.control}
+                      name="min_acceptable_price"
+                      render={({ field }) => (
+                        <>
+                          <FormControl>
+                            <PriceInput
+                              {...field}
+                              setValue={handleSetCurrency}
+                              placeholder={t("adForm.minPricePlaceholder")}
+                              selectedCurrencyCode={selectedCurrencyCode}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                          {/* <p className="text-xs text-gray-600 mt-1">{t("adForm.minPriceHintText")}</p> */}
+                        </>
+                      )}
+                    />
+                  </div>
                 </FormItem>
-
               </div>
+
+              <FormItem>
+                <FormLabel>{t("adForm.conditionLabel")}</FormLabel>
+                <FormField
+                  control={form.control}
+                  name="condition"
+                  render={({ field }) => (
+                    <FormControl>
+                      <Select value={(field.value as unknown as string)} onValueChange={field.onChange} dir={locale === "he" ? "rtl" : "ltr"}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Condition" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {productConditionEnum.map((cond, i) => (
+                            <SelectItem key={i} value={cond}>{t(`condition.${cond.toLowerCase()}`)}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                  )}
+                />
+              </FormItem>
+
 
               {/* Attributes Section */}
               <FormItem>

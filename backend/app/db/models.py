@@ -99,6 +99,9 @@ class Product(Base):
     # Store Firebase User ID as the seller_id
     # Firebase UID is a string
     seller_id = Column(String, index=True, nullable=False)
+    seller_name = Column(String, nullable=True)
+    seller_phone = Column(String, nullable=True)
+    seller_allowed_to_contact = Column(Boolean, default=False)
 
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())

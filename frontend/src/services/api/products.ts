@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { type ProductFormData, type Product } from '@/types/product';
+import { type ProductFormData, type Product, ContactFormData } from '@/types/product';
 
 export const getProducts = async (token?: string, params?: Record<string, string | number | boolean | undefined>): Promise<Product[]> => {
   let queryString = '';
@@ -44,7 +44,7 @@ export const createProduct = async (formData: ProductFormData, token: string): P
   return response.data;
 };
 
-export const updateProduct = async (productId: string, formData: ProductFormData, token: string): Promise<Product> => {
+export const updateProduct = async (productId: string, formData: ProductFormData | ContactFormData, token: string): Promise<Product> => {
   const response = await apiClient.put<Product>(`/products/${productId}`, formData, {
     headers: {
       'Authorization': `Bearer ${token}`,

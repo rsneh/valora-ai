@@ -55,7 +55,17 @@ export interface ProductFormData {
   longitude?: number;
   location_source?: string;
   min_acceptable_price?: number;
-  negotiation_notes_for_ai?: string;
+  // negotiation_notes_for_ai?: string;
   attributes?: Record<string, string>;
   images?: ImageItem[];
+}
+
+export interface ContactFormData {
+  email?: string;
+  product_id?: number;
+  location_text?: string;
+  seller_name?: string;
+  seller_phone?: string;
+  seller_allowed_to_contact?: boolean;
+  // negotiation_notes_for_ai?: string;
 }

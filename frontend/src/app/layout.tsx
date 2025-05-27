@@ -19,16 +19,6 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.valorra.net"
 
 const inter = Inter({ subsets: ["latin"] })
 
-const metadata = {
-  icons: {
-    icon: [
-      { rel: "icon”", type: "image/png", sizes: "16x16", url: "/favicon-16x16.png" },
-      { rel: "icon”", type: "image/png", sizes: "32x32", url: "/favicon-32x32.png" },
-      { rel: "icon”", type: "image/png", sizes: "96x96", url: "/favicon-96x96.png" },
-    ],
-  },
-}
-
 export async function generateMetadata(
   // props: { params: { locale?: AppLocale } }, // locale might not be in params here
   // parent: ResolvingMetadata // Optional: to access parent metadata
@@ -52,9 +42,6 @@ export async function generateMetadata(
       locale: locale,
       type: 'website',
     },
-    icons: {
-      ...metadata.icons,
-    }
   };
 }
 

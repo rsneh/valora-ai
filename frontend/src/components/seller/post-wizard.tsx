@@ -3,18 +3,19 @@
 import { useEffect, useState } from 'react'
 import { PhotoUploader } from "@/components/ui/photo-uploader"
 import StepContent from '../ui/step-content'
-import { ProductFormData } from '@/types/product'
+import { ContactFormData, Product, ProductFormData } from '@/types/product'
 import { SellerAdForm } from './ad-form'
 import { useAuth } from '@/components/auth/auth-context'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
-import { createProduct } from '@/services/api/products'
+import { createProduct, updateProduct } from '@/services/api/products'
 import { Image as ImageData } from '@/types/image'
 import { Dialog, DialogContent, DialogTitle } from '../ui/dialog'
 import { useLocation } from '../location-context'
 import { useI18nContext } from '../locale-context'
 import { useCategories } from '../categories-context'
 import { uploadProductImages } from '@/services/api/images'
+import { SellerAdContactForm } from './contact-form'
 
 
 export default function SellerPostWizard() {
@@ -26,6 +27,7 @@ export default function SellerPostWizard() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
   const [productFormData, setProductFormData] = useState({} as ProductFormData);
+  const [product, setProduct] = useState<Product>();
   const { t } = useI18nContext();
 
   const {
@@ -73,7 +75,6 @@ export default function SellerPostWizard() {
   async function handleUploadComplete(imageData: ImageData): Promise<void> {
     setProductFormData({
       ...productFormData,
-      ...location,
       image_url: imageData.image_url,
       image_key: imageData.image_key,
       title: imageData.suggested_title,
@@ -84,6 +85,35 @@ export default function SellerPostWizard() {
     });
     nextStep();
   }
+
+  async function handleContactSubmit(formData: ContactFormData): Promise<void> {
+    if (!currentUser) {
+      return;
+    }
+
+    const newData = {
+      ...location,
+      ...formData,
+    };
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const updatedProduct = await updateProduct(product!.id.toString(), newData, firebaseIdToken!);
+      setProduct(updatedProduct);
+      toast({
+        title: t("postWizard.productCreatedTitle"),
+        description: t("postWizard.productCreatedDescription"),
+        variant: "success",
+      });
+      router.push(`/product/${updatedProduct.id}/`);
+    } catch (err: any) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   async function handleCreateProduct(formData: ProductFormData): Promise<void> {
     if (!currentUser) {
@@ -106,12 +136,13 @@ export default function SellerPostWizard() {
       if (newData.images && newData.images.length > 0) {
         await uploadProductImages(newProduct.id, newData.images || [], firebaseIdToken!);
       }
+      setProduct(newProduct);
       toast({
         title: t("postWizard.productCreatedTitle"),
         description: t("postWizard.productCreatedDescription"),
         variant: "success",
       });
-      router.push("/my/ads/");
+      nextStep();
     } catch (err: any) {
       setError(err);
     } finally {
@@ -168,31 +199,45 @@ export default function SellerPostWizard() {
             <h3 className="w-full text-center font-bold text-2xl text-gray-900 mb-5 md:text-4xl">
               {t("postWizard.aiSuggestionsReadyTitle")}
             </h3>
-            <div className="bg-white">
+            <div className="bg-white md:rounded-2xl md:shadow-md md:p-6">
               <SellerAdForm
                 defaultValues={productFormData}
                 topCategories={categories}
                 loading={loading}
                 onSubmit={handleCreateProduct}
               />
-              <Dialog open={!!error} onOpenChange={() => setError(null)}>
-                <DialogContent>
-                  <DialogTitle className="text-red-600">
-                    {t("postWizard.errorCreateAdTitle")}
-                  </DialogTitle>
-                  {error && (
-                    <span>{error.name}</span>
-                  )}
-                </DialogContent>
-              </Dialog>
             </div>
           </StepContent>
         )}
-        {/* {currentStep === 3 && (
-          <StepContent>
-            Step 4: Completion
+        {currentStep === 2 && (
+          <StepContent className="md:mt-10">
+            <h3 className="w-full text-center font-bold text-2xl text-gray-900 mb-5 md:text-4xl">
+              {t("postWizard.sellerContactFormTitle")}
+            </h3>
+            <div className="bg-white md:rounded-2xl md:shadow-md md:p-6">
+              <SellerAdContactForm
+                product={product}
+                defaultValues={{
+                  product_id: product?.id,
+                  email: currentUser?.email || '',
+                  seller_name: currentUser?.displayName || '',
+                  location_text: productFormData.location_text || location?.location_text || '',
+                }}
+                onSubmit={handleContactSubmit}
+              />
+            </div>
           </StepContent>
-        )} */}
+        )}
+        <Dialog open={!!error} onOpenChange={() => setError(null)}>
+          <DialogContent>
+            <DialogTitle className="text-red-600">
+              {t("postWizard.errorCreateAdTitle")}
+            </DialogTitle>
+            {error && (
+              <span>{error.name}</span>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

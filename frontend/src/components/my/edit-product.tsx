@@ -33,7 +33,7 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
     currency: product.currency,
     image_url: product.image_url,
     min_acceptable_price: product.min_acceptable_price,
-    negotiation_notes_for_ai: product.negotiation_notes_for_ai,
+    // negotiation_notes_for_ai: product.negotiation_notes_for_ai,
     attributes: product.attributes,
     condition: product.condition as typeof productConditionEnum[number],
   };
