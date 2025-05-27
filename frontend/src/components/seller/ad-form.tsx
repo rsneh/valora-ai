@@ -26,6 +26,8 @@ import Image from "next/image";
 import ImageGalleryUpload from "../ui/image-gallery-upload";
 import AttributesInput from "../ui/attributes-input";
 import Message from "../ui/message";
+import AutoCompleteLocation from "../ui/autocomplete-location";
+import { Separator } from "../ui/separator";
 
 const productFormSchema = z.object({
   id: z.number().optional(),
@@ -37,6 +39,10 @@ const productFormSchema = z.object({
   category_id: z.number({ required_error: "Category is required." }),
   currency: z.string(),
   attributes: z.record(z.string(), z.string()).optional().default({}),
+  location_text: z.string().optional(),
+  seller_phone: z.string({ required_error: "Phone number is required." }).optional(),
+  seller_name: z.string({ required_error: "Name is required." }).min(1, { message: "Name must be at least 1 character long." }).optional(),
+  seller_allowed_to_contact: z.boolean().optional(),
   images: z.array(z.object({
     src: z.string(),
     file: z.instanceof(File),
@@ -48,10 +54,17 @@ interface SellerAdFormProps {
   topCategories: Category[];
   categoryBreadcrumbs?: Category[];
   loading?: boolean;
+  editMode?: boolean;
   onSubmit: (data: ProductFormData) => void;
 }
 
-export function SellerAdForm({ defaultValues, topCategories, loading = false, onSubmit }: SellerAdFormProps) {
+export function SellerAdForm({
+  defaultValues,
+  topCategories,
+  loading = false,
+  editMode = false,
+  onSubmit,
+}: SellerAdFormProps) {
   const [subCategories, setSubCategories] = useState<Category[]>([]);
   const [parentCategory, setParentCategory] = useState<Category>();
   const { t, locale } = useI18nContext();
@@ -299,6 +312,88 @@ export function SellerAdForm({ defaultValues, topCategories, loading = false, on
                 />
               </FormItem>
 
+              {editMode && (
+                <>
+                  <Separator className="my-6" />
+                  <FormItem>
+                    <FormLabel>{t("adForm.locationLabel")}</FormLabel>
+                    <FormField
+                      control={form.control}
+                      name="location_text"
+                      render={({ field }) => (
+                        <>
+                          <FormControl>
+                            <AutoCompleteLocation
+                              placeholder={t("adForm.locationPlaceholder")}
+                              initialValue={defaultValues?.location_text || ""}
+                              onLocationSelect={(location) => {
+                                field.onChange(location?.name || "");
+                              }}
+                            />
+                          </FormControl>
+                          <p className="text-xs text-gray-600">{t("contactForm.locationHintText")}</p>
+                          <FormMessage />
+                        </>
+                      )}
+                    />
+                  </FormItem>
+                  <div className="grid grid-cols-2 gap-2">
+                    <FormField
+                      control={form.control}
+                      name="seller_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("contactForm.nameLabel")}</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="seller_phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("contactForm.phoneLabel")}</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="tel" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="seller_allowed_to_contact"
+                    render={({ field }) => (
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <FormControl className="me-2">
+                            <input
+                              {...field}
+                              id="allowToShowContact"
+                              type="checkbox"
+                              className="form-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                              checked={!!field.value}
+                              value={field.value ? "true" : "false"}
+                            />
+                          </FormControl>
+                          <FormLabel htmlFor="allowToShowContact">{t("contactForm.allowToShowContactLabel")}</FormLabel>
+                        </div>
+                        <FormMessage />
+                        <p className="text-xs text-gray-600">{t("contactForm.allowToShowContactHint")}</p>
+                      </div>
+                    )}
+                  />
+                </>
+              )}
+
+              <Separator className="my-6" />
 
               {/* Attributes Section */}
               <FormItem>

@@ -36,6 +36,7 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
     // negotiation_notes_for_ai: product.negotiation_notes_for_ai,
     attributes: product.attributes,
     condition: product.condition as typeof productConditionEnum[number],
+    location_text: product.location_text,
   };
 
   async function handleUpdateProduct(formData: ProductFormData): Promise<void> {
@@ -73,6 +74,7 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
           topCategories={categories}
           onSubmit={handleUpdateProduct}
           loading={loading}
+          editMode
         />
       </div>
     </div>

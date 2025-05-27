@@ -28,7 +28,7 @@ class ProductUpdate(BaseModel):
     price: Optional[float] = None
     category_id: Optional[int] = None
     status: ProductStatusEnum = ProductStatusEnum.DRAFT
-    currency: Optional[float] = None
+    currency: Optional[str] = None
     condition: Optional[ProductConditionEnum] = None
     seller_name: Optional[str] = None
     seller_phone: Optional[str] = None

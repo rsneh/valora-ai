@@ -20,13 +20,14 @@ export const Gallery = ({ product }: GalleryProps) => {
   return (
     <div className="grid gap-4 lg:col-span-4 lg:row-end-1">
       <div className="rounded-lg">
-        <div className="relative aspect-square w-full overflow-hidden duration-300 ease-in-out">
+        <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden">
           <Image
-            className="rounded-lg object-cover transition-transform duration-500 ease-in-out"
+            className="rounded-lg transition-transform duration-500 ease-in-out h-full w-full object-contain"
             src={selectedImage || product.image_url || ''}
             alt={product.title || "Product image"}
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(min-width: 1024px) 66vw, 100vw"
+
             priority
           />
         </div>

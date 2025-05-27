@@ -192,7 +192,7 @@ async def update_product(
     longitude = product_in.longitude
     if latitude is None or longitude is None:
         latitude, longitude = await location_service.geocode_address(
-            location_text=product_in.location_text
+            product_in.location_text
         )
         product_in.latitude = latitude
         product_in.longitude = longitude
