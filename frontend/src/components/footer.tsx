@@ -96,11 +96,11 @@ export function Footer() {
                     {t("footer.terms")}
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground">
                     {t("footer.contact")}
                   </Link>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>

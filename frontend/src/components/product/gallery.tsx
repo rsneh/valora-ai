@@ -27,7 +27,6 @@ export const Gallery = ({ product }: GalleryProps) => {
             alt={product.title || "Product image"}
             fill
             sizes="(min-width: 1024px) 66vw, 100vw"
-
             priority
           />
         </div>

@@ -23,6 +23,7 @@ export default function ChatPage() {
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<null | HTMLDivElement>(null); // For auto-scrolling
+  const inputRef = useRef<HTMLInputElement>(null); // Reference to the input field
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -53,7 +54,7 @@ export default function ChatPage() {
 
   const handleSendMessage = async (e?: React.FormEvent<HTMLFormElement>) => {
     if (e) e.preventDefault();
-    if (!newMessage.trim() || !product || !currentUser || !firebaseIdToken) return;
+    if (!newMessage.trim() || !product || !currentUser || !firebaseIdToken || isSendingMessage) return;
 
     const optimisticUserMessage: ChatMessage = {
       id: `temp-${Date.now()}`, // Temporary ID for optimistic update
@@ -84,6 +85,10 @@ export default function ChatPage() {
       setMessages(prevMessages => prevMessages.filter(msg => msg.id !== optimisticUserMessage.id)); // Remove optimistic
     } finally {
       setIsSendingMessage(false);
+      // Focus the input field after sending the message
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
   };
 
@@ -139,12 +144,12 @@ export default function ChatPage() {
         <form onSubmit={handleSendMessage}>
           <div className="flex items-center space-x-2 rtl:space-x-reverse">
             <Input
+              ref={inputRef}
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder={t("chat.typeMessagePlaceholder")}
               className="flex-grow p-2 border-0"
-              disabled={isSendingMessage}
               autoComplete="off"
             />
             <Button type="submit" className="rounded-full w-10 h-10" disabled={isSendingMessage || !newMessage.trim()}>
