@@ -26,6 +26,7 @@ class ProductConditionEnum(str, enum.Enum):
 
 class ProductStatusEnum(str, enum.Enum):  # Changed SAEnum to enum.Enum
     DRAFT = "DRAFT"
+    PENDING_SALE = "PENDING_SALE"
     ACTIVE = "ACTIVE"
     SOLD = "SOLD"
     ARCHIVED = "ARCHIVED"

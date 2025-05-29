@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 from app.db.models import MessageSenderType, ConversationStatus  # Import your enums
 
@@ -38,3 +38,15 @@ class Conversation(ConversationBase):
 
     class Config:
         from_attributes = True
+
+
+class SellerContactInfo(BaseModel):
+    # Define what contact info you might share. Start with email from Firebase user.
+    phone: Optional[str] = None  # If you store this and seller allows sharing
+    name: Optional[str] = None  # Seller's display name or first name
+
+
+class ChatMessageWithDealInfo(ChatMessage):  # Extends existing ChatMessage
+    deal_closed: bool = False
+    agreed_price: Optional[float] = None
+    seller_contact_info: Optional[SellerContactInfo] = None

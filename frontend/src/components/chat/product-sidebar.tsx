@@ -5,6 +5,7 @@ import { CheckCircleIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useI18nContext } from "../locale-context";
+import { getCurrencySymbol } from "@/lib/currency";
 
 interface ChatProductSidebarProps {
   product: Product;
@@ -12,6 +13,7 @@ interface ChatProductSidebarProps {
 
 const ChatProductSidebar = ({ product }: ChatProductSidebarProps) => {
   const { t } = useI18nContext();
+  const currencySign = getCurrencySymbol(product.currency ?? "USD");
   return (
     <aside className="hidden lg:flex flex-col w-72 bg-slate-50 dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 p-4 lg:w-96">
       <h2 className="text-lg font-semibold text-slate-700 dark:text-slate-100 mb-4">{t("chat.productDetails")}</h2>
@@ -25,7 +27,7 @@ const ChatProductSidebar = ({ product }: ChatProductSidebarProps) => {
           height={200}
         />
         <h3 className="font-medium text-slate-800 dark:text-slate-100">{product.title}</h3>
-        <p className="text-lg font-bold text-blue-500 dark:text-blue-400">${product.price.toFixed(2)}</p>
+        <p className="text-lg font-bold text-blue-500 dark:text-blue-400">{`${currencySign}${product.price}`}</p>
         {product.location_text && (
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t("chat.locationLabel")}: {product.location_text}</p>
         )}

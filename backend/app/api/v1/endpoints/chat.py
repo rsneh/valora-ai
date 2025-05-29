@@ -10,7 +10,7 @@ from app.lib.locale import AppLocale, get_locale_from_header
 router = APIRouter()
 
 
-@router.post("/send_message", response_model=chat_schemas.ChatMessage)
+@router.post("/send_message", response_model=chat_schemas.ChatMessageWithDealInfo)
 async def send_chat_message(
     message_in: chat_schemas.ChatMessageCreate,
     db: Session = Depends(database.get_db),
@@ -18,7 +18,7 @@ async def send_chat_message(
     current_user: user_schemas.User = Depends(get_current_active_user),
 ):
     try:
-        ai_response_message = (
+        ai_message_db, seller_contact_info, deal_closed = (
             await chat_service.process_buyer_message_and_get_ai_response(
                 db=db,
                 product_id=message_in.product_id,
@@ -27,7 +27,23 @@ async def send_chat_message(
                 locale=locale,
             )
         )
-        return ai_response_message
+        # Construct the response
+        response_data = {
+            "id": ai_message_db.id,
+            "conversation_id": ai_message_db.conversation_id,
+            "sender_id": ai_message_db.sender_id,
+            "sender_type": ai_message_db.sender_type,
+            "message_text": ai_message_db.message_text,
+            "timestamp": ai_message_db.timestamp,
+            "deal_closed": deal_closed,
+            "agreed_price": None,  # Populate if deal_closed and price is confirmed
+            "seller_contact_info": seller_contact_info,
+        }
+        # If deal_closed, you might want to get agreed_price from conversation or product if it was updated
+        # For now, contact_info is the main addition for deal closure.
+        # The AI's message text itself will contain the agreed price.
+
+        return chat_schemas.ChatMessageWithDealInfo(**response_data)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(ve))
     except Exception as e:
