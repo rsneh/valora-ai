@@ -50,7 +50,9 @@ export function Navigation({ categories = [] }: NavigationProps) {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className={cn("z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", {
+        "sticky top-0": categories.length === 0,
+      })}>
         <div className="px-4 flex h-16 items-center justify-between">
           <div className="hidden md:flex space-x-6 rtl:space-x-reverse items-baseline">
             <Logo />
