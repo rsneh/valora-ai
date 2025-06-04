@@ -22,7 +22,7 @@ export const ProductBreadcrumbs = ({ product, categories }: ProductBreadcrumbsPr
           </Link>
         </BreadcrumbLink>
       </BreadcrumbItem>
-      <BreadcrumbSeparator className="text-gray-400" />
+      <BreadcrumbSeparator className="text-gray-400 rtl:rotate-180" />
       {categories && categories.slice(0, 1).map((category, index) => (
         <React.Fragment key={index}>
           <BreadcrumbItem key={index} className="text-gray-500">
@@ -32,7 +32,7 @@ export const ProductBreadcrumbs = ({ product, categories }: ProductBreadcrumbsPr
               </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator className="text-gray-400" />
+          <BreadcrumbSeparator className="text-gray-400 rtl:rotate-180" />
         </React.Fragment>
       ))}
       <BreadcrumbItem className="text-gray-500">

@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useI18nContext } from "./locale-context"
 import { Category } from "@/types/category"
+import { useEffect } from "react"
 
 interface NavigationProps {
   categories: Category[];
@@ -47,6 +48,13 @@ export function Navigation({ categories = [] }: NavigationProps) {
       console.error("Logout error:", error);
     }
   };
+
+  useEffect(() => {
+    if (currentUser && (showLoginDialog || showRegisterDialog)) {
+      setShowRegisterDialog(false);
+      setShowLoginDialog(false);
+    }
+  }, [currentUser]);
 
   return (
     <>

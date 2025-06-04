@@ -38,7 +38,6 @@ const productFormSchema = z.object({
   condition: z.enum(productConditionEnum).optional(),
   category_id: z.number({ required_error: "Category is required." }),
   currency: z.string(),
-  attributes: z.record(z.string(), z.string()).optional().default({}),
   location_text: z.string().optional(),
   seller_phone: z.string({ required_error: "Phone number is required." }).optional(),
   seller_name: z.string({ required_error: "Name is required." }).min(1, { message: "Name must be at least 1 character long." }).optional(),
@@ -77,7 +76,6 @@ export function SellerAdForm({
       ...defaultValues,
       currency: defaultValues?.currency || initCurrency,
       images: defaultValues?.images || [],
-      attributes: defaultValues?.attributes || {},
     }
   });
 
@@ -392,30 +390,6 @@ export function SellerAdForm({
                   />
                 </>
               )}
-
-              <Separator className="my-6" />
-
-              {/* Attributes Section */}
-              <FormItem>
-                <FormLabel>{t("adForm.attributesLabel") || "Attributes"}</FormLabel>
-                <FormField
-                  control={form.control}
-                  name="attributes"
-                  render={({ field }) => (
-                    <FormControl>
-                      <AttributesInput
-                        value={field.value || {}}
-                        onChange={field.onChange}
-                        placeholder={{
-                          key: t("adForm.attributeKeyPlaceholder") || "Brand, Size, Model...",
-                          value: t("adForm.attributeValuePlaceholder") || "Value..."
-                        }}
-                      />
-                    </FormControl>
-                  )}
-                />
-                <FormMessage />
-              </FormItem>
             </div>
           </div>
 

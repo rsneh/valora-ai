@@ -586,9 +586,11 @@ async def process_image_for_suggestions(
     suggested_category_key = await get_ai_category_key(
         db, all_image_features, web_entities
     )
-    suggested_attributes = await get_ai_attributes(
-        db, suggested_category_key, all_image_features, web_entities
-    )
+    # suggested_attributes = await get_ai_attributes(
+    #     db, suggested_category_key, all_image_features, web_entities
+    # )
+    suggested_attributes = None
+
     suggested_title = await get_ai_title(
         db,
         suggested_category_key,

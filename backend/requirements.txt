@@ -2,6 +2,7 @@ alembic==1.15.2
 annotated-types==0.7.0
 anyio==4.9.0
 blinker==1.9.0
+brevo-python==1.1.2
 CacheControl==0.14.3
 cachetools==5.5.2
 certifi==2025.4.26
