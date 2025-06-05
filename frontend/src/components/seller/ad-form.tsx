@@ -24,7 +24,6 @@ import PriceInput from "../ui/price-input";
 import { getLocalCurrency } from "@/lib/utils";
 import Image from "next/image";
 import ImageGalleryUpload from "../ui/image-gallery-upload";
-import AttributesInput from "../ui/attributes-input";
 import Message from "../ui/message";
 import AutoCompleteLocation from "../ui/autocomplete-location";
 import { Separator } from "../ui/separator";

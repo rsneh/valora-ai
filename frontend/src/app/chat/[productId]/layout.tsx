@@ -1,8 +1,7 @@
-import ChatLeftSidebar from "@/components/chat/left-sidebar";
-import ChatProductSidebar from "@/components/chat/product-sidebar";
-import { getProductById } from "@/services/api/products";
 import { Suspense } from "react";
 import { ChatContextProvider } from "./chat-context";
+import ChatProductSidebar from "@/components/chat/product-sidebar";
+import { getProductById } from "@/services/api/products";
 import { Navigation } from "@/components/navigation";
 
 async function fetchProduct(productId: string) {
