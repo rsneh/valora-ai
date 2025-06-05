@@ -2,7 +2,6 @@
 
 import { getLocation } from '@/services/api/location';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { useAuth } from './auth/auth-context';
 import { Location } from '@/types/location';
 import Cookies from 'js-cookie';
 
@@ -27,7 +26,6 @@ interface LocationProviderProps {
 }
 
 export function LocationProvider({ children }: LocationProviderProps) {
-  const { firebaseIdToken } = useAuth();
   const [location, setLocationState] = useState<Location | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
