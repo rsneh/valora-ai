@@ -22,7 +22,7 @@ export const Gallery = ({ product }: GalleryProps) => {
       <div className="rounded-lg">
         <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden">
           <Image
-            className="rounded-lg transition-transform duration-500 ease-in-out h-full w-full object-contain"
+            className="rounded-lg transition-transform h-full w-full object-contain"
             src={selectedImage || product.image_url || ''}
             alt={product.title || "Product image"}
             fill
@@ -35,7 +35,13 @@ export const Gallery = ({ product }: GalleryProps) => {
         {product.image_url && (
           <div
             onClick={() => setSelectedImage(product.image_url)}
-            className="cursor-pointer transition-all duration-200 relative aspect-square overflow-hidden rounded-lg">
+            className={cn(
+              "cursor-pointer transition-all duration-200 relative aspect-square overflow-hidden rounded-lg",
+              selectedImage === product.image_url ?
+                "ring-2 ring-offset-2 ring-blue-500 opacity-100 scale-100" :
+                "opacity-70 hover:opacity-100 hover:scale-105"
+            )}
+          >
             <Image
               className="rounded-lg object-cover"
               src={product.image_url}
