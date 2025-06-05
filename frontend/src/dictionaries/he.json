@@ -11,7 +11,7 @@
     "createAdButton": "פרסום מודעה"
   },
   "navigation": {
-    "browse": "לכל המוצרים",
+    "browse": "לעיין בהכל",
     "login": "התחברות",
     "signup": "הרשמה",
     "createAd": "מודעה חדשה",
@@ -41,7 +41,7 @@
   },
   "categoriesSection": {
     "title": "קטגוריות פופולריות",
-    "browseAll": "לכל המוצרים"
+    "browseAll": "לעיין בהכל"
   },
   "categories": {
     "title": "קטגוריות",

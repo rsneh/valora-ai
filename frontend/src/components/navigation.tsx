@@ -67,6 +67,12 @@ export function Navigation({ categories = [] }: NavigationProps) {
           <div className="hidden md:flex space-x-6 rtl:space-x-reverse items-baseline">
             <Logo />
             <nav className="flex items-center space-x-6 text-sm mx-auto font-medium rtl:space-x-reverse">
+              <Link
+                href={`/browse`}
+                className="transition-colors hover:text-foreground/80 text-foreground"
+              >
+                {t("navigation.browse")}
+              </Link>
               {categories.filter((category) => category.image_path).map((category, index) => (
                 <Link
                   key={category.id}
@@ -98,6 +104,12 @@ export function Navigation({ categories = [] }: NavigationProps) {
                 <Logo />
               </SheetTitle>
               <nav className="grid gap-6 px-2 py-6">
+                <Link
+                  href={`/browse`}
+                  className="transition-colors hover:text-foreground/80 text-foreground"
+                >
+                  {t("navigation.browse")}
+                </Link>
                 {categories.filter((category) => category.image_path).map((category) => (
                   <Link
                     key={category.id}

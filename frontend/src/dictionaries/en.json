@@ -11,14 +11,14 @@
     "createAdButton": "Create Ad with AI"
   },
   "navigation": {
-    "browse": "Browse",
-    "login": "Log in",
+    "browse": "Browse All",
+    "login": "Log In",
     "signup": "Sign Up",
     "createAd": "Create Ad",
     "profile": "Profile",
     "ads": "Ads",
     "favorites": "Favorites",
-    "logout": "Log out",
+    "logout": "Log Out",
     "toggleMenu": "Toggle Menu",
     "logoutSuccess": "You've been logged out."
   },
@@ -41,7 +41,7 @@
   },
   "categoriesSection": {
     "title": "Popular Categories",
-    "browseAll": "All Products"
+    "browseAll": "Browse All"
   },
   "categories": {
     "title": "Categories",
