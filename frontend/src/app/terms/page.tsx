@@ -45,12 +45,12 @@ export default async function PrivacyPage() {
           <p className="line-y mt-6 max-w-2xl py-2 text-lg/7 font-medium text-pretty text-gray-600">Last updated on June 5, 2025</p>
           <div className="p-6 md:p-10 my-8 font-inter">
             <p className="mb-6 text-gray-700 leading-relaxed">
-              Welcome to {platformName} (the "Platform"), a neighborhood marketplace connecting individuals to buy and sell used goods. These Terms of Use ("Terms") govern your access to and use of our Platform and services (collectively, the "Services"). By accessing or using our Services, you agree to be bound by these Terms. If you do not agree to these Terms, you may not access or use our Services.
+              Welcome to {platformName} (the &quot;Platform&quot;), a neighborhood marketplace connecting individuals to buy and sell used goods. These Terms of Use (&quot;Terms&quot;) govern your access to and use of our Platform and services (collectively, the &quot;Services&quot;). By accessing or using our Services, you agree to be bound by these Terms. If you do not agree to these Terms, you may not access or use our Services.
             </p>
 
             <PolicySection title="1. The Platform">
               <p>
-                {platformName} provides an online platform that allows users to offer, sell, and buy used goods ("Items") in their local neighborhood. We are a facilitator and are not a party to any transaction between buyers and sellers. We do not own, inspect, buy, or sell any Items listed on the Platform. The actual contract for sale is directly between the seller and buyer.
+                {platformName} provides an online platform that allows users to offer, sell, and buy used goods (&quot;Items&quot;) in their local neighborhood. We are a facilitator and are not a party to any transaction between buyers and sellers. We do not own, inspect, buy, or sell any Items listed on the Platform. The actual contract for sale is directly between the seller and buyer.
               </p>
             </PolicySection>
 
@@ -135,14 +135,14 @@ export default async function PrivacyPage() {
                   <strong>Our Content:</strong> All content on the Platform, including text, graphics, logos, icons, images, audio clips, and software, is the property of {platformName} or its content suppliers and is protected by international copyright and other intellectual property laws.
                 </ListItem>
                 <ListItem>
-                  <strong>User Content:</strong> By posting content (e.g., listings, messages, reviews) on the Platform ("User Content"), you grant {platformName} a non-exclusive, worldwide, royalty-free, irrevocable, sublicensable, perpetual license to use, display, edit, modify, reproduce, distribute, store, and prepare derivative works of your User Content to provide the Services and to promote the Platform or the Services in general, in any formats and through any channels. You represent and warrant that you have all necessary rights to grant us this license.
+                  <strong>User Content:</strong> By posting content (e.g., listings, messages, reviews) on the Platform (&quot;User Content&quot;), you grant {platformName} a non-exclusive, worldwide, royalty-free, irrevocable, sublicensable, perpetual license to use, display, edit, modify, reproduce, distribute, store, and prepare derivative works of your User Content to provide the Services and to promote the Platform or the Services in general, in any formats and through any channels. You represent and warrant that you have all necessary rights to grant us this license.
                 </ListItem>
               </ul>
             </PolicySection>
 
             <PolicySection title="9. Disclaimers of Warranties">
               <p className="font-semibold">
-                THE SERVICES ARE PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS, WITHOUT ANY WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, AND ANY WARRANTIES ARISING OUT OF COURSE OF DEALING OR USAGE OF TRADE.
+                THE SERVICES ARE PROVIDED ON AN &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; BASIS, WITHOUT ANY WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, AND ANY WARRANTIES ARISING OUT OF COURSE OF DEALING OR USAGE OF TRADE.
               </p>
               <p className="mt-2">
                 {platformName.toUpperCase()} DOES NOT WARRANT THAT: (I) THE SERVICES WILL BE SECURE, UNINTERRUPTED, ERROR-FREE, OR AVAILABLE AT ANY PARTICULAR TIME OR LOCATION; (II) ANY DEFECTS OR ERRORS WILL BE CORRECTED; (III) THE SERVICES ARE FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS; OR (IV) THE RESULTS OF USING THE SERVICES WILL MEET YOUR REQUIREMENTS. YOUR USE OF THE SERVICES IS SOLELY AT YOUR OWN RISK.
@@ -163,7 +163,7 @@ export default async function PrivacyPage() {
 
             <PolicySection title="11. Indemnification">
               <p>
-                You agree to defend, indemnify, and hold harmless {platformName} and its affiliates, licensors, and service providers, and its and their respective officers, directors, employees, contractors, agents, licensors, suppliers, successors, and assigns from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees (including reasonable attorneys' fees) arising out of or relating to your violation of these Terms or your use of the Services, including, but not limited to, your User Content, any use of the Platform's content, services, and products other than as expressly authorized in these Terms, or your use of any information obtained from the Services, or your interactions with other users.
+                You agree to defend, indemnify, and hold harmless {platformName} and its affiliates, licensors, and service providers, and its and their respective officers, directors, employees, contractors, agents, licensors, suppliers, successors, and assigns from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees (including reasonable attorneys&apos; fees) arising out of or relating to your violation of these Terms or your use of the Services, including, but not limited to, your User Content, any use of the Platform&apos;s content, services, and products other than as expressly authorized in these Terms, or your use of any information obtained from the Services, or your interactions with other users.
               </p>
             </PolicySection>
 

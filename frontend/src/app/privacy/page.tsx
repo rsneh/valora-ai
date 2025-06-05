@@ -43,7 +43,7 @@ export default async function PrivacyPage() {
           <p className="line-y mt-6 max-w-2xl py-2 text-lg/7 font-medium text-pretty text-gray-600">Last updated on June 5, 2025</p>
           <div className="p-6 md:p-10 my-8 font-inter">
             <p className="mb-6 text-gray-700 leading-relaxed">
-              Welcome to {platformName} (the "Platform," "we," "us," or "our"). We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website {websiteUrl} and use our mobile application and services (collectively, the "Services"). Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access or use the Services.
+              Welcome to {platformName} (the &quot;Platform,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;). We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website {websiteUrl} and use our mobile application and services (collectively, the &quot;Services&quot;). Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access or use the Services.
             </p>
 
             <PolicySection title="1. Information We Collect" level={2}>
@@ -61,7 +61,7 @@ export default async function PrivacyPage() {
                   <strong>Transaction Information:</strong> While we are not a party to transactions, we may collect information related to your offers, purchases, or sales made through the Platform to facilitate communication and record-keeping within the Platform. We do not process payments directly; payment processing is handled by third-party payment processors (if applicable).
                 </ListItem>
                 <ListItem>
-                  <strong>Communications:</strong> If you contact us directly or communicate with other users through our Platform's messaging features, we may collect the content of those communications.
+                  <strong>Communications:</strong> If you contact us directly or communicate with other users through our Platform&apos;s messaging features, we may collect the content of those communications.
                 </ListItem>
                 <ListItem>
                   <strong>Profile Information:</strong> You may choose to provide additional information as part of your user profile.
@@ -114,7 +114,7 @@ export default async function PrivacyPage() {
                   <strong>With Service Providers:</strong> We may share your information with third-party vendors, consultants, and other service providers who perform services on our behalf, such as hosting, data analytics, customer service, email delivery, and marketing assistance. These service providers will only have access to your information to the extent necessary to perform their functions and are obligated to protect your information.
                 </ListItem>
                 <ListItem>
-                  <strong>For Legal Reasons:</strong> We may disclose your information if we believe it's necessary to comply with a legal obligation, protect and defend our rights or property, prevent fraud, protect the safety of our users or the public, or protect against legal liability.
+                  <strong>For Legal Reasons:</strong> We may disclose your information if we believe it&apos;s necessary to comply with a legal obligation, protect and defend our rights or property, prevent fraud, protect the safety of our users or the public, or protect against legal liability.
                 </ListItem>
                 <ListItem>
                   <strong>Business Transfers:</strong> In connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business by another company, your information may be transferred.
@@ -169,7 +169,7 @@ export default async function PrivacyPage() {
 
             <PolicySection title="10. Changes to This Privacy Policy" level={2}>
               <p>
-                We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date. You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page. We may also provide notice of material changes in other ways, such as through the Services or by email.
+                We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the &quot;Last Updated&quot; date. You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page. We may also provide notice of material changes in other ways, such as through the Services or by email.
               </p>
             </PolicySection>
 
