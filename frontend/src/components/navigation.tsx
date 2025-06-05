@@ -56,10 +56,12 @@ export function Navigation({ categories = [] }: NavigationProps) {
     }
   }, [currentUser]);
 
+  const shouldStick = categories.length !== 0 && pathname !== "/chat";
+
   return (
     <>
       <header className={cn("z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", {
-        "sticky top-0": categories.length === 0,
+        "sticky top-0": shouldStick,
       })}>
         <div className="px-4 flex h-16 items-center justify-between">
           <div className="hidden md:flex space-x-6 rtl:space-x-reverse items-baseline">

@@ -1,7 +1,11 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from app.db.models import MessageSenderType, ConversationStatus  # Import your enums
+from app.db.models import (
+    MessageSenderType,
+    ConversationStatus,
+    MessageType,
+)
 
 
 class ChatMessageBase(BaseModel):
@@ -17,6 +21,7 @@ class ChatMessage(ChatMessageBase):
     conversation_id: int
     sender_id: str  # Firebase UID or "VALORA_AI"
     sender_type: MessageSenderType
+    message_type: Optional[MessageType] = None
     timestamp: datetime
 
     class Config:

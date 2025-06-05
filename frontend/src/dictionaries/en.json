@@ -140,8 +140,9 @@
   "productDescription": {
     "description": "Description",
     "price": "Price",
+    "location": "Location",
     "noDescription": "No description available for this product.",
-    "startChat": "Start AI Chat",
+    "startChat": "Start Chat",
     "posted": "Posted",
     "updated": "Updated",
     "addToFavorites": "Add to Favorites",
@@ -149,7 +150,9 @@
     "addedToFavorites": "Added to Favorites",
     "removedFromFavorites": "Removed from Favorites",
     "attributes": "Attributes",
-    "conditionLabel": "Condition"
+    "conditionLabel": "Condition",
+    "sellerDescription": "Seller's description",
+    "sellerInfo": "Seller information"
   },
   "chat": {
     "valoraAIAlt": "Valora AI",
@@ -306,8 +309,8 @@
         "answer": "You can sell a wide variety of used goods! Popular categories include Electronics (phones, laptops, gaming consoles), Fashion & Apparel, Home Goods & Furniture, Kids & Babies items, Sports & Leisure equipment, Books & Media, Collectibles, and more. Our AI is trained to help you list items across many common categories."
       },
       "6": {
-        "question": "How does the \"Start AI Chat\" button work when I'm interested in an item?",
-        "answer": "When you are interested in a product, you'll begin a conversation with Valora's AI Seller Assistant. This AI represents the seller and can answer your questions about the item based on the ad details, discuss the price and terms for an in-person exchange."
+        "question": "How does the \"Start Chat\" button work when I'm interested in an item?",
+        "answer": "When you are interested in a product, you'll begin a conversation with Valora's AI Seller Assistant. This AI represents the seller and can answer your questions about the item based on seller details, discuss the price and terms for an in-person exchange."
       },
       "7": {
         "question": "How do I purchase an item and arrange pickup?",

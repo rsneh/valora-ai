@@ -46,6 +46,20 @@ class MessageSenderType(str, enum.Enum):  # Changed SAEnum to enum.Enum
     SELLER = "SELLER"  # Changed to uppercase
 
 
+class MessageType(str, enum.Enum):
+    GREETING = "GREETING"
+    GENERAL = "GENERAL"
+    QUESTION = "QUESTION"
+    OFFER_PROPOSED = "OFFER_PROPOSED"
+    OFFER_ACCEPTED = "OFFER_ACCEPTED"
+    OFFER_REJECTED = "OFFER_REJECTED"
+    CONDITION_QUESTION = "CONDITION_QUESTION"
+    LOCATION_QUESTION = "LOCATION_QUESTION"
+    QUESTION_TO_SELLER = "QUESTION_TO_SELLER"
+    CLOSED_DEAL = "CLOSED_DEAL"
+    UNAVAILABLE_PRODUCT = "UNAVAILABLE_PRODUCT"
+
+
 class Product(Base):
     __tablename__ = "products"
 
@@ -219,8 +233,15 @@ class ChatMessage(Base):
     )
     message_text = Column(Text, nullable=False)
     timestamp = Column(DateTime(timezone=True), server_default=func.now(), index=True)
-    # e.g., "text", "offer_proposed", "question_product_condition"
-    message_type = Column(String, nullable=True)
+    message_type = Column(
+        SAEnum(
+            MessageType,
+            name="message_type_enum",
+            create_type=False,
+        ),
+        nullable=True,
+        index=True,
+    )
 
     # Relationship
     conversation = relationship("Conversation", back_populates="messages")

@@ -2,10 +2,10 @@ import re
 from typing import List, Optional
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from firebase_admin import auth as firebase_auth_admin
 from app.db import models
-from app.services import ai_negotiation_service
+from app.services import ai_negotiation_service, gcp_services
 from app.schemas.chat import SellerContactInfo
+from firebase_admin import auth as firebase_auth_admin
 
 
 async def send_seller_deal_notification_email(
@@ -61,9 +61,6 @@ async def finalize_deal_from_ai(
                 None  # Cannot close deal if already sold or pending with another buyer
             )
 
-    product.status = (
-        models.ProductStatusEnum.PENDING_SALE
-    )  # Or SOLD if payment is confirmed (not in PoC)
     conversation.status = models.ConversationStatus.CLOSED_DEAL
 
     # Fetch seller's Firebase user details (email)
@@ -71,16 +68,18 @@ async def finalize_deal_from_ai(
     seller_firebase_user = None
     seller_phone = None
     seller_email = None
-    seller_name = product.seller_name or "Seller"
+    seller_name = "Seller"
+
+    if product.seller_allowed_to_contact:
+        # If seller allowed to contact, we can fetch their phone number
+        seller_phone = product.seller_phone if product.seller_phone else None
+        seller_name = product.seller_name if product.seller_name else "Seller"
+
     try:
         seller_firebase_user = firebase_auth_admin.get_user(product.seller_id)
         seller_email = seller_firebase_user.email
-        seller_name = product.seller_name if product.seller_name else "Seller"
-        seller_phone = product.seller_phone if product.seller_phone else None
-
     except Exception as e:
         print(f"Could not fetch seller email for notification: {e}")
-        seller_email = None  # No email, no notification
 
     if seller_email:
         await send_seller_deal_notification_email(
@@ -97,7 +96,7 @@ async def finalize_deal_from_ai(
         f"Deal finalized for product {product_id}, conversation {conversation_id}. Statuses updated."
     )
 
-    if product.seller_allowed_to_contact and seller_phone:
+    if seller_name and seller_phone:
         return SellerContactInfo(name=seller_name, phone=seller_phone)
     return None
 
@@ -151,6 +150,7 @@ async def get_or_create_conversation_with_greeting(
             sender_type=models.MessageSenderType.AI_ASSISTANT,
             message_text=ai_greeting_text,
             update_last_message_at=False,
+            message_type=models.MessageType.GREETING,  # Assign GREETING type
         )
         db.refresh(conversation)
     return conversation
@@ -163,12 +163,14 @@ def add_message_to_conversation(
     sender_type: models.MessageSenderType,
     message_text: str,
     update_last_message_at: bool = True,  # Added flag
+    message_type: Optional[models.MessageType] = None,  # Added message_type parameter
 ) -> models.ChatMessage:
     db_message = models.ChatMessage(
         conversation_id=conversation_id,
         sender_id=sender_id,
         sender_type=sender_type,
         message_text=message_text,
+        message_type=message_type,  # Save the message type
     )
     db.add(db_message)
 
@@ -197,6 +199,7 @@ async def process_buyer_message_and_get_ai_response(
     """
     Processes a buyer's message, gets an AI response, and saves both.
     """
+    lang = "Hebrew" if locale == "he" else "English"
     product = db.query(models.Product).filter(models.Product.id == product_id).first()
     if not product:
         raise ValueError("Product not found")  # Or a specific HTTPException
@@ -208,6 +211,7 @@ async def process_buyer_message_and_get_ai_response(
         seller_id=product.seller_id,
         locale=locale,
     )
+    print(product.status)
     if product.status != models.ProductStatusEnum.ACTIVE:
         # If product is not available, AI should ideally know this or be informed.
         # For now, let's have AI give a polite message.
@@ -219,6 +223,7 @@ async def process_buyer_message_and_get_ai_response(
             sender_id="VALORA_AI_ASSISTANT",
             sender_type=models.MessageSenderType.AI_ASSISTANT,
             message_text=unavailable_msg,
+            message_type=models.MessageType.UNAVAILABLE_PRODUCT,  # Assign UNAVAILABLE type
         )
         return ai_message_db, None, False
 
@@ -229,6 +234,7 @@ async def process_buyer_message_and_get_ai_response(
         sender_id=buyer_id,
         sender_type=models.MessageSenderType.BUYER,
         message_text=buyer_message_text,
+        message_type=models.MessageType.GENERAL,  # Default buyer message type to GENERAL, could add AI classification later
     )
 
     recent_messages_db = (
@@ -244,24 +250,45 @@ async def process_buyer_message_and_get_ai_response(
         for msg in reversed(recent_messages_db)  # Ensure chronological for prompt
     ]
 
-    ai_raw_response_text = await ai_negotiation_service.generate_ai_response(
+    # Call AI service to get both text and type
+    ai_response_data = await ai_negotiation_service.generate_ai_response(
         product=product,
         conversation_history=conversation_history_for_ai,
         buyer_message_text=buyer_message_text,
         locale=locale,
     )
+    print(f"DEBUG: AI Response Data: {ai_response_data}")
+    ai_message_for_buyer = ai_response_data.get("message_text", "")
+    ai_message_type = ai_response_data.get(
+        "message_type",
+        models.MessageType.GENERAL.value,
+    )  # Default to GENERAL if AI doesn't provide type
+
+    # Ensure message_type is a valid enum member
+    try:
+        ai_message_type_enum = models.MessageType(ai_message_type)
+    except ValueError:
+        print(
+            f"AI returned invalid message type: {ai_message_type}. Defaulting to GENERAL."
+        )
+        ai_message_type_enum = models.MessageType.GENERAL
 
     seller_contact_info_to_return: Optional[SellerContactInfo] = None
     deal_closed_flag = False
-    ai_message_for_buyer = ai_raw_response_text  # Default
 
     # Parse AI response for DEAL_AGREED signal
     deal_signal_match = re.search(
-        r"DEAL_AGREED: Price=(\d+\.?\d*), Location=([^\"]+)", ai_raw_response_text
+        r"DEAL_AGREED: Price=(\d+\.?\d*), Location=([^\"]+)", ai_message_for_buyer
     )
-    print("DEBUG: AI Response Text:", ai_raw_response_text)
+    print("DEBUG: AI Response Text:", ai_message_for_buyer)
     print("DEBUG: Deal Signal Match:", deal_signal_match)
-    if deal_signal_match and product.status == models.ProductStatusEnum.ACTIVE:
+
+    # Trigger deal finalization if AI suggests CLOSED_DEAL type AND signal is present
+    if (
+        ai_message_type_enum == models.MessageType.CLOSED_DEAL
+        and deal_signal_match
+        and product.status == models.ProductStatusEnum.ACTIVE
+    ):
         try:
             agreed_price = float(deal_signal_match.group(1))
             # agreed_location = deal_signal_match.group(2) # Location context, not strictly needed for DB update
@@ -275,15 +302,41 @@ async def process_buyer_message_and_get_ai_response(
                 agreed_price=agreed_price,
             )
             deal_closed_flag = True
-            # Modify AI's message to buyer to confirm and provide next steps
-            ai_message_for_buyer = ai_raw_response_text.split("DEAL_AGREED:")[
-                0
-            ].strip()  # Get text before signal
-            ai_message_for_buyer += f"\n\nGreat! We've agreed on ${agreed_price:.2f}. "
-            if seller_contact_info_to_return and seller_contact_info_to_return.phone:
-                ai_message_for_buyer += f"The seller has agreed to share their contact information. You can reach them at: {seller_contact_info_to_return.phone}. Please coordinate your meetup."
+            # Append contact info to the AI's message if available
+            # The AI's text should ideally confirm the deal, we just add contact info
+            close_deal_message_for_buyer = ""
+            if (
+                not ai_message_for_buyer.strip()
+            ):  # If AI returned empty text but CLOSED_DEAL type
+                close_deal_message_for_buyer = (
+                    f"Great! We've agreed on ${agreed_price:.2f}. "
+                )
+            elif "DEAL_AGREED:" in ai_message_for_buyer:
+                # Remove the signal from the final message shown to the user
+                close_deal_message_for_buyer = ai_message_for_buyer.split(
+                    "DEAL_AGREED:"
+                )[0].strip()
+                close_deal_message_for_buyer += (
+                    f"\n\nDeal agreed at ${agreed_price:.2f}. "
+                )
             else:
-                ai_message_for_buyer += "Please wait for the seller to contact you via Valora to arrange the meetup."
+                # If AI didn't include the signal but returned CLOSED_DEAL type, just add confirmation
+                close_deal_message_for_buyer += (
+                    f"\n\nDeal agreed at ${agreed_price:.2f}. "
+                )
+
+            if seller_contact_info_to_return and seller_contact_info_to_return.phone:
+                close_deal_message_for_buyer += f"The seller has agreed to share their contact information. You can reach them at: {seller_contact_info_to_return.phone}. Please coordinate your meetup."
+            else:
+                close_deal_message_for_buyer += "Please wait for the seller to contact you via Valora to arrange the meetup."
+
+            # Translate the final message if needed
+            if locale != "en":
+                close_deal_message_for_buyer = await gcp_services.translate_text_gemini(
+                    text_to_translate=close_deal_message_for_buyer, target_language=lang
+                )
+
+            ai_message_for_buyer = close_deal_message_for_buyer
 
             print(
                 f"DEAL AGREED and processed for product {product_id}. Price: {agreed_price}"
@@ -305,6 +358,7 @@ async def process_buyer_message_and_get_ai_response(
         sender_id="VALORA_AI_ASSISTANT",
         sender_type=models.MessageSenderType.AI_ASSISTANT,
         message_text=ai_message_for_buyer,
+        message_type=ai_message_type_enum,  # Use the AI's message type
     )
     return ai_message_db, seller_contact_info_to_return, deal_closed_flag
 

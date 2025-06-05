@@ -138,6 +138,7 @@
   "productDescription": {
     "description": "תיאור",
     "price": "מחיר",
+    "location": "מיקום",
     "noDescription": "אין תיאור זמין למוצר זה.",
     "startChat": "התחל שיחה",
     "posted": "פורסם",
@@ -147,7 +148,9 @@
     "addedToFavorites": "התווסף למועדפים!",
     "removedFromFavorites": "הוסר מהמועדפים!",
     "attributes": "פרטים נוספים",
-    "conditionLabel": "מצב המוצר"
+    "conditionLabel": "מצב המוצר",
+    "sellerDescription": "תיאור המוכר",
+    "sellerInfo": "פרטי המוכר"
   },
   "chat": {
     "valoraAIAlt": "Valora AI",

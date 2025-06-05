@@ -10,7 +10,7 @@ from app.lib.locale import AppLocale, get_locale_from_header
 router = APIRouter()
 
 
-@router.post("/send_message", response_model=chat_schemas.ChatMessageWithDealInfo)
+@router.post("/send_message", response_model=chat_schemas.ChatMessage)
 async def send_chat_message(
     message_in: chat_schemas.ChatMessageCreate,
     db: Session = Depends(database.get_db),
@@ -34,16 +34,14 @@ async def send_chat_message(
             "sender_id": ai_message_db.sender_id,
             "sender_type": ai_message_db.sender_type,
             "message_text": ai_message_db.message_text,
+            "message_type": ai_message_db.message_type,
             "timestamp": ai_message_db.timestamp,
-            "deal_closed": deal_closed,
-            "agreed_price": None,  # Populate if deal_closed and price is confirmed
-            "seller_contact_info": seller_contact_info,
         }
         # If deal_closed, you might want to get agreed_price from conversation or product if it was updated
         # For now, contact_info is the main addition for deal closure.
         # The AI's message text itself will contain the agreed price.
 
-        return chat_schemas.ChatMessageWithDealInfo(**response_data)
+        return chat_schemas.ChatMessage(**response_data)
     except ValueError as ve:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(ve))
     except Exception as e:

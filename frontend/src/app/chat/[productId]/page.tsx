@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Loader, SendHorizonalIcon } from 'lucide-react';
+import { HandshakeIcon, Loader, SendHorizonalIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/auth/auth-context';
 import { ChatMessage } from '@/types/chat';
@@ -11,6 +11,7 @@ import { useChatContext } from './chat-context';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { useI18nContext } from '@/components/locale-context';
+import { cn } from '@/lib/utils';
 
 export default function ChatPage() {
   const { t } = useI18nContext();
@@ -62,6 +63,7 @@ export default function ChatPage() {
       sender_id: currentUser.uid,
       sender_type: 'BUYER',
       message_text: newMessage,
+      message_type: 'GENERAL',
       timestamp: new Date().toISOString(),
     };
 
@@ -96,7 +98,7 @@ export default function ChatPage() {
     <>
       {/* Chat Header */}
       {product && (
-        <header className="bg-white dark:bg-slate-800 p-4 rounded-t-xl shadow-md border-b border-slate-200 dark:border-slate-700 flex items-center space-x-3 rtl:space-x-reverse">
+        <div className="bg-white dark:bg-slate-800 p-4 shadow-md border-b border-slate-200 dark:border-slate-700 flex items-center space-x-3 rtl:space-x-reverse md:rounded-t-xl">
           <Avatar>
             <AvatarImage
               src="/images/valora-ai-avatar.webp"
@@ -110,7 +112,7 @@ export default function ChatPage() {
             <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{t("chat.valoraAITitle")}</h2>
             <p className="text-xs text-green-500 dark:text-green-400">{t("chat.valoraAIOnline")}</p>
           </div>
-        </header>
+        </div>
       )}
 
       {/* Message List Area */}
@@ -122,16 +124,26 @@ export default function ChatPage() {
         )}
         {messages.map((msg, index) => {
           const isBuyer = msg.sender_type === 'BUYER';
+          const closeDeal = msg.message_type === 'CLOSED_DEAL';
           return (
-            <div key={msg.id || index} className={`flex ${isBuyer ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[70%] p-3 rounded-lg shadow ${isBuyer
-                ? 'bg-blue-500 text-white rounded-br-none'
-                : 'bg-gray-200 text-gray-800 rounded-bl-none'
-                }`}
-              >
+            <div key={msg.id || index} className={cn("flex relative", isBuyer ? 'justify-end' : 'justify-start')}>
+              <div className={cn(
+                "max-w-[70%] p-3 rounded-lg shadow",
+                isBuyer
+                  ? 'bg-blue-500 text-white rounded-br-none'
+                  : 'bg-gray-200 text-gray-800 rounded-bl-none',
+                {
+                  "bg-green-100 text-green-800 border-e-4 border-green-500": closeDeal && !isBuyer,
+                }
+              )}>
                 <p className="text-sm">{msg.message_text}</p>
-                <p className={`text-xs mt-1 ${isBuyer ? 'text-blue-200 text-right' : 'text-gray-500 text-left'}`}>
-                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                <p className={cn("text-xs mt-1 flex justify-between", isBuyer ? 'text-blue-200' : 'text-gray-500')}>
+                  {closeDeal && !isBuyer && (
+                    <HandshakeIcon className="w-5 h-5" strokeWidth={1} />
+                  )}
+                  <span className="ms-auto">
+                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
                 </p>
               </div>
             </div>
@@ -140,7 +152,7 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="bg-white dark:bg-slate-800 p-4 rounded-b-xl shadow-md border-t border-slate-200">
+      <div className="bg-white dark:bg-slate-800 p-4 shadow-md border-t border-slate-200 md:rounded-b-xl">
         <form onSubmit={handleSendMessage}>
           <div className="flex items-center space-x-2 rtl:space-x-reverse">
             <Input

@@ -6,7 +6,7 @@ from requests import Session
 from fastapi import UploadFile
 from typing import Any, Dict, List, Optional, Tuple
 from google.cloud import vision, storage
-from vertexai.generative_models import GenerativeModel
+from vertexai.generative_models import GenerativeModel, GenerationConfig
 from app.core.config import settings
 from app.services import category_service
 from app.db.models import ProductConditionEnum
@@ -229,8 +229,12 @@ async def generate_text_with_gemini(
     """
     Generates text using a Google Vertex AI Gemini model.
     """
+    generation_config = GenerationConfig(
+        temperature=0.2,
+    )
+
     try:
-        model = GenerativeModel(model_name)
+        model = GenerativeModel(model_name, generation_config=generation_config)
         response = await model.generate_content_async(prompt)
 
         # Accessing the text response - this might vary slightly based on SDK version and model
@@ -253,6 +257,40 @@ async def generate_text_with_gemini(
     except Exception as e:
         print(f"Error generating text with Vertex AI Gemini: {e}")
         return ""
+
+
+async def translate_text_gemini(
+    text_to_translate: str,
+    target_language: str,
+    source_language: str = "English",
+) -> str | None:
+    """
+    Translates text from a source language to a target language using the Gemini API.
+
+    Args:
+        text_to_translate: The text you want to translate.
+        target_language: The language to translate the text into (e.g., "Hebrew", "French", "Spanish").
+        source_language: The language of the input text (defaults to "English").
+
+    Returns:
+        The translated text as a string, or None if translation fails.
+    """
+    # Construct the prompt for the Gemini model
+    # It's crucial to be very specific in the prompt for best results.
+    prompt = (
+        f"Your sole task is to translate the following {source_language} text into {target_language}. "
+        f"Provide *only* the translated {target_language} text and nothing else. "
+        f"Do not include any explanations, introductions, or any text other than the translation itself.\n\n"
+        f'Original {source_language} text: "{text_to_translate}"'
+    )
+    translate_result = await generate_text_with_gemini(prompt)
+    if translate_result:
+        # Clean up the result to ensure it's just the translated text
+        translate_result = translate_result.strip()
+        return translate_result
+    else:
+        print(f"Translation failed for text: {text_to_translate}")
+        return None
 
 
 async def get_ai_category_key(
