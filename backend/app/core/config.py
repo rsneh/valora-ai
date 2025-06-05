@@ -14,13 +14,13 @@ if os.path.exists(dotenv_path):
 
 class Settings(BaseSettings):
     DATABASE_URL: str
-    GOOGLE_APPLICATION_CREDENTIALS: str  # Path for Docker
-    LOCAL_GCP_CREDENTIALS_PATH: str | None = (
-        None  # Optional: For local non-Docker execution
-    )
+    GOOGLE_APPLICATION_CREDENTIALS: str
+    LOCAL_GCP_CREDENTIALS_PATH: str | None = None
     FIREBASE_PROJECT_ID: str
     GCS_BUCKET_NAME: str
-    ADMIN_EMAIL: str | None = None  # Optional: For local
+    ADMIN_EMAIL: str | None = None
+    BREVO_API_KEY: str | None = None
+    FRONTEND_BASE_URL: str = "https://www.valoraai.net"
 
     class Config:
         env_file = ".env"

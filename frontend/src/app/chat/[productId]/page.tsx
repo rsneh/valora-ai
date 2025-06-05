@@ -46,6 +46,9 @@ export default function ChatPage() {
           setError(err.message || t("chat.couldNotLoadHistory"));
         } finally {
           setIsLoadingHistory(false);
+          setTimeout(() => {
+            inputRef.current?.focus();
+          }, 100);
         }
       };
       fetchHistory();

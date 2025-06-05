@@ -3,23 +3,31 @@ from typing import List, Optional
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.db import models
+from app.lib.brevo import send_email_template
 from app.services import ai_negotiation_service, gcp_services
 from app.schemas.chat import SellerContactInfo
-from firebase_admin import auth as firebase_auth_admin
+from app.security.firebase_auth import auth as firebase_auth_admin
 
 
-async def send_seller_deal_notification_email(
-    seller_email: str, product_title: str, buyer_id: str, agreed_price: float
+def send_seller_deal_notification_email(
+    seller_email: str,
+    seller_name: str,
+    product_title: str,
+    # buyer_id: str,
+    agreed_price: str,
 ):
-    print(
-        f"SIMULATING EMAIL to {seller_email}: Deal agreed for '{product_title}' with buyer {buyer_id} at ${agreed_price}."
+    email_context = {
+        "customer_name": seller_name,
+        "product_name": product_title,
+        "deal_value": agreed_price,
+    }
+
+    send_email_template(
+        template_name="close_deal.html",
+        to_email=seller_email,
+        subject=f"Deal Agreed for your item: {product_title} on Valora!",
+        context=email_context,
     )
-    # In a real app:
-    # await email_service.send_email(
-    #     to_email=seller_email,
-    #     subject=f"Deal Agreed for your item: {product_title} on Valora!",
-    #     html_content=f"<p>Congratulations! A buyer ({buyer_id}) has agreed to purchase your item '{product_title}' for ${agreed_price}. Please coordinate the meetup. You can view the chat on Valora.</p>"
-    # )
 
 
 async def finalize_deal_from_ai(
@@ -82,11 +90,13 @@ async def finalize_deal_from_ai(
         print(f"Could not fetch seller email for notification: {e}")
 
     if seller_email:
-        await send_seller_deal_notification_email(
+        formated_agreed_price = f"{agreed_price} {product.currency}"
+        send_seller_deal_notification_email(
             seller_email=seller_email,
-            product_title=product.display_title_en or product.slug,
-            buyer_id=buyer_id,
-            agreed_price=agreed_price,
+            product_title=product.title,
+            seller_name=seller_name,
+            # buyer_id=buyer_id,
+            agreed_price=formated_agreed_price,
         )
 
     db.add(product)
