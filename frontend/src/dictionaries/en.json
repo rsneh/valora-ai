@@ -135,7 +135,10 @@
     "tooltipText": "The location is used to show you the most relevant results.",
     "typeToSearch": "Type to search for a location",
     "loadingSuggestions": "Loading suggestions..",
-    "notFound": "No locations found for"
+    "notFound": "No locations found for",
+    "dialogTitle": "Change Location",
+    "dialogDescription": "Select your location to find items near you.",
+    "dialogApplyButton": "Apply"
   },
   "productDescription": {
     "description": "Description",

@@ -36,7 +36,7 @@ export default function ChildrenWrapper({ children }: { children: React.ReactNod
   return (
     <Fragment key={searchParams.get('q')}>
       <TooltipProvider>
-        <div className="flex flex-col justify-between mb-8 md:flex-row md:items-baseline">
+        <div className="flex flex-col justify-between mb-6 md:flex-row md:items-baseline">
           {category && (
             <h2 className="text-2xl font-bold mb-2 md:mb-0 md:text-4xl">
               {category.name}

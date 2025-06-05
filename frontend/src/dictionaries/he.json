@@ -133,7 +133,10 @@
     "tooltipText": "המיקום משמש כדי להציג בפניך את התוצאות הרלוונטיות ביותר.",
     "typeToSearch": "חיפוש לפי מיקום",
     "loadingSuggestions": "מחפש...",
-    "notFound": "לא נמצאו תוצאות עבור"
+    "notFound": "לא נמצאו תוצאות עבור",
+    "dialogTitle": "שינוי מיקום",
+    "dialogDescription": "יש לחבוראת המיקום שלך כדי למצוא פריטים קרובים אליך.",
+    "dialogApplyButton": "אישור"
   },
   "productDescription": {
     "description": "תיאור",

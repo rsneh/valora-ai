@@ -1,49 +1,64 @@
 "use client"
 
-import { Suspense, useState } from "react"
+import { Suspense } from "react"
 import { cn } from "@/lib/utils"
 import { useLocation } from "@/components/location-context"
-import { LocationEditIcon } from "lucide-react";
+import { MapPinIcon } from "lucide-react";
 import AutoComplete from "@/components/ui/autocomplete-location";
 import { useI18nContext } from "@/components/locale-context";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 function LocationFilter() {
   const { location, setLocation } = useLocation();
   const { t } = useI18nContext();
-  const [showSearch, setShowSearch] = useState(false);
   return (
     <div className="flex flex-col-reverse md:flex-row">
-      <div className={cn("transition-all duration-600 ease-out z-40 animate-width overflow-hidden mt-2 md:mt-0 md:mx-2", {
-        "w-full md:w-72": showSearch,
-        "w-0 h-0": !showSearch,
-      })}>
-        <AutoComplete
-          placeholder={t("locationFilter.inputPlaceholder")}
-          onLocationSelect={(location) => {
-            setLocation({
-              location_text: location?.name,
-              latitude: location?.latitude,
-              longitude: location?.longitude,
-            });
-            setShowSearch(false);
-          }}
-        />
-      </div>
-      <Tooltip>
-        <TooltipTrigger>
-          <div className="text-xs flex items-center gap-1" onClick={() => setShowSearch(!showSearch)}>
-            <LocationEditIcon className="text-gray-500" size={16} strokeWidth={2} />
-            <span className="text-neutral-500">{t("locationFilter.title")}</span>
-            <span>
-              {location?.location_text ?? t("locationFilter.unknown")}
-            </span>
+      <Dialog>
+        <DialogTrigger>
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="text-xs text-primary flex items-center gap-1 hover:underline cursor-pointer">
+                <MapPinIcon size={18} strokeWidth={2} />
+                <span>
+                  {location?.location_text ?? t("locationFilter.unknown")}
+                </span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs text-gray-500">{t("locationFilter.tooltipText")}</p>
+            </TooltipContent>
+          </Tooltip>
+        </DialogTrigger>
+        <DialogContent className="w-full max-w-sm md:max-w-2xl">
+          <DialogTitle>
+            {t("locationFilter.dialogTitle")}
+          </DialogTitle>
+          <p className="text-sm text-gray-500 p-0">
+            {t("locationFilter.dialogDescription")}
+          </p>
+          <div>
+            <AutoComplete
+              placeholder={t("locationFilter.inputPlaceholder")}
+              onLocationSelect={(location) => {
+                setLocation({
+                  location_text: location?.name,
+                  latitude: location?.latitude,
+                  longitude: location?.longitude,
+                });
+              }}
+            />
           </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p className="text-xs text-gray-500">{t("locationFilter.tooltipText")}</p>
-        </TooltipContent>
-      </Tooltip>
+          <div
+            style={{ display: "flex", marginTop: 25, justifyContent: "flex-end" }}
+          >
+            <DialogClose asChild>
+              <Button>{t("locationFilter.dialogApplyButton")}</Button>
+            </DialogClose>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
