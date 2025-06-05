@@ -221,12 +221,16 @@ async def process_buyer_message_and_get_ai_response(
         seller_id=product.seller_id,
         locale=locale,
     )
-    print(product.status)
+
     if product.status != models.ProductStatusEnum.ACTIVE:
         # If product is not available, AI should ideally know this or be informed.
         # For now, let's have AI give a polite message.
         # This could be a specific AI response or a hardcoded one.
-        unavailable_msg = f"I apologize, but it seems '{product.title}' is currently no available for new offers through this chat. You can browse other items!"
+        unavailable = f"I apologize, but it seems '{product.title}' is currently no available for new offers through this chat. You can browse other items!"
+        unavailable_msg = await gcp_services.translate_text_gemini(
+            text_to_translate=unavailable, target_language=lang
+        )
+
         ai_message_db = add_message_to_conversation(
             db=db,
             conversation_id=conversation.id,
@@ -235,7 +239,7 @@ async def process_buyer_message_and_get_ai_response(
             message_text=unavailable_msg,
             message_type=models.MessageType.UNAVAILABLE_PRODUCT,  # Assign UNAVAILABLE type
         )
-        return ai_message_db, None, False
+        return ai_message_db
 
     # Save buyer's message
     add_message_to_conversation(
@@ -284,7 +288,6 @@ async def process_buyer_message_and_get_ai_response(
         ai_message_type_enum = models.MessageType.GENERAL
 
     seller_contact_info_to_return: Optional[SellerContactInfo] = None
-    deal_closed_flag = False
 
     # Parse AI response for DEAL_AGREED signal
     deal_signal_match = re.search(
@@ -311,7 +314,6 @@ async def process_buyer_message_and_get_ai_response(
                 buyer_id=buyer_id,
                 agreed_price=agreed_price,
             )
-            deal_closed_flag = True
             # Append contact info to the AI's message if available
             # The AI's text should ideally confirm the deal, we just add contact info
             close_deal_message_for_buyer = ""
@@ -370,7 +372,7 @@ async def process_buyer_message_and_get_ai_response(
         message_text=ai_message_for_buyer,
         message_type=ai_message_type_enum,  # Use the AI's message type
     )
-    return ai_message_db, seller_contact_info_to_return, deal_closed_flag
+    return ai_message_db
 
 
 async def get_chat_history_with_greeting(  # Renamed for clarity
@@ -379,7 +381,7 @@ async def get_chat_history_with_greeting(  # Renamed for clarity
     buyer_id: str,
     seller_id: str,
     locale: str,
-) -> List[models.ChatMessage]:
+) -> models.Conversation:
     """
     Retrieves chat history. If conversation is new, it creates it with an AI greeting.
     """
@@ -401,4 +403,14 @@ async def get_chat_history_with_greeting(  # Renamed for clarity
         .order_by(models.ChatMessage.timestamp.asc())
         .all()
     )
-    return messages
+
+    return {
+        "id": conversation.id,
+        "product_id": conversation.product_id,
+        "buyer_id": conversation.buyer_id,
+        "seller_id": conversation.seller_id,
+        "created_at": conversation.created_at,
+        "last_message_at": conversation.last_message_at,
+        "status": conversation.status,
+        "messages": messages,
+    }

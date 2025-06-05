@@ -100,27 +100,29 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
           )}
         </ul>
         <div>
-          {productLocation &&
-            isLoaded ? (
-            <GoogleMap
-              mapContainerClassName="h-48 mt-2 rounded-lg shadow-md"
-              zoom={10}
-              center={productLocation}
-            >
-              <Circle
-                options={{
-                  fillOpacity: 0.1,
-                  strokeOpacity: 0.8,
-                  strokeWeight: 1,
-                }}
-                center={productLocation}
-                radius={5000}
-              />
-            </GoogleMap>
-          ) : (
-            <Skeleton className="h-48 mt-2 rounded-lg shadow-md" />
-          )
-          }
+          {productLocation && (
+            <>
+              {isLoaded ? (
+                <GoogleMap
+                  mapContainerClassName="h-48 mt-2 rounded-lg shadow-md"
+                  zoom={10}
+                  center={productLocation}
+                >
+                  <Circle
+                    options={{
+                      fillOpacity: 0.1,
+                      strokeOpacity: 0.8,
+                      strokeWeight: 1,
+                    }}
+                    center={productLocation}
+                    radius={5000}
+                  />
+                </GoogleMap>
+              ) : (
+                <Skeleton className="h-48 mt-2 rounded-lg shadow-md" />
+              )}
+            </>
+          )}
           {product.location_text && (
             <p className="text-sm mt-1 text-gray-600">{product.location_text}</p>
           )}

@@ -1,4 +1,4 @@
-import { ChatMessage, ChatMessageCreatePayload } from "@/types/chat";
+import { ChatMessage, ChatMessageCreatePayload, Conversation } from "@/types/chat";
 import apiClient from "./client";
 
 /**
@@ -7,9 +7,9 @@ import apiClient from "./client";
  * @param token - The Firebase ID token for authentication.
  * @returns Promise<ChatMessage[]>
  */
-export const getChatHistoryAPI = async (productId: string | number, token: string): Promise<ChatMessage[]> => {
+export const getChatHistoryAPI = async (productId: string | number, token: string): Promise<Conversation> => {
   try {
-    const response = await apiClient.get<ChatMessage[]>(`/chat/history/${productId}`, {
+    const response = await apiClient.get<Conversation>(`/chat/history/${productId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

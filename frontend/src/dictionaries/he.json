@@ -166,7 +166,9 @@
     "viewDetailsButton": "הצג פרטים",
     "sellerTipsTitle": "טיפים",
     "tipClearMessages": "היה ברור ותמציתי בהודעות שלך.",
-    "tipAgreePriceMeeting": "הסכם על מחיר ונקודת מפגש לפני שיתוף פרטים אישיים."
+    "tipAgreePriceMeeting": "הסכם על מחיר ונקודת מפגש לפני שיתוף פרטים אישיים.",
+    "closedConversation": "שיחה זו הסתיימה מרגע שהסכמתם על מחיר",
+    "isClosedPlaceholder": "שיחה זו סגורה. לא ניתן לשלוח הודעות נוספות."
   },
   "postWizard": {
     "unlockSellingTitle": "עולם חדש של מכירות חכמות!",

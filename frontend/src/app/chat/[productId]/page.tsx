@@ -22,15 +22,24 @@ export default function ChatPage() {
   const [newMessage, setNewMessage] = useState('');
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [isSendingMessage, setIsSendingMessage] = useState(false);
+  const [isClosed, setIsClosed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<null | HTMLDivElement>(null); // For auto-scrolling
   const inputRef = useRef<HTMLInputElement>(null); // Reference to the input field
 
-  const scrollToBottom = () => {
+  const watchMessages = () => {
+    // Check if closed deal status has changed
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.message_type === 'CLOSED_DEAL' && lastMessage.sender_type !== 'BUYER') {
+        setIsClosed(true);
+      }
+    }
+    // Scroll to the bottom of the messages area
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, [messages]); // Scroll when messages change
+  useEffect(watchMessages, [messages]); // Scroll when messages change
 
   // Fetch chat history
   useEffect(() => {
@@ -40,7 +49,10 @@ export default function ChatPage() {
         setError(null);
         try {
           const history = await getChatHistoryAPI(product!.id, firebaseIdToken);
-          setMessages(history);
+          if (history.status === 'CLOSED_DEAL') {
+            setIsClosed(true);
+          }
+          setMessages(history.messages || []);
         } catch (err: any) {
           console.error("Failed to fetch chat history:", err);
           setError(err.message || t("chat.couldNotLoadHistory"));
@@ -152,6 +164,11 @@ export default function ChatPage() {
             </div>
           );
         })}
+        {isClosed && (
+          <div className="text-sm text-gray-500 mt-8 bg-gray-100 p-2 rounded-lg md:w-96 text-center mx-auto">
+            {t("chat.closedConversation")}
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -163,11 +180,12 @@ export default function ChatPage() {
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              placeholder={t("chat.typeMessagePlaceholder")}
+              placeholder={t(isClosed ? "chat.isClosedPlaceholder" : "chat.typeMessagePlaceholder")}
               className="flex-grow p-2 border-0"
               autoComplete="off"
+              disabled={isClosed || isSendingMessage}
             />
-            <Button type="submit" className="rounded-full w-10 h-10" disabled={isSendingMessage || !newMessage.trim()}>
+            <Button type="submit" className="rounded-full w-10 h-10" disabled={isClosed || isSendingMessage || !newMessage.trim()}>
               {isSendingMessage && <Loader className="animate-spin" />}
               {!isSendingMessage && <SendHorizonalIcon className="rtl:rotate-180" />}
             </Button>

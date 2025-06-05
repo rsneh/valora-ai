@@ -7,6 +7,8 @@ export type MessageType = "GREETING" | "GENERAL" | "QUESTION" | "OFFER_PROPOSED"
   | "CLOSED_DEAL"
   | "UNAVAILABLE_PRODUCT";
 
+export type ConversationStatus = 'ACTIVE' | 'CLOSED_DEAL' | 'ARCHIVED';
+
 export interface ChatMessage {
   id: string;
   conversation_id: number;
@@ -21,4 +23,13 @@ export interface ChatMessage {
 export interface ChatMessageCreatePayload {
   product_id: number | string;
   message_text: string;
+}
+
+export interface Conversation {
+  id: number;
+  product_id: number;
+  buyer_id: string;
+  seller_id: string;
+  status: ConversationStatus;
+  messages: ChatMessage[];
 }

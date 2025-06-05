@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
 from app.db import database, models
 from app.schemas import chat as chat_schemas, user as user_schemas
 from app.services import chat_service
@@ -18,14 +17,12 @@ async def send_chat_message(
     current_user: user_schemas.User = Depends(get_current_active_user),
 ):
     try:
-        ai_message_db, seller_contact_info, deal_closed = (
-            await chat_service.process_buyer_message_and_get_ai_response(
-                db=db,
-                product_id=message_in.product_id,
-                buyer_id=current_user.uid,
-                buyer_message_text=message_in.message_text,
-                locale=locale,
-            )
+        ai_message_db = await chat_service.process_buyer_message_and_get_ai_response(
+            db=db,
+            product_id=message_in.product_id,
+            buyer_id=current_user.uid,
+            buyer_message_text=message_in.message_text,
+            locale=locale,
         )
         # Construct the response
         response_data = {
@@ -52,7 +49,7 @@ async def send_chat_message(
         )
 
 
-@router.get("/history/{product_id}", response_model=List[chat_schemas.ChatMessage])
+@router.get("/history/{product_id}", response_model=chat_schemas.Conversation)
 async def get_conversation_history(  # Made async to align with service
     product_id: int,
     db: Session = Depends(database.get_db),

@@ -168,7 +168,9 @@
     "viewDetailsButton": "View Details",
     "sellerTipsTitle": "Seller Tips",
     "tipClearMessages": "Be clear and concise in your messages.",
-    "tipAgreePriceMeeting": "Agree on a price and meeting point before sharing personal details."
+    "tipAgreePriceMeeting": "Agree on a price and meeting point before sharing personal details.",
+    "closedConversation": "This conversation is over when we have agreed and confirmed the deal",
+    "isClosedPlaceholder": "This conversation is closed. You can no longer send messages."
   },
   "postWizard": {
     "unlockSellingTitle": "Unlock Smart Selling!",

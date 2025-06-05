@@ -3,6 +3,8 @@ import { ChatContextProvider } from "./chat-context";
 import ChatProductSidebar from "@/components/chat/product-sidebar";
 import { getProductById } from "@/services/api/products";
 import { Navigation } from "@/components/navigation";
+import { getLocaleFromRequest } from "@/lib/dictionaries";
+import { getCategories } from "@/services/api/categories";
 
 async function fetchProduct(productId: string) {
   return await getProductById(productId);
@@ -16,9 +18,12 @@ type LayoutProps = {
 export default async function ChatLayout({ children, params }: LayoutProps) {
   const { productId } = await params;
   const product = await fetchProduct(productId);
+  const locale = await getLocaleFromRequest();
+  const categories = await getCategories(locale);
+
   return (
     <div className="h-screen flex flex-col">
-      <Navigation categories={[]} />
+      <Navigation categories={categories} />
       <div className="flex flex-1 antialiased text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-900 font-sans">
         <ChatProductSidebar product={product} />
         <ChatContextProvider product={product}>
