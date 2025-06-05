@@ -28,7 +28,7 @@ export interface Product {
   condition?: typeof productConditionEnum[number];
   currency?: string;
   image_url?: string;
-  seller_id: string;
+  // seller_id: string;
   time_created: string;
   time_updated?: string;
   location_text: string;
@@ -38,6 +38,8 @@ export interface Product {
   attributes?: Record<string, string>;
   images?: ImageGallery[];
   distance_km?: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface ProductFormData {

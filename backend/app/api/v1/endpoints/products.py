@@ -92,7 +92,6 @@ def read_products(
 @router.get("/{product_id}", response_model=product_schema.Product)
 def read_product(
     product_id: int,
-    locale: str = Query("en", description="Locale for category names."),
     db: Session = Depends(database.get_db),
 ):
     """

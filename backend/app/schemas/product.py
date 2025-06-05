@@ -79,12 +79,13 @@ class Product(BaseModel):
     condition: Optional[ProductConditionEnum] = None
     status: ProductStatusEnum = ProductStatusEnum.DRAFT
     image_url: Optional[str] = None
-    seller_id: str
     location_text: Optional[str] = None
     time_created: datetime
     time_updated: Optional[datetime] = None
     attributes: Optional[Dict[str, Any]] = None
     distance_km: Optional[float] = None  # Distance in kilometers from user's location
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
     # Relationships
     category: Optional[Category] = None

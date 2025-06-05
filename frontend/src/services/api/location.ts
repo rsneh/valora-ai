@@ -3,15 +3,9 @@ import apiClient from './client';
 import { Location, LocationSuggestion } from '@/types/location';
 
 export const getLocation = async (
-  token: string,
-  lat?: number,
-  lng?: number,
   options: AxiosRequestConfig = {},
 ): Promise<Location> => {
-  const response = await apiClient.get<Location>(`/location/?${lat ? `lat=${lat}` : ""}${lng ? `&lng=${lng}` : ""}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
+  const response = await apiClient.get<Location>(`/location/`, {
     ...options,
   });
   return response.data;

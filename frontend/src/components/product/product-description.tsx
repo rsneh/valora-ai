@@ -9,6 +9,10 @@ import { Heart } from "lucide-react";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { GoogleMap, useLoadScript, Circle } from '@react-google-maps/api';
+import { Skeleton } from "../ui/skeleton";
+
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API || "";
 
 interface ProductDescriptionProps {
   product: Product;
@@ -20,7 +24,15 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
   const { toggleFavorite, isFavorite } = useFavorites();
   const [isFavorited, setIsFavorited] = useState(isFavorite(product.id));
   const currencySign = getCurrencySymbol(product.currency!);
-  const attributeEntries = Object.entries(product.attributes ?? {});
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+  });
+
+  const productLocation = product.latitude && product.longitude ? {
+    lat: product.latitude,
+    lng: product.longitude,
+  } : null;
+
   return (
     <div className="lg:col-span-3">
       <div>
@@ -76,27 +88,43 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
       </div>
 
       <div className="mt-10 pt-10 border-t border-gray-200">
-        {attributeEntries && (
-          <div>
-            <h2 className="font-medium mb-2">
-              {t("productDescription.attributes")}
-            </h2>
-            <dl className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
-              {product.condition && (
-                <div>
-                  <dt className="font-medium text-sm text-gray-900">{t("productDescription.conditionLabel")}</dt>
-                  <dd className="mt-2 text-sm text-gray-500">{t(`condition.${product.condition.toLowerCase()}`)}</dd>
-                </div>
-              )}
-              {attributeEntries.map(([key, value], index) => (
-                <div key={index} className="">
-                  <dt className="font-medium text-sm text-gray-900">{t(`productAttributes.${key.toLowerCase()}`)}</dt>
-                  <dd className="mt-2 text-sm text-gray-500">{value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        )}
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">{t("productDescription.sellerDescription")}</h2>
+        <ul>
+          {product.condition && (
+            <li>
+              <div className="flex">
+                <span className="flex-1 font-bold">{t("productDescription.conditionLabel")}</span>
+                <span className="flex-1">{t(`condition.${product.condition.toLowerCase()}`)}</span>
+              </div>
+            </li>
+          )}
+        </ul>
+        <div>
+          {productLocation &&
+            isLoaded ? (
+            <GoogleMap
+              mapContainerClassName="h-48 mt-2 rounded-lg shadow-md"
+              zoom={10}
+              center={productLocation}
+            >
+              <Circle
+                options={{
+                  fillOpacity: 0.1,
+                  strokeOpacity: 0.8,
+                  strokeWeight: 1,
+                }}
+                center={productLocation}
+                radius={5000}
+              />
+            </GoogleMap>
+          ) : (
+            <Skeleton className="h-48 mt-2 rounded-lg shadow-md" />
+          )
+          }
+          {product.location_text && (
+            <p className="text-sm mt-1 text-gray-600">{product.location_text}</p>
+          )}
+        </div>
       </div>
     </div>
   )
