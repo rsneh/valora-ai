@@ -2,6 +2,7 @@ from typing import List, Optional, Union
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from app.db import database
+from app.db.models import ProductStatusEnum
 from app.schemas import product as product_schema
 from app.schemas import user as user_schema
 from app.services import product_service, gcp_services
@@ -72,12 +73,17 @@ def read_products(
         None, description="Filter products by category name"
     ),
     seller_id: Optional[str] = Query(None, description="Filter products by seller ID"),
+    current_user: Optional[user_schema.User] = Depends(get_optional_current_user),
 ):
     """
     Retrieve products.
     Supports pagination with skip and limit.
     Optionally filters by category.
     """
+    status = ProductStatusEnum.ACTIVE
+    if current_user and seller_id and current_user["uid"] == seller_id:
+        status = "ALL"
+
     products = product_service.get_products(
         db,
         skip=skip,
@@ -87,6 +93,7 @@ def read_products(
         user_latitude=lat,
         user_longitude=lng,
         sort_by_distance=True,
+        status=status,
     )
     return products
 

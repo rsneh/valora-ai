@@ -68,6 +68,7 @@ export function SellerAdForm({
 }: SellerAdFormProps) {
   const [subCategories, setSubCategories] = useState<Category[]>([]);
   const [parentCategory, setParentCategory] = useState<Category>();
+  const [currentCategory, setCurrentCategory] = useState<Category>();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const { t, locale } = useI18nContext();
 
@@ -104,6 +105,7 @@ export function SellerAdForm({
   }, [errors]);
 
   const selectedCurrencyCode = form.watch('currency');
+  const selectedCategory = form.watch('category_id');
 
   const handleSetCurrency = (key: string, value: string) => {
     if (key === 'currency') {
@@ -144,6 +146,15 @@ export function SellerAdForm({
     };
     fetchBreadcrumbs();
   }, [defaultValues?.category_id, locale]);
+
+  useEffect(() => {
+    if (selectedCategory) {
+      const selectedSubCategory = subCategories.find((category) => category.id === selectedCategory);
+      setCurrentCategory(selectedSubCategory);
+    } else {
+      setCurrentCategory(undefined);
+    }
+  }, [selectedCategory, subCategories]);
 
   return (
     <Form {...form}>
@@ -223,6 +234,9 @@ export function SellerAdForm({
                     )}
                   />
                 </div>
+                {currentCategory && (
+                  <p className="text-xs text-gray-600">{currentCategory.description}</p>
+                )}
               </FormItem>
 
               <FormField

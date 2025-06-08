@@ -81,9 +81,10 @@ def get_products(
     category: Optional[str] = None,
     seller_id: Optional[str] = None,
     # Add other filters like location, price_range etc. as needed
-    user_latitude: Optional[float] = None,  # NEW
-    user_longitude: Optional[float] = None,  # NEW
-    sort_by_distance: bool = False,  # NEW flag
+    user_latitude: Optional[float] = None,
+    user_longitude: Optional[float] = None,
+    sort_by_distance: bool = False,
+    status: Optional[str] = models.ProductStatusEnum.ACTIVE,
 ) -> List[models.Product]:
     """
     Retrieves a list of products, with optional hierarchical category filtering.
@@ -91,9 +92,10 @@ def get_products(
     OR products whose category key starts with the provided key followed by an underscore
     (e.g., category="electronics" will fetch "electronics", "electronics_laptops", "electronics_phones_smartphones").
     """
-    query = db.query(models.Product).filter(
-        models.Product.status == models.ProductStatusEnum.ACTIVE
-    )
+    query = db.query(models.Product)
+
+    if status and status != "ALL":
+        query = query.filter(models.Product.status == status)
 
     if seller_id:
         query = query.filter(models.Product.seller_id == seller_id)
