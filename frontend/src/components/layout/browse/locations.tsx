@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import { cn } from "@/lib/utils"
 import { useLocation } from "@/components/location-context"
 import { MapPinIcon } from "lucide-react";
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 
 function LocationFilter() {
   const { location, setLocation } = useLocation();
+  const [tmpLocation, setTmpLocation] = useState(location);
   const { t } = useI18nContext();
   return (
     <div className="flex flex-col-reverse md:flex-row">
@@ -44,7 +45,7 @@ function LocationFilter() {
             <AutoComplete
               placeholder={t("locationFilter.inputPlaceholder")}
               onLocationSelect={(location) => {
-                setLocation({
+                setTmpLocation({
                   location_text: location?.name,
                   latitude: location?.latitude,
                   longitude: location?.longitude,
@@ -56,7 +57,7 @@ function LocationFilter() {
             style={{ display: "flex", marginTop: 25, justifyContent: "flex-end" }}
           >
             <DialogClose asChild>
-              <Button>{t("locationFilter.dialogApplyButton")}</Button>
+              <Button onClick={() => setLocation(tmpLocation)}>{t("locationFilter.dialogApplyButton")}</Button>
             </DialogClose>
           </div>
         </DialogContent>
