@@ -7,7 +7,7 @@ import { MapPinIcon } from "lucide-react";
 import AutoComplete from "@/components/ui/autocomplete-location";
 import { useI18nContext } from "@/components/locale-context";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 function LocationFilter() {
@@ -18,7 +18,7 @@ function LocationFilter() {
       <Dialog>
         <DialogTrigger>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <div className="text-xs text-primary flex items-center gap-1 hover:underline cursor-pointer">
                 <MapPinIcon size={18} strokeWidth={2} />
                 <span>
@@ -35,9 +35,11 @@ function LocationFilter() {
           <DialogTitle>
             {t("locationFilter.dialogTitle")}
           </DialogTitle>
-          <p className="text-sm text-gray-500 p-0">
-            {t("locationFilter.dialogDescription")}
-          </p>
+          <DialogDescription asChild>
+            <p className="text-sm text-gray-500 p-0">
+              {t("locationFilter.dialogDescription")}
+            </p>
+          </DialogDescription>
           <div>
             <AutoComplete
               placeholder={t("locationFilter.inputPlaceholder")}

@@ -268,7 +268,8 @@
   },
   "productCard": {
     "addToFavorites": "הוסף למועדפים",
-    "removeFromFavorites": "הסרה מהמועדפים"
+    "removeFromFavorites": "הסרה מהמועדפים",
+    "kmAway": "ק\"מ"
   },
   "condition": {
     "new": "חדש",

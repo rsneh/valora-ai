@@ -1,28 +1,23 @@
 import apiClient from './client';
 import { type ProductFormData, type Product, ContactFormData } from '@/types/product';
 
-export const getProducts = async (token?: string, params?: Record<string, string | number | boolean | undefined>): Promise<Product[]> => {
-  let queryString = '';
-  if (params) {
-    const queryParts = Object.entries(params)
-      .filter(([, value]) => value !== undefined && value !== null && value !== '')
-      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`);
+type QueryParams = Record<string, string | number | boolean | undefined>;
 
-    if (queryParts.length > 0) {
-      queryString = `?${queryParts.join('&')}`;
-    }
-  }
-  const response = await apiClient.get<Product[]>(`/products/${queryString}`, {
+export const getProducts = async (token?: string, params?: QueryParams): Promise<Product[]> => {
+  const response = await apiClient.get<Product[]>(`/products/`, {
+    params,
     headers: token ? {
       "Authorization": `Bearer ${token}`,
     } : undefined,
   });
   return response.data;
+
 };
 
-export const getCategoryProducts = async (locale: string, category: string): Promise<Product[]> => {
-  const response = await apiClient.get<Product[]>('/products/', {
+export const getCategoryProducts = async (locale: string, category: string, params?: QueryParams): Promise<Product[]> => {
+  const response = await apiClient.get<Product[]>(`/products/`, {
     params: {
+      ...params,
       locale,
       category,
     },
