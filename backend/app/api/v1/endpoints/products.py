@@ -1,12 +1,14 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-
 from app.db import database
 from app.schemas import product as product_schema
 from app.schemas import user as user_schema
 from app.services import product_service, gcp_services
-from app.security.firebase_auth import get_current_active_user
+from app.security.firebase_auth import (
+    get_current_active_user,
+    get_optional_current_user,
+)
 
 router = APIRouter()
 
@@ -36,7 +38,7 @@ async def create_product(
             seller_id=current_user.uid,
         )
         await gcp_services.delete_gcs_image(
-            temp_image_key=product_data.image_key, current_user_id=current_user.uid
+            image_key=product_data.image_key, current_user_id=current_user.uid
         )
         return created_product
     except HTTPException as e:
@@ -89,10 +91,14 @@ def read_products(
     return products
 
 
-@router.get("/{product_id}", response_model=product_schema.Product)
+@router.get(
+    "/{product_id}",
+    response_model=Union[product_schema.Product, product_schema.ProductForEdit],
+)
 def read_product(
     product_id: int,
     db: Session = Depends(database.get_db),
+    current_user: Optional[user_schema.User] = Depends(get_optional_current_user),
 ):
     """
     Retrieve a specific product by its ID.
@@ -102,7 +108,11 @@ def read_product(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
         )
-    return db_product
+
+    if current_user and current_user["uid"] == db_product.seller_id:
+        return product_schema.ProductForEdit.model_validate(db_product)
+    else:
+        return product_schema.Product.model_validate(db_product)
 
 
 @router.put("/{product_id}", response_model=product_schema.Product)

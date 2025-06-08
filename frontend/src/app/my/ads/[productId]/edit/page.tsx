@@ -1,17 +1,55 @@
-import { Suspense } from 'react';
-import { notFound } from 'next/navigation';
-import { getProductById } from '@/services/api/products';
+"use client";
+
+import { useAuth } from '@/components/auth/auth-context';
 import { MyEditProductPage } from '@/components/my/edit-product';
+import { getProductById } from '@/services/api/products';
+import { Product } from '@/types/product';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-export default async function AdEditPage(props: { params: Promise<{ productId: string }> }) {
-  const params = await props.params;
-  const product = await getProductById(params.productId);
+async function getProduct(productId: string, firebaseIdToken?: string) {
+  try {
+    const updatedProduct = await getProductById(productId as string, firebaseIdToken!);
+    return updatedProduct;
+  } catch (err: any) {
+    console.error("Error fetching product:", err);
+    return null;
+  }
+}
 
-  if (!product) return notFound();
+export default function AdEditPage() {
+  const params = useParams();
+  const { productId } = params;
+  const { firebaseIdToken } = useAuth();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (firebaseIdToken && productId) {
+      const fetchProduct = async () => {
+        const fetchedProduct = await getProduct(productId as string, firebaseIdToken);
+
+        if (!fetchedProduct) {
+          console.log("Invalid product ID or product not found");
+          setIsLoading(false);
+        }
+
+        setProduct(fetchedProduct);
+        setIsLoading(false);
+      };
+      fetchProduct();
+    }
+  }, [productId, firebaseIdToken])
+
+  if (isLoading) return <div className="animate-pulse">Loading...</div>;
 
   return (
-    <Suspense fallback={<div className="animate-pulse">Loading...</div>}>
-      <MyEditProductPage product={product} />
-    </Suspense>
+    <>
+      {product ? (
+        <MyEditProductPage product={product!} />
+      ) : (
+        <div className="text-center text-red-500">Product not found</div>
+      )}
+    </>
   );
 }

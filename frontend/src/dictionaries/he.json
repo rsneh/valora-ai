@@ -228,7 +228,11 @@
     "removeAttribute": "הסרת מאפיין",
     "minPriceLabel": "מחיר מינימלי",
     "minPricePlaceholder": "המחיר המינימלי הרצוי",
-    "minPriceHintText": "המחיר המינימלי הוא המחיר הנמוך ביותר עבור הפריט."
+    "minPriceHintText": "המחיר המינימלי הוא המחיר הנמוך ביותר עבור הפריט.",
+    "deleteButton": "מחיקת מודעה",
+    "deleteConfirmationMessage": "האם אתה בטוח שברצונך למחוק את המודעה הזו? פעולה זו לא ניתנת לביטול.",
+    "deleteConfirmationTitle": "אישור מחיקת מודעה",
+    "deleteSuccessMessage": "המודעה נמחקה בהצלחה."
   },
   "contactForm": {
     "emailLabel": "כתובת אימייל",

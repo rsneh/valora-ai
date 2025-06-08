@@ -40,6 +40,9 @@ export interface Product {
   distance_km?: number;
   latitude?: number;
   longitude?: number;
+  seller_name?: string;
+  seller_phone?: string;
+  seller_allowed_to_contact?: boolean;
 }
 
 export interface ProductFormData {
@@ -62,6 +65,7 @@ export interface ProductFormData {
   images?: ImageItem[];
   seller_name?: string;
   seller_phone?: string;
+  seller_allowed_to_contact?: boolean;
 }
 
 export interface ContactFormData {

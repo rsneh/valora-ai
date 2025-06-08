@@ -10,7 +10,6 @@ import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 import { createProduct, updateProduct } from '@/services/api/products'
 import { Image as ImageData } from '@/types/image'
-import { Dialog, DialogContent, DialogTitle } from '../ui/dialog'
 import { useLocation } from '../location-context'
 import { useI18nContext } from '../locale-context'
 import { useCategories } from '../categories-context'
@@ -25,7 +24,6 @@ export default function SellerPostWizard() {
   const { categories } = useCategories();
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
   const [productFormData, setProductFormData] = useState({} as ProductFormData);
   const [product, setProduct] = useState<Product>();
   const { t } = useI18nContext();
@@ -97,7 +95,6 @@ export default function SellerPostWizard() {
     };
 
     setLoading(true);
-    setError(null);
 
     try {
       const updatedProduct = await updateProduct(product!.id.toString(), newData, firebaseIdToken!);
@@ -109,7 +106,12 @@ export default function SellerPostWizard() {
       });
       router.push(`/product/${updatedProduct.id}/`);
     } catch (err: any) {
-      setError(err);
+      console.log("Error creating product:", err);
+      toast({
+        title: t("postWizard.errorCreateAdTitle"),
+        description: err.message,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -128,7 +130,6 @@ export default function SellerPostWizard() {
     setProductFormData(newData);
 
     setLoading(true);
-    setError(null);
 
     try {
       const newProduct = await createProduct(newData, firebaseIdToken!);
@@ -144,7 +145,12 @@ export default function SellerPostWizard() {
       });
       nextStep();
     } catch (err: any) {
-      setError(err);
+      console.log("Error creating product:", err);
+      toast({
+        title: t("postWizard.errorCreateAdTitle"),
+        description: err.message,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -228,16 +234,6 @@ export default function SellerPostWizard() {
             </div>
           </StepContent>
         )}
-        <Dialog open={!!error} onOpenChange={() => setError(null)}>
-          <DialogContent>
-            <DialogTitle className="text-red-600">
-              {t("postWizard.errorCreateAdTitle")}
-            </DialogTitle>
-            {error && (
-              <span>{error.name}</span>
-            )}
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );

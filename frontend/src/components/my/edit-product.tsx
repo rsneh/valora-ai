@@ -3,7 +3,7 @@
 import { Product, productConditionEnum, ProductFormData } from "@/types/product";
 import { SellerAdForm } from "../seller/ad-form";
 import { useState } from "react";
-import { updateProduct } from "@/services/api/products";
+import { deleteProduct, updateProduct } from "@/services/api/products";
 import { useAuth } from "../auth/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -34,9 +34,12 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
     image_url: product.image_url,
     min_acceptable_price: product.min_acceptable_price,
     // negotiation_notes_for_ai: product.negotiation_notes_for_ai,
+    seller_name: product.seller_name || "",
+    seller_phone: product.seller_phone || "",
+    location_text: product.location_text || "",
     attributes: product.attributes,
     condition: product.condition as typeof productConditionEnum[number],
-    location_text: product.location_text,
+    seller_allowed_to_contact: product.seller_allowed_to_contact || false,
   };
 
   async function handleUpdateProduct(formData: ProductFormData): Promise<void> {
@@ -65,6 +68,30 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
     }
   }
 
+  async function handleDeleteProduct(id: string): Promise<void> {
+    setLoading(true);
+
+    try {
+      const updatedData = await deleteProduct(id, firebaseIdToken!);
+      console.log("Product deleted successfully:", updatedData);
+      toast({
+        title: t("my.ads.adDeleted"),
+        description: t("my.ads.adDeletedDescription"),
+        variant: "success",
+      });
+      router.push("/my/ads/");
+    } catch (err: any) {
+      console.log("Error deleting product:", err);
+      toast({
+        title: t("my.ads.errorDeletingAd"),
+        description: err.message || t("my.ads.errorDeletingAdDescription"),
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center">
       <div className="animate-fadeInSlideUp w-full flex-1 lg:max-w-6xl xl:max-w-7xl">
@@ -75,6 +102,7 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
           onSubmit={handleUpdateProduct}
           loading={loading}
           editMode
+          handleOnDelete={handleDeleteProduct}
         />
       </div>
     </div>

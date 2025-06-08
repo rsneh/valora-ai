@@ -27,6 +27,7 @@ import ImageGalleryUpload from "../ui/image-gallery-upload";
 import Message from "../ui/message";
 import AutoCompleteLocation from "../ui/autocomplete-location";
 import { Separator } from "../ui/separator";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
 
 const productFormSchema = z.object({
   id: z.number().optional(),
@@ -54,6 +55,7 @@ interface SellerAdFormProps {
   loading?: boolean;
   editMode?: boolean;
   onSubmit: (data: ProductFormData) => void;
+  handleOnDelete?: (id: string) => void;
 }
 
 export function SellerAdForm({
@@ -62,9 +64,11 @@ export function SellerAdForm({
   loading = false,
   editMode = false,
   onSubmit,
+  handleOnDelete,
 }: SellerAdFormProps) {
   const [subCategories, setSubCategories] = useState<Category[]>([]);
   const [parentCategory, setParentCategory] = useState<Category>();
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const { t, locale } = useI18nContext();
 
   const initCurrency = defaultValues?.currency || getLocalCurrency(locale);
@@ -424,8 +428,43 @@ export function SellerAdForm({
             </div>
           </div>
         </div>
-        <div className="flex justify-end mt-6">
-          <Button type="reset" size="lg" className="font-bold me-2" variant="secondary">{t("cancel")}</Button>
+        <div className="flex justify-end mt-6 border-t pt-4">
+          {editMode && (
+            <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+              <AlertDialogTrigger asChild>
+                <Button
+                  type="button"
+                  size="lg"
+                  className="font-bold me-auto"
+                  variant="destructive"
+                >
+                  {t("adForm.deleteButton")}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogTitle>
+                  {t("adForm.deleteConfirmationTitle")}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t("adForm.deleteConfirmationMessage")}
+                </AlertDialogDescription>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>
+                    {t("cancel")}
+                  </AlertDialogCancel>
+                  <Button type="button" variant="destructive" onClick={() => {
+                    if (handleOnDelete && defaultValues?.id) {
+                      handleOnDelete(defaultValues!.id.toString());
+                    }
+                    setOpenDeleteDialog(false);
+                  }}
+                  >
+                    {t("adForm.deleteButton")}
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
           <Button type="submit" size="lg" className="font-bold" disabled={loading}>{loading ? t("adForm.submittingButton") : t("adForm.submitButton")}</Button>
         </div>
       </form>

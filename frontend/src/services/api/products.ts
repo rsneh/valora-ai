@@ -30,8 +30,12 @@ export const getCategoryProducts = async (locale: string, category: string): Pro
   return response.data;
 };
 
-export const getProductById = async (productId: string | number): Promise<Product> => {
-  const response = await apiClient.get<Product>(`/products/${productId}`);
+export const getProductById = async (productId: string | number, token?: string): Promise<Product> => {
+  const response = await apiClient.get<Product>(`/products/${productId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
   return response.data;
 };
 

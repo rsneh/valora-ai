@@ -43,6 +43,7 @@ export function SellerAdContactForm({ defaultValues, product, loading = false, o
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
       seller_name: defaultValues.seller_name || "",
+      seller_phone: defaultValues.seller_phone || "",
       location_text: defaultValues.location_text || "",
       product_id: defaultValues.product_id,
     }

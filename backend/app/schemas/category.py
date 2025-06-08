@@ -38,7 +38,7 @@ class CategoryCreate(CategoryBase):
 class Category(CategoryBase):
     id: int
     # If you want to return children categories directly nested within a parent category:
-    children: List["Category"] = []  # Forward reference for self-referencing model
+    # children: List["Category"] = []  # Forward reference for self-referencing model
 
     class Config:
         from_attributes = True  # For Pydantic V2 (replaces orm_mode)

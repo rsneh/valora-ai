@@ -33,6 +33,7 @@ class ProductUpdate(BaseModel):
     seller_name: Optional[str] = None
     seller_phone: Optional[str] = None
     seller_allowed_to_contact: bool = False
+    min_acceptable_price: Optional[float] = None
     location_text: str
     latitude: Optional[float] = None
     longitude: Optional[float] = None
@@ -90,6 +91,33 @@ class Product(BaseModel):
     # Relationships
     category: Optional[Category] = None
     images: Optional[list[ProductImage]] = None
+
+    class Config:
+        from_attributes = True
+
+
+class ProductForEdit(BaseModel):
+    id: int
+    title: str
+    category_id: int
+    description: Optional[str] = None
+    price: float
+    currency: str
+    condition: Optional[ProductConditionEnum] = None
+    status: ProductStatusEnum = ProductStatusEnum.DRAFT
+    image_url: Optional[str] = None
+    location_text: Optional[str] = None
+    seller_name: Optional[str] = None
+    seller_phone: Optional[str] = None
+    seller_allowed_to_contact: Optional[bool] = False
+    min_acceptable_price: Optional[float] = None
+
+    # Relationships
+    category: Optional[Category] = None
+    images: Optional[list[ProductImage]] = None
+
+    class Config:
+        from_attributes = True
 
 
 # Properties stored in DB
