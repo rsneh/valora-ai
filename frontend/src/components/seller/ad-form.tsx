@@ -28,6 +28,7 @@ import Message from "../ui/message";
 import AutoCompleteLocation from "../ui/autocomplete-location";
 import { Separator } from "../ui/separator";
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
+import AttributesInput from "../ui/attributes-input";
 
 const productFormSchema = z.object({
   id: z.number().optional(),
@@ -38,6 +39,7 @@ const productFormSchema = z.object({
   condition: z.enum(productConditionEnum).optional(),
   category_id: z.number({ required_error: "Category is required." }),
   currency: z.string(),
+  attributes: z.record(z.string(), z.string()).optional().default({}),
   location_text: z.string().optional(),
   seller_phone: z.string({ required_error: "Phone number is required." }).optional(),
   seller_name: z.string({ required_error: "Name is required." }).min(1, { message: "Name must be at least 1 character long." }).optional(),
@@ -70,6 +72,7 @@ export function SellerAdForm({
   const [parentCategory, setParentCategory] = useState<Category>();
   const [currentCategory, setCurrentCategory] = useState<Category>();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [categoryAttributeSchema, setCategoryAttributeSchema] = useState<any[]>([]);
   const { t, locale } = useI18nContext();
 
   const initCurrency = defaultValues?.currency || getLocalCurrency(locale);
@@ -78,6 +81,7 @@ export function SellerAdForm({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
       ...defaultValues,
+      attributes: defaultValues?.attributes || {},
       currency: defaultValues?.currency || initCurrency,
       images: defaultValues?.images || [],
     }
@@ -151,10 +155,24 @@ export function SellerAdForm({
     if (selectedCategory) {
       const selectedSubCategory = subCategories.find((category) => category.id === selectedCategory);
       setCurrentCategory(selectedSubCategory);
+      if (selectedSubCategory?.attribute_schema) {
+        setCategoryAttributeSchema(selectedSubCategory.attribute_schema);
+      } else {
+        setCategoryAttributeSchema([]);
+      }
     } else {
       setCurrentCategory(undefined);
     }
   }, [selectedCategory, subCategories]);
+
+  useEffect(() => {
+    if (!editMode) {
+      form.setValue("attributes", categoryAttributeSchema.reduce((acc, attr) => {
+        acc[attr.name] = attr.value || "";
+        return acc;
+      }, {}));
+    }
+  }, [categoryAttributeSchema, editMode]);
 
   return (
     <Form {...form}>
@@ -327,6 +345,33 @@ export function SellerAdForm({
                 />
               </FormItem>
 
+              {categoryAttributeSchema.length > 0 && (
+                <>
+                  {/* Attributes Section */}
+                  <FormItem>
+                    <FormLabel>{t("adForm.attributesLabel") || "Attributes"}</FormLabel>
+                    <FormField
+                      control={form.control}
+                      name="attributes"
+                      render={({ field }) => (
+                        <FormControl>
+                          <AttributesInput
+                            value={field.value || {}}
+                            onChange={field.onChange}
+                            placeholder={{
+                              key: t("adForm.attributeKeyPlaceholder") || "Brand, Size, Model...",
+                              value: t("adForm.attributeValuePlaceholder") || "Value..."
+                            }}
+                          />
+                        </FormControl>
+                      )}
+                    />
+                    <FormMessage />
+                  </FormItem>
+                  <Separator className="my-6" />
+                </>
+              )}
+
               {editMode && (
                 <>
                   <Separator className="my-6" />
@@ -393,7 +438,7 @@ export function SellerAdForm({
                               {...field}
                               id="allowToShowContact"
                               type="checkbox"
-                              className="form-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                              className="dark:bg-white form-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                               checked={!!field.value}
                               value={field.value ? "true" : "false"}
                             />

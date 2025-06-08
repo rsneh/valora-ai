@@ -14,7 +14,7 @@ export default async function ProductLayout({
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation categories={categories} />
-      <main className="py-8 container mx-auto px-4 flex-grow">
+      <main className="py-4 md:py-8 container mx-auto px-4 flex-grow">
         <Suspense fallback={null}>
           {children}
         </Suspense>

@@ -58,7 +58,7 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
           </div>
         )}
 
-        <div>
+        <div className="mb-10">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">{t("productDescription.itemDetails")}</h2>
           <ul className="md:w-60">
             {product.condition && (
@@ -79,7 +79,7 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
             ))}
           </ul>
         </div>
-        <div className="mt-10 grid grid-cols-2 gap-4 sm:gap-8">
+        <div className="grid grid-cols-2 gap-4 sm:gap-8 sticky bottom-0 bg-white z-10 p-4 w-full">
           <StartChatButton
             productId={product.id.toString()}
             buttonTxt={t("productDescription.startChat")}
