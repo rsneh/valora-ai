@@ -42,7 +42,7 @@ export default function HeroTwo() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Button size="lg" className="px-8" asChild>
-              <Link href="/sell">
+              <Link href="/sell/">
                 {t("hero.createAdButton")}
               </Link>
             </Button>

@@ -36,7 +36,7 @@ export function Hero() {
           </p>
           <div className="flex flex-wrap justify-center gap-4 mt-6">
             <Button size="lg" className="rounded-full" asChild>
-              <Link href="/sell">
+              <Link href="/sell/">
                 {t("hero.createAdButton")}
               </Link>
             </Button>

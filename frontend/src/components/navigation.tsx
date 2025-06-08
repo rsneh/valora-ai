@@ -121,7 +121,7 @@ export function Navigation({ categories = [] }: NavigationProps) {
                 ))}
                 <Link
                   passHref
-                  href="/sell"
+                  href="/sell/"
                   className="mt-2"
                 >
                   <Button className="w-[90%]">
@@ -158,7 +158,7 @@ export function Navigation({ categories = [] }: NavigationProps) {
             {!isSellPage && (
               <Link
                 passHref
-                href="/sell"
+                href="/sell/"
                 className={cn(
                   "ms-auto md:block",
                   {

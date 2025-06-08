@@ -51,7 +51,7 @@ export function CategoriesSection({ categories = [] }: CategoriesSectionProps) {
 
         <div className="text-center mt-12">
           <Button size="lg" className="rounded-full">
-            <Link href="/browse">
+            <Link href="/browse/">
               <span className="font-bold">{t("categoriesSection.browseAll")}</span>
             </Link>
           </Button>
