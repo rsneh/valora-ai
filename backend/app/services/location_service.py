@@ -120,9 +120,10 @@ async def get_location_suggestions(query: str, locale: str = "en") -> list[dict]
                     loc_raw
                     and loc_raw.raw
                     and loc_raw.raw.get("address")
-                    and loc_raw.raw.get("addresstype") in ["town", "city"]
+                    and loc_raw.raw.get("addresstype") in ["town", "city", "suburb"]
                 ):
                     address_details = loc_raw.raw.get("address", {})
+                    suburb = address_details.get("suburb")
                     city = (
                         address_details.get("city")
                         or address_details.get("town")
@@ -133,7 +134,12 @@ async def get_location_suggestions(query: str, locale: str = "en") -> list[dict]
                     country = address_details.get("country", "Unknown")
 
                     # Construct a display name. Nominatim's display_name is often good.
-                    display_name = ", ".join(filter(None, [city, country]))
+                    if suburb:
+                        display_name = ", ".join(filter(None, [suburb, city]))
+                    else:
+                        display_name = ", ".join(filter(None, [city, country]))
+
+                    print(f"Display name constructed: {display_name}")
 
                     # Ensure city is part of display_name if available, otherwise construct
                     if city and city.lower() not in display_name.lower():
