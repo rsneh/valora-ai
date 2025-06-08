@@ -87,12 +87,12 @@ export function Footer() {
                   </Link>
                 </li> */}
                 <li>
-                  <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
+                  <Link href="/privacy/" className="text-sm text-muted-foreground hover:text-foreground">
                     {t("footer.privacy")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">
+                  <Link href="/terms/" className="text-sm text-muted-foreground hover:text-foreground">
                     {t("footer.terms")}
                   </Link>
                 </li>
