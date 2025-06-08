@@ -38,7 +38,7 @@ export default function ProfileForm() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="absolute top-2 end-2 p-2 bg-white bg-opacity-80 rounded-full w-8 h-8 shadow-md hover:bg-opacity-100 transition-all z-10"
+                      className="absolute top-2 end-2 p-2 bg-white rounded-full w-8 h-8 z-10"
                       asChild
                     >
                       <Link href={`/my/ads/${ad.id}/edit`}>

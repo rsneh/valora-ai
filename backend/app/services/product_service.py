@@ -216,7 +216,7 @@ async def update_product(
     return db_product
 
 
-def delete_product(db: Session, product_id: int, seller_id: str) -> bool:
+async def delete_product(db: Session, product_id: int, seller_id: str) -> bool:
     """
     Deletes a product from the database after authorization check.
     Also attempts to delete the associated image from GCS.
@@ -260,11 +260,47 @@ def delete_product(db: Session, product_id: int, seller_id: str) -> bool:
             # This is a simplified way; proper async handling in FastAPI/SQLAlchemy sync sessions is nuanced.
             # For a truly async gcp_services call, this delete_product service and its endpoint should be async.
             # If delete_gcs_permanent_image is synchronous, this is fine.
-            # await gcp_services.delete_gcs_permanent_image(image_url=db_product.image_url) # This line would make the function async
+            image_url = db_product.image_url
+            image_key = gcp_services.get_gcs_image_key(image_url)
+            if not image_key:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid image URL format",
+                )
+            print(f"INFO: Deleting GCS image with key {image_key}")
+            await gcp_services.delete_gcs_image(
+                image_key=image_key, current_user_id=seller_id
+            )
         except Exception as e:
             print(
                 f"Error deleting GCS image {db_product.image_url} during product deletion: {e}. Continuing with DB deletion."
             )
+    # Check for associated images and delete them
+    associated_images = (
+        db.query(models.ProductImage)
+        .filter(models.ProductImage.product_id == product_id)
+        .all()
+    )
+    for image in associated_images:
+        try:
+            print(
+                f"INFO: Attempting to delete GCS image {image.image_url} for product image {image.id}"
+            )
+            await gcp_services.delete_gcs_image(
+                image_key=image.image_url, current_user_id=seller_id
+            )
+        except Exception as e:
+            print(
+                f"Error deleting GCS image {image.image_url} during product image deletion: {e}. Continuing with DB deletion."
+            )
+
+    # Now delete the product from the database
+    print(f"INFO: Deleting product {product_id} from database.")
+    # Delete associated conversations if needed
+
+    db.query(models.Conversation).where(
+        models.Conversation.product_id == product_id
+    ).delete(synchronize_session=False)
 
     db.delete(db_product)
     db.commit()

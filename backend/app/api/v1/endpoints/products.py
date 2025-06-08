@@ -35,7 +35,7 @@ async def create_product(
             product_in=product_data,  # Pass the Pydantic model directly
             seller_id=current_user.uid,
         )
-        await gcp_services.delete_gcs_temp_image(
+        await gcp_services.delete_gcs_image(
             temp_image_key=product_data.image_key, current_user_id=current_user.uid
         )
         return created_product
@@ -147,7 +147,7 @@ async def update_product(
 
 
 @router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_product(
+async def delete_product(
     product_id: int,
     db: Session = Depends(database.get_db),
     current_user: user_schema.User = Depends(get_current_active_user),
@@ -167,7 +167,7 @@ def delete_product(
         )
 
     try:
-        product_service.delete_product(
+        await product_service.delete_product(
             db=db, product_id=product_id, seller_id=current_user.uid
         )
         return  # 204 No Content doesn't return a body

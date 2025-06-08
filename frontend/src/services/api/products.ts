@@ -52,3 +52,12 @@ export const updateProduct = async (productId: string, formData: ProductFormData
   });
   return response.data;
 };
+
+export const deleteProduct = async (productId: string, token: string): Promise<Product> => {
+  const response = await apiClient.delete(`/products/${productId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};

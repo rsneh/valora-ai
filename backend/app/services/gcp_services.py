@@ -125,10 +125,27 @@ async def move_gcs_image_to_permanent(
         return None
 
 
-async def delete_gcs_temp_image(temp_image_key: str, current_user_id: str) -> bool:
+def get_gcs_image_key(image_url: str) -> Optional[str]:
     """
-    Deletes an image from the temporary GCS location.
-    Validates that the key is in the temp prefix.
+    Extracts the GCS image key from a public URL.
+    Assumes the URL is in the format: https://storage.googleapis.com/bucket_name/path/to/image.jpg
+    Returns the key (path) part after the bucket name.
+    """
+    if not image_url.startswith("https://storage.googleapis.com/"):
+        print(f"Invalid GCS image URL: {image_url}")
+        return None
+
+    parts = image_url.split("/", 3)  # Split into 4 parts
+    if len(parts) < 4:
+        print(f"Unexpected GCS image URL format: {image_url}")
+        return None
+
+    return parts[3]  # Return the path after bucket name
+
+
+async def delete_gcs_image(image_key: str, current_user_id: str) -> bool:
+    """
+    Deletes an image from the GCS location.
     For enhanced security (post-PoC), one might also check if the current_user_id somehow matches
     an owner of the temp file if such metadata were stored, or if the temp_image_key incorporates user_id.
     For PoC, simply deleting from temp if key is valid is acceptable if endpoint is protected.
@@ -136,34 +153,21 @@ async def delete_gcs_temp_image(temp_image_key: str, current_user_id: str) -> bo
     if not storage_client:
         print("Storage client not initialized.")
         return False
-    if not temp_image_key.startswith(TEMP_UPLOAD_PREFIX):
-        print(
-            f"Invalid temp_image_key for deletion: {temp_image_key} does not start with {TEMP_UPLOAD_PREFIX}"
-        )
-        # Potentially raise HTTPException here if called from an endpoint
-        return False
-
-    # Optional: Add a check here if temp_image_key was structured to include user_id
-    # e.g., if temp_image_key was "temp-uploads/{user_id}/{uuid}-{filename}"
-    # if not temp_image_key.startswith(f"{TEMP_UPLOAD_PREFIX}{current_user_id}/"):
-    #     print(f"User {current_user_id} not authorized to delete {temp_image_key} or key format mismatch.")
-    #     return False
-    # For this PoC, we assume the endpoint protection is sufficient and any valid temp key can be deleted by an auth user.
 
     try:
         bucket_name = settings.GCS_BUCKET_NAME
         bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(temp_image_key)
+        blob = bucket.blob(image_key)
 
         if blob.exists():
             blob.delete()
-            print(f"Temporary image deleted from GCS: {temp_image_key}")
+            print(f"Image deleted from GCS: {image_key}")
             return True
         else:
-            print(f"Temporary image not found for deletion: {temp_image_key}")
-            return False  # Or True if "not found" is considered a successful deletion state
+            print(f"Image not found for deletion: {image_key}")
+            return True
     except Exception as e:
-        print(f"Error deleting temporary GCS image {temp_image_key}: {e}")
+        print(f"Error deleting GCS image {image_key}: {e}")
         return False
 
 

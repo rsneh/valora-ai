@@ -60,6 +60,8 @@ export interface ProductFormData {
   // negotiation_notes_for_ai?: string;
   attributes?: Record<string, string>;
   images?: ImageItem[];
+  seller_name?: string;
+  seller_phone?: string;
 }
 
 export interface ContactFormData {

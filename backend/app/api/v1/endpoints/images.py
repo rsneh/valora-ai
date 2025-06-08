@@ -147,38 +147,3 @@ async def upload_multiple_images_to_product(
             else f"Successfully uploaded {len(images_response)} images to product."
         ),
     }
-
-
-# @router.delete(
-#     "/temp/{image_key:path}",
-#     response_model=image_schema.ImageDeleteResponse,
-#     status_code=status.HTTP_200_OK,
-# )
-# async def delete_temporary_image(
-#     image_key: str = Path(
-#         ...,
-#         description="The GCS object name key for the temporary image, including prefix. e.g., temp-uploads/some-uuid-filename.jpg",
-#     ),
-#     current_user: user_schema.User = Depends(get_current_active_user),
-# ):
-#     """
-#     Deletes a temporary image from GCS.
-#     The image_key path parameter should be URL-encoded by the client if it contains special characters like '/'.
-#     FastAPI automatically decodes path parameters.
-#     """
-#     # The image_key from the path is already URL-decoded by FastAPI.
-#     # No need for urllib.parse.unquote here unless the client double-encodes.
-#     # decoded_image_key = urllib.parse.unquote(image_key) # Usually not needed
-
-#     deleted = await gcp_services.delete_gcs_temp_image(
-#         temp_image_key=image_key, current_user_id=current_user.uid
-#     )
-
-#     return image_schema.ImageDeleteResponse(
-#         message=(
-#             "Temporary image successfully deleted."
-#             if deleted
-#             else "Temporary image not found."
-#         ),
-#         image_key=image_key,
-#     )
