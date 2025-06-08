@@ -20,7 +20,7 @@ function LocationFilter() {
         <DialogTrigger>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="text-xs text-primary flex items-center gap-1 hover:underline cursor-pointer">
+              <div className="text-xs text-primary flex items-center gap-1 hover:underline cursor-pointer text-start">
                 <MapPinIcon size={18} strokeWidth={2} />
                 <span>
                   {location?.location_text ?? t("locationFilter.unknown")}

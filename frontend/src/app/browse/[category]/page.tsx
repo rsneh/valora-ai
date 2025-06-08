@@ -52,7 +52,7 @@ export default async function CategoryPage(props: {
         <p className="py-3 md:py-6 text-lg text-center">{t("browse.noProductsFound")}</p>
       ) : (
         <div className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          <ProductList products={products} category={params.category} />
+          <ProductList products={products} />
         </div>
       )}
     </>
