@@ -18,7 +18,7 @@ export default function ProfileForm() {
   useEffect(() => {
     async function fetchAds() {
       const data = await getProducts(firebaseIdToken!, { seller_id: currentUser?.uid })
-      setAds(data)
+      setAds(data);
     }
     fetchAds()
   }, [firebaseIdToken, currentUser?.uid])

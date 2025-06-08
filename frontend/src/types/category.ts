@@ -6,4 +6,5 @@ export interface Category {
   description?: string;
   image_path?: string;
   parent_category_key?: string;
+  attribute_schema?: Array<Record<string, any>>;
 }

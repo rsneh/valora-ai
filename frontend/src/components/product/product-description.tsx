@@ -24,6 +24,7 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
   const { toggleFavorite, isFavorite } = useFavorites();
   const [isFavorited, setIsFavorited] = useState(isFavorite(product.id));
   const currencySign = getCurrencySymbol(product.currency!);
+  const attributeEntries = Object.entries(product.attributes ?? {});
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
   });
@@ -36,10 +37,10 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
   return (
     <div className="lg:col-span-3">
       <div>
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">{product.title}</h1>
-        <div className="mt-4">
+        <h1 className="text-3xl text-gray-800 mb-0">{product.title}</h1>
+        <div className="my-2">
           <div className="flex items-center justify-between space-x-4 rtl:space-x-reverse">
-            <p className="text-xl text-gray-700">{`${currencySign}${product.price}`}</p>
+            <p className="text-3xl font-semibold tracking-tight">{`${currencySign}${product.price}`}</p>
           </div>
         </div>
 
@@ -49,15 +50,35 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
             <span>{t("productDescription.updated")}: {new Date(product.time_updated).toLocaleDateString()}</span>
           )}
         </div> */}
-
         {product.description && (
-          <div className="mt-4">
-            <p className="text-gray-400 leading-relaxed whitespace-pre-line font-light">
+          <div className="my-4">
+            <p className="text-gray-500 leading-relaxed whitespace-pre-line">
               {product.description}
             </p>
           </div>
         )}
 
+        <div>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">{t("productDescription.itemDetails")}</h2>
+          <ul className="md:w-60">
+            {product.condition && (
+              <li>
+                <div className="flex">
+                  <span className="flex-1 text-gray-500">{t("productDescription.conditionLabel")}</span>
+                  <span className="flex-1">{t(`condition.${product.condition.toLowerCase()}`)}</span>
+                </div>
+              </li>
+            )}
+            {attributeEntries.map(([key, value], index) => (
+              <li key={index}>
+                <div className="flex">
+                  <span className="flex-1 text-gray-500">{t(`attributeInput.${key.toLowerCase()}`)}</span>
+                  <span className="flex-1">{value}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
         <div className="mt-10 grid grid-cols-2 gap-4 sm:gap-8">
           <StartChatButton
             productId={product.id.toString()}
@@ -88,45 +109,32 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
       </div>
 
       <div className="mt-10 pt-10 border-t border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">{t("productDescription.sellerDescription")}</h2>
-        <ul>
-          {product.condition && (
-            <li>
-              <div className="flex">
-                <span className="flex-1 font-bold">{t("productDescription.conditionLabel")}</span>
-                <span className="flex-1">{t(`condition.${product.condition.toLowerCase()}`)}</span>
-              </div>
-            </li>
-          )}
-        </ul>
-        <div>
-          {productLocation && (
-            <>
-              {isLoaded ? (
-                <GoogleMap
-                  mapContainerClassName="h-48 mt-2 rounded-lg shadow-md"
-                  zoom={10}
+        {productLocation && (
+          <>
+            {isLoaded ? (
+              <GoogleMap
+                mapContainerClassName="h-48 mt-2 rounded-lg shadow-md"
+                zoom={10}
+                center={productLocation}
+              >
+                <Circle
+                  options={{
+                    fillOpacity: 0.1,
+                    strokeOpacity: 0.8,
+                    strokeWeight: 1,
+                  }}
                   center={productLocation}
-                >
-                  <Circle
-                    options={{
-                      fillOpacity: 0.1,
-                      strokeOpacity: 0.8,
-                      strokeWeight: 1,
-                    }}
-                    center={productLocation}
-                    radius={5000}
-                  />
-                </GoogleMap>
-              ) : (
-                <Skeleton className="h-48 mt-2 rounded-lg shadow-md" />
-              )}
-            </>
-          )}
-          {product.location_text && (
-            <p className="text-sm mt-1 text-gray-600">{product.location_text}</p>
-          )}
-        </div>
+                  radius={5000}
+                />
+              </GoogleMap>
+            ) : (
+              <Skeleton className="h-48 mt-2 rounded-lg shadow-md" />
+            )}
+          </>
+        )}
+        {product.location_text && (
+          <p className="text-sm mt-1 text-gray-600">{product.location_text}</p>
+        )}
       </div>
     </div>
   )

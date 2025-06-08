@@ -34,6 +34,7 @@ class ProductUpdate(BaseModel):
     seller_phone: Optional[str] = None
     seller_allowed_to_contact: bool = False
     min_acceptable_price: Optional[float] = None
+    attributes: Optional[Dict[str, Any]] = None
     location_text: str
     latitude: Optional[float] = None
     longitude: Optional[float] = None
@@ -111,6 +112,7 @@ class ProductForEdit(BaseModel):
     seller_phone: Optional[str] = None
     seller_allowed_to_contact: Optional[bool] = False
     min_acceptable_price: Optional[float] = None
+    attributes: Optional[Dict[str, Any]] = None
 
     # Relationships
     category: Optional[Category] = None

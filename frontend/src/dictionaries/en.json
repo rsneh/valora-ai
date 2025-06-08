@@ -154,8 +154,7 @@
     "removedFromFavorites": "Removed from Favorites",
     "attributes": "Attributes",
     "conditionLabel": "Condition",
-    "sellerDescription": "Seller's description",
-    "sellerInfo": "Seller information"
+    "itemDetails": "Item Details"
   },
   "chat": {
     "valoraAIAlt": "Valora AI",
@@ -336,6 +335,11 @@
     "he": {
       "name": "עברית"
     }
+  },
+  "attributeInput": {
+    "height": "Height",
+    "width": "Width",
+    "depth": "Depth"
   },
   "aiSuggestionTooltip": "Suggested by Valora AI",
   "cancel": "Cancel"

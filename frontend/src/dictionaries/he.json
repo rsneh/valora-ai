@@ -152,8 +152,7 @@
     "removedFromFavorites": "הוסר מהמועדפים!",
     "attributes": "פרטים נוספים",
     "conditionLabel": "מצב המוצר",
-    "sellerDescription": "תיאור המוכר",
-    "sellerInfo": "פרטי המוכר"
+    "itemDetails": "פרטי המוצר"
   },
   "chat": {
     "valoraAIAlt": "Valora AI",
@@ -337,6 +336,11 @@
     "he": {
       "name": "עברית"
     }
+  },
+  "attributeInput": {
+    "height": "גובה",
+    "width": "רוחב",
+    "depth": "עומק"
   },
   "aiSuggestionTooltip": "מוצע על ידי Valora AI",
   "cancel": "ביטול"
