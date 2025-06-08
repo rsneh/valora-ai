@@ -91,7 +91,9 @@ def get_products(
     OR products whose category key starts with the provided key followed by an underscore
     (e.g., category="electronics" will fetch "electronics", "electronics_laptops", "electronics_phones_smartphones").
     """
-    query = db.query(models.Product)
+    query = db.query(models.Product).filter(
+        models.Product.status == models.ProductStatusEnum.ACTIVE
+    )
 
     if seller_id:
         query = query.filter(models.Product.seller_id == seller_id)
