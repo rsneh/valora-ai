@@ -68,6 +68,9 @@ class CategoryUI(BaseModel):
     name: str
     path: Optional[str] = None
     image_path: Optional[str] = None
+    attribute_schema: Optional[List[dict]] = (
+        None  # Assuming this is a list of dicts for attributes
+    )
     description: Optional[Annotated[str, constr(max_length=255)]] = None
     parent_category_key: Optional[str] = None
 

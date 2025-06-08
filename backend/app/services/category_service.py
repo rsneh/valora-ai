@@ -167,6 +167,7 @@ def get_all_categories(
         name_column.label("name"),  # Use label to have a consistent 'name' key
         desc_ui_column.label("description_ui"),
         models.Category.parent_category_key,
+        models.Category.attribute_schema,
     ).filter(models.Category.is_active == True)
 
     if parent_category_key:
@@ -187,6 +188,7 @@ def get_all_categories(
                 "path": cat.category_key.replace("_", "-"),
                 "description": cat.description_ui,
                 "parent_category_key": cat.parent_category_key,
+                "attribute_schema": cat.attribute_schema or [],
                 # You could add a flag 'has_children' if needed for UI
             }
         )

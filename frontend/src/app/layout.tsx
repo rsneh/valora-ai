@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { GoogleTagManager } from '@next/third-parties/google'
-import { Inter } from "next/font/google"
+import { Rubik } from "next/font/google"
 import "./globals.css"
 import type React from "react"
 import Loader from "@/components/loader"
@@ -17,7 +17,7 @@ import { FavoritesProvider } from '@/hooks/use-favorites';
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.valorra.net"
 
-const inter = Inter({ subsets: ["latin"] })
+const rubik = Rubik({ subsets: ["latin", "hebrew"] })
 
 export async function generateMetadata(
   // props: { params: { locale?: AppLocale } }, // locale might not be in params here
@@ -61,7 +61,7 @@ export default async function RootLayout({
       {isProduction && (
         <GoogleTagManager gtmId="GTM-WFNRK2VR" />
       )}
-      <body className={inter.className}>
+      <body className={rubik.className}>
         <Loader />
         <I18nProvider initialLocale={locale} initialDictionary={dictionary}>
           <ThemeProvider>

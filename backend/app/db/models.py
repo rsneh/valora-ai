@@ -273,6 +273,8 @@ class Category(Base):
     sort_order = Column(Integer, default=0)
     is_active = Column(Boolean, default=True)
 
+    attribute_schema = Column(JSONB, server_default="[]", nullable=True)
+
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
