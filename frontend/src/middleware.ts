@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getLocaleQueryParam, getLocaleCookieName, getSupportedLocales, AppLocale } from './locales/config';
 
 export function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname === '/health/') {
+    return new NextResponse(JSON.stringify({ status: 'ok' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   const response = NextResponse.next();
   const queryParamName = getLocaleQueryParam();
   const cookieName = getLocaleCookieName();
