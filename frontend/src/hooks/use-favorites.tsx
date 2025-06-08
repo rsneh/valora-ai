@@ -3,7 +3,6 @@
 import { useState, useEffect, createContext, ReactNode, useContext } from 'react';
 
 const FAVORITES_STORAGE_KEY = 'user_favorites';
-const initialFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY) ? JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)!) : []
 
 interface FavoritesContextType {
   favorites: number[];
@@ -14,6 +13,7 @@ interface FavoritesContextType {
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
+  const initialFavorites = localStorage !== undefined && localStorage.getItem(FAVORITES_STORAGE_KEY) ? JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)!) : []
   const [favorites, setFavorites] = useState<number[]>(initialFavorites);
 
   useEffect(() => {

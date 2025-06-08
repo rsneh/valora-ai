@@ -100,7 +100,7 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
               });
             }}
           >
-            <Heart className={`h-5 w-5 me-2 ${isFavorited ? "fill-current text-red-500" : ""}`} />
+            <Heart className={`h-5 w-5 ${isFavorited ? "fill-current text-red-500" : ""}`} />
             {isFavorited
               ? t("productDescription.removeFromFavorites")
               : t("productDescription.addToFavorites")}
