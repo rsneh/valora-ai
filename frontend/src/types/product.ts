@@ -77,3 +77,11 @@ export interface ContactFormData {
   seller_allowed_to_contact?: boolean;
   // negotiation_notes_for_ai?: string;
 }
+
+export interface ProductAttribute {
+  name: string;
+  type: string;
+  required?: boolean | undefined;
+  options?: string[] | undefined;
+  unit?: string | undefined;
+}

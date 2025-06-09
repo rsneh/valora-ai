@@ -12,8 +12,8 @@ import { getLocaleFromRequest } from '@/lib/dictionaries';
 async function fetchProduct(productId: string) {
   try {
     return await getProductById(productId);
-  } catch (error) {
-    console.error("Error fetching product:", error);
+  } catch (error: Error | any) {
+    console.error("Error fetching product:", error.message);
     notFound();
   }
 }

@@ -21,8 +21,8 @@ export default function FavoritesPage() {
         const productsPromises = favorites.map(id => getProductById(id));
         const products = await Promise.all(productsPromises);
         setFavoriteProducts(products);
-      } catch (error) {
-        console.error("Error fetching favorite products:", error);
+      } catch (error: Error | any) {
+        console.error("Error fetching favorite products:", error.message);
       } finally {
         setLoading(false);
       }

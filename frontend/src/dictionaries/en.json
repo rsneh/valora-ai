@@ -339,7 +339,10 @@
   "attributeInput": {
     "height": "Height",
     "width": "Width",
-    "depth": "Depth"
+    "depth": "Depth",
+    "unitOptions": {
+      "cm": "cm"
+    }
   },
   "aiSuggestionTooltip": "Suggested by Valora AI",
   "cancel": "Cancel"

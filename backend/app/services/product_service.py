@@ -160,18 +160,18 @@ def get_products(
     return products
 
 
-def get_product(db: Session, product_id: int) -> models.Product | None:
+def get_product(
+    db: Session, product_id: int, status: Optional[str] = None
+) -> models.Product | None:
     """
     Retrieves a single product by its ID.
     """
-    return (
-        db.query(models.Product)
-        .filter(
-            models.Product.id == product_id,
-            models.Product.status == models.ProductStatusEnum.ACTIVE,
-        )
-        .first()
-    )
+    query = db.query(models.Product)
+
+    if status:
+        query = query.filter(models.Product.status == status)
+
+    return query.filter(models.Product.id == product_id).first()
 
 
 async def update_product(

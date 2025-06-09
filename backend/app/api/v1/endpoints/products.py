@@ -110,7 +110,9 @@ def read_product(
     """
     Retrieve a specific product by its ID.
     """
-    db_product = product_service.get_product(db, product_id=product_id)
+    db_product = product_service.get_product(
+        db, product_id=product_id, status=ProductStatusEnum.ACTIVE
+    )
     if db_product is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"

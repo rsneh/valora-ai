@@ -11,8 +11,8 @@ async function getProduct(productId: string, firebaseIdToken?: string) {
   try {
     const updatedProduct = await getProductById(productId as string, firebaseIdToken!);
     return updatedProduct;
-  } catch (err: any) {
-    console.error("Error fetching product:", err);
+  } catch (error: Error | any) {
+    console.error("Error fetching product:", error.message);
     return null;
   }
 }

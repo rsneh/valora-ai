@@ -340,7 +340,10 @@
   "attributeInput": {
     "height": "גובה",
     "width": "רוחב",
-    "depth": "עומק"
+    "depth": "עומק",
+    "unitOptions": {
+      "cm": "סֿ״מ"
+    }
   },
   "aiSuggestionTooltip": "מוצע על ידי Valora AI",
   "cancel": "ביטול"

@@ -165,14 +165,14 @@ export function SellerAdForm({
     }
   }, [selectedCategory, subCategories]);
 
-  useEffect(() => {
-    if (!editMode) {
-      form.setValue("attributes", categoryAttributeSchema.reduce((acc, attr) => {
-        acc[attr.name] = attr.value || "";
-        return acc;
-      }, {}));
-    }
-  }, [categoryAttributeSchema, editMode]);
+  // useEffect(() => {
+  //   if (!editMode) {
+  //     form.setValue("attributes", categoryAttributeSchema.reduce((acc, attr) => {
+  //       acc[attr.name] = attr.value || "";
+  //       return acc;
+  //     }, {}));
+  //   }
+  // }, [categoryAttributeSchema, editMode]);
 
   return (
     <Form {...form}>
@@ -356,12 +356,9 @@ export function SellerAdForm({
                       render={({ field }) => (
                         <FormControl>
                           <AttributesInput
+                            schema={categoryAttributeSchema}
                             value={field.value || {}}
                             onChange={field.onChange}
-                            placeholder={{
-                              key: t("adForm.attributeKeyPlaceholder") || "Brand, Size, Model...",
-                              value: t("adForm.attributeValuePlaceholder") || "Value..."
-                            }}
                           />
                         </FormControl>
                       )}

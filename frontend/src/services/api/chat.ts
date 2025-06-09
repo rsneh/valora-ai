@@ -15,8 +15,8 @@ export const getChatHistoryAPI = async (productId: string | number, token: strin
       },
     });
     return response.data;
-  } catch (error) {
-    console.error(`Error fetching chat history for product ${productId}:`, error);
+  } catch (error: Error | any) {
+    console.error(`Error fetching chat history for product ${productId}:`, error.message);
     throw error;
   }
 };
