@@ -33,7 +33,8 @@ export const getProductById = async (productId: string | number, token?: string)
       },
     });
     return response.data;
-  } catch (error) {
+  } catch (error: Error | any) {
+    console.error(`Error fetching product ${productId}:`, error.message);
     return null;
   }
 };
