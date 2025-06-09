@@ -164,7 +164,14 @@ def get_product(db: Session, product_id: int) -> models.Product | None:
     """
     Retrieves a single product by its ID.
     """
-    return db.query(models.Product).filter(models.Product.id == product_id).first()
+    return (
+        db.query(models.Product)
+        .filter(
+            models.Product.id == product_id,
+            models.Product.status == models.ProductStatusEnum.ACTIVE,
+        )
+        .first()
+    )
 
 
 async def update_product(

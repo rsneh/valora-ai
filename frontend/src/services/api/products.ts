@@ -25,13 +25,17 @@ export const getCategoryProducts = async (locale: string, category: string, para
   return response.data;
 };
 
-export const getProductById = async (productId: string | number, token?: string): Promise<Product> => {
-  const response = await apiClient.get<Product>(`/products/${productId}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
-  return response.data;
+export const getProductById = async (productId: string | number, token?: string): Promise<Product | null> => {
+  try {
+    const response = await apiClient.get<Product>(`/products/${productId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const createProduct = async (formData: ProductFormData, token: string): Promise<Product> => { // Renamed to avoid conflict
