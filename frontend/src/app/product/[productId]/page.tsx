@@ -9,11 +9,20 @@ import { ProductDescription } from '@/components/product/product-description';
 import { getCategoryBreadcrumbs } from '@/services/api/categories';
 import { getLocaleFromRequest } from '@/lib/dictionaries';
 
+async function fetchProduct(productId: string) {
+  try {
+    return await getProductById(productId);
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    notFound();
+  }
+}
+
 export async function generateMetadata(props: {
   params: Promise<{ productId: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const product = await getProductById(params.productId);
+  const product = await fetchProduct(params.productId);
 
   if (!product) return notFound();
 
@@ -47,7 +56,7 @@ export async function generateMetadata(props: {
 
 export default async function ProductPage(props: { params: Promise<{ productId: string }> }) {
   const params = await props.params;
-  const product = await getProductById(params.productId);
+  const product = await fetchProduct(params.productId);
   const locale = await getLocaleFromRequest()
 
   if (!product) return notFound();

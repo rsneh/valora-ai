@@ -5,9 +5,15 @@ import { getProductById } from "@/services/api/products";
 import { Navigation } from "@/components/navigation";
 import { getLocaleFromRequest } from "@/lib/dictionaries";
 import { getCategories } from "@/services/api/categories";
+import { notFound } from "next/navigation";
 
 async function fetchProduct(productId: string) {
-  return await getProductById(productId);
+  try {
+    return await getProductById(productId);
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    notFound();
+  }
 }
 
 type LayoutProps = {
@@ -20,6 +26,10 @@ export default async function ChatLayout({ children, params }: LayoutProps) {
   const product = await fetchProduct(productId);
   const locale = await getLocaleFromRequest();
   const categories = await getCategories(locale);
+
+  if (!product) {
+    notFound();
+  }
 
   return (
     <div className="h-screen flex flex-col">
