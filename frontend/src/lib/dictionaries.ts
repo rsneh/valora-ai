@@ -2,7 +2,7 @@ import 'server-only'
 
 import { AppLocale, getDefaultLocale, getLocaleCookieName, getSupportedLocales } from '@/locales/config';
 import { NextRequest } from 'next/server';
-import Cookies from 'js-cookie';
+import { cookies } from 'next/headers';
 
 // Define a type for our dictionary
 export type Dictionary = {
@@ -61,14 +61,14 @@ export async function getLocaleFromRequest(request?: NextRequest): Promise<AppLo
 
   // For Server Components (Pages, Layouts)
   try {
-    const locale = Cookies.get(localeCookieName) as AppLocale | undefined;
+    const cookieStore = await cookies();
+    const locale = cookieStore.get(localeCookieName)?.value as AppLocale | undefined;
     if (locale && supportedLocales.includes(locale)) {
       return locale;
     }
-  } catch (error) {
-    console.warn("cookies() from next/headers not available in this context. Falling back to default locale.", error);
+  } catch (error: Error | any) {
+    console.log("Error accessing cookies in Server Component:", error.message);
+    return defaultLocale;
   }
-
-  // Fallback to default if no cookie or invalid cookie
   return defaultLocale;
 }
