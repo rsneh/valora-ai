@@ -10,7 +10,6 @@ import { useFavorites } from "@/hooks/use-favorites";
 import { Heart } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from "../ui/badge";
 
 interface ProductCardProps {
   product: Product;
@@ -71,23 +70,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className, si
           {`${currencySign}${product.price}`}
         </p>
         {product.location_text && (
-          product.distance_km !== null ? (
-            <Badge className="bg-gray-100 text-gray-800">
-              {product.distance_km?.toFixed(0)} {t("productCard.kmAway")}
-            </Badge>
-          ) : (
-            <p className="mt-1 text-sm text-gray-500">
-              {product.location_text}
-            </p>
-          )
+          <p className="mt-1 text-sm text-gray-500">
+            {product.location_text}
+          </p>
         )}
       </div>
-      <h3 className="font-medium text-gray-900">
-        <Link href={`/product/${product.id}`}>
-          <span aria-hidden="true" className="absolute inset-0" />
-          {product.title}
-        </Link>
-      </h3>
+      <div className="flex items-center justify-between">
+        <h3 className="font-medium text-gray-900">
+          <Link href={`/product/${product.id}`}>
+            <span aria-hidden="true" className="absolute inset-0" />
+            {product.title}
+          </Link>
+        </h3>
+        {product.distance_km !== null && (
+          <p className="bg-opacity-70 text-gray-500 text-xs">
+            {product.distance_km?.toFixed(0)} {t("productCard.kmAway")}
+          </p>
+        )}
+      </div>
     </div>
   );
 };
