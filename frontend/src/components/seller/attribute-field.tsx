@@ -36,7 +36,7 @@ const AttribteField = ({ attribute, value = "", onChange, t }: AttribteFieldProp
               className={cn("w-full", { "pe-9": !!attribute.unit })}
             />
             {attribute.unit && (
-              <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
+              <span className="absolute inset-y-0 end-0 flex items-center pe-3 text-gray-500">
                 {t(`attributeInput.unitOptions.${attribute.unit}`)}
               </span>
             )}

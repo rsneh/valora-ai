@@ -84,4 +84,5 @@ export interface ProductAttribute {
   required?: boolean | undefined;
   options?: string[] | undefined;
   unit?: string | undefined;
+  value?: string | undefined;
 }

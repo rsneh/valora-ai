@@ -165,15 +165,6 @@ export function SellerAdForm({
     }
   }, [selectedCategory, subCategories]);
 
-  // useEffect(() => {
-  //   if (!editMode) {
-  //     form.setValue("attributes", categoryAttributeSchema.reduce((acc, attr) => {
-  //       acc[attr.name] = attr.value || "";
-  //       return acc;
-  //     }, {}));
-  //   }
-  // }, [categoryAttributeSchema, editMode]);
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)}>

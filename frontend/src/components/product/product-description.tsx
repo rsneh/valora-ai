@@ -1,13 +1,13 @@
 "use client"
 
-import { Product } from "@/types/product";
+import { Product, ProductAttribute } from "@/types/product";
 import { StartChatButton } from "./start-chat-button";
 import { useI18nContext } from "../locale-context";
 import { getCurrencySymbol } from "@/lib/currency";
 import { Button } from "../ui/button";
 import { Heart } from "lucide-react";
 import { useFavorites } from "@/hooks/use-favorites";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { GoogleMap, useLoadScript, Circle } from '@react-google-maps/api';
 import { Skeleton } from "../ui/skeleton";
@@ -24,10 +24,25 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
   const { toggleFavorite, isFavorite } = useFavorites();
   const [isFavorited, setIsFavorited] = useState(isFavorite(product.id));
   const currencySign = getCurrencySymbol(product.currency!);
-  const attributeEntries = Object.entries(product.attributes ?? {});
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
   });
+  const categoryAttributeSchema = useMemo(() => {
+    if (!product.attributes || !product.category?.attribute_schema?.length) return;
+    return product.category?.attribute_schema?.reduce((acc, schema) => {
+      const attributeValue = product.attributes ? product.attributes[schema.name] : null;
+      if (attributeValue) {
+        acc.push({
+          ...schema,
+          value: attributeValue,
+        });
+      }
+      return acc;
+    }, []);
+  }, [product]);
+
+  console.log({ categoryAttributeSchema });
+
 
   const productLocation = product.latitude && product.longitude ? {
     lat: product.latitude,
@@ -69,11 +84,11 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
                 </div>
               </li>
             )}
-            {attributeEntries.map(([key, value], index) => (
+            {categoryAttributeSchema?.map((attribute: ProductAttribute, index: number) => (
               <li key={index}>
                 <div className="flex">
-                  <span className="flex-1 text-gray-500">{t(`attributeInput.${key.toLowerCase()}`)}</span>
-                  <span className="flex-1">{value}</span>
+                  <span className="flex-1 text-gray-500">{t(`attributeInput.${attribute.name?.toLowerCase()}`)}</span>
+                  <span className="flex-1">{attribute.value}{attribute.unit && (<small>{t(`attributeInput.unitOptions.${attribute.unit}`)}</small>)}</span>
                 </div>
               </li>
             ))}
