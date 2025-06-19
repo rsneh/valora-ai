@@ -23,6 +23,7 @@ async def get_location(
     final_latitude: Optional[float] = None
     final_longitude: Optional[float] = None
     location_source_info: str = "unknown"
+    final_location_text: str = "Unknown (IP based)"
 
     client_ip = get_client_ip(request)
     if final_latitude is None and final_longitude is None and client_ip:

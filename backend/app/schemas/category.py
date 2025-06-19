@@ -37,6 +37,9 @@ class CategoryCreate(CategoryBase):
 # This will include the 'id' and potentially relationships like children.
 class Category(CategoryBase):
     id: int
+    attribute_schema: Optional[List[dict]] = (
+        None  # Assuming this is a list of dicts for attributes
+    )
     # If you want to return children categories directly nested within a parent category:
     # children: List["Category"] = []  # Forward reference for self-referencing model
 
