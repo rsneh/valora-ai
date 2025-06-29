@@ -37,13 +37,15 @@ export function Footer() {
                     className="h-4 w-4 fill-white"
                   />
                 </Button>
-                <Button variant="ghost" size="icon" className="w-8 h-8 py-2 px-2">
-                  <Image
-                    src={linkedInIcon}
-                    alt="LinkedIn Icon"
-                    title="LinkedIn"
-                    className="h-4 w-4 fill-white"
-                  />
+                <Button variant="ghost" size="icon" className="w-8 h-8 py-2 px-2" asChild>
+                  <Link href="https://linkedin.com/company/valora-ai" target="_blank" rel="noopener noreferrer">
+                    <Image
+                      src={linkedInIcon}
+                      alt="LinkedIn Icon"
+                      title="LinkedIn"
+                      className="h-4 w-4 fill-white"
+                    />
+                  </Link>
                 </Button>
                 <Button variant="ghost" size="icon" className="w-8 h-8 py-2 px-2">
                   <Image
