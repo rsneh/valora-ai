@@ -200,7 +200,7 @@ export function SellerAdContactForm({ defaultValues, product, loading = false, o
           </div>
         </div>
         <div className="flex justify-end mt-6">
-          <Button type="submit" size="lg" className="font-bold" disabled={loading}>{loading ? t("adForm.submittingButton") : t("adForm.submitButton")}</Button>
+          <Button type="submit" size="lg" className="font-bold" disabled={loading}>{loading ? t("adForm.publishingButton") : t("adForm.publishButton")}</Button>
         </div>
       </form>
     </Form >

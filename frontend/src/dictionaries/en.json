@@ -181,6 +181,8 @@
     "registrationSuccessDescription": "You're all set. Time to hit 'Submit' to publish your ad.",
     "productCreatedTitle": "Product Created!",
     "productCreatedDescription": "Your product has been successfully created.",
+    "productCreatedDraftTitle": "Draft Created!",
+    "productCreatedDraftDescription": "Your product has been successfully created but not published yet.",
     "photoToOfferTitle": "Turn Your Photo into a Perfect Ad,",
     "photoToOfferTitleHighlight": " Instantly",
     "photoToOfferDescription": "Upload your item's photo, and our intelligent AI will help you create an optimized listing designed to sell quickly and effortlessly.",
@@ -233,7 +235,9 @@
     "deleteButton": "Delete Ad",
     "deleteConfirmationMessage": "Are you sure you want to delete this ad? This action cannot be undone.",
     "deleteConfirmationTitle": "Delete Ad Confirmation",
-    "deleteSuccessMessage": "Ad deleted successfully."
+    "deleteSuccessMessage": "Ad deleted successfully.",
+    "publishingButton": "Publishing...",
+    "publishButton": "Publish"
   },
   "contactForm": {
     "emailLabel": "Email Address",

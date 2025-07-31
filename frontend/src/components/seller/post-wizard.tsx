@@ -139,8 +139,8 @@ export default function SellerPostWizard() {
       }
       setProduct(newProduct);
       toast({
-        title: t("postWizard.productCreatedTitle"),
-        description: t("postWizard.productCreatedDescription"),
+        title: t("postWizard.productCreatedDraftTitle"),
+        description: t("postWizard.productCreatedDraftDescription"),
         variant: "success",
       });
       nextStep();

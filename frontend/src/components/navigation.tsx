@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useI18nContext } from "./locale-context"
 import { Category } from "@/types/category"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 interface NavigationProps {
   categories: Category[];
@@ -27,6 +27,7 @@ export function Navigation({ categories = [] }: NavigationProps) {
   const pathname = usePathname();
   const { toast } = useToast();
   const { locale, t } = useI18nContext();
+  const [open, setOpen] = useState(false);
   const {
     logout,
     currentUser,
@@ -89,7 +90,7 @@ export function Navigation({ categories = [] }: NavigationProps) {
               ))}
             </nav>
           </div>
-          <Sheet>
+          <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
@@ -136,7 +137,10 @@ export function Navigation({ categories = [] }: NavigationProps) {
                       // size="sm"
                       variant="link"
                       className="flex text-foreground/80 w-[90%]"
-                      onClick={() => setShowLoginDialog(true)}
+                      onClick={() => {
+                        setOpen(false);
+                        setShowLoginDialog(true)
+                      }}
                     >
                       {t("navigation.login")}
                     </Button>
@@ -144,7 +148,10 @@ export function Navigation({ categories = [] }: NavigationProps) {
                       // size="sm"
                       variant="secondary"
                       className="flex w-[90%]"
-                      onClick={() => setShowRegisterDialog(true)}
+                      onClick={() => {
+                        setOpen(false);
+                        setShowRegisterDialog(true);
+                      }}
                     >
                       {t("navigation.signup")}
                     </Button>
