@@ -237,7 +237,9 @@
     "deleteConfirmationTitle": "Delete Ad Confirmation",
     "deleteSuccessMessage": "Ad deleted successfully.",
     "publishingButton": "Publishing...",
-    "publishButton": "Publish"
+    "publishButton": "Publish",
+    "editingButton": "Editing...",
+    "editButton": "Edit"
   },
   "contactForm": {
     "emailLabel": "Email Address",

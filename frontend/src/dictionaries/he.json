@@ -235,7 +235,9 @@
     "deleteConfirmationTitle": "אישור מחיקת מודעה",
     "deleteSuccessMessage": "המודעה נמחקה בהצלחה.",
     "publishingButton": "מפרסם...",
-    "publishButton": "פרסם"
+    "publishButton": "פרסם",
+    "editingButton": "מעדכן...",
+    "editButton": "עדכון"
   },
   "contactForm": {
     "emailLabel": "כתובת אימייל",
