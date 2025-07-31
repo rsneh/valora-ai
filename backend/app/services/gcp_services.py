@@ -598,11 +598,14 @@ async def get_ai_description_from_structured_data(
 
     prompt = f"""Based on the following item information:
         {prompt_context}
-        Write an objective and informative description (around 2-3 concise sentences) for this used item.
-        Focus on accurately describing what the item is, its main characteristics as observed or inferred, and its general state.
-        If the condition is particularly notable (e.g., 'Like New and hardly used', or 'Fair with some visible scuffs'), incorporate that naturally.
-        Avoid overly enthusiastic or "salesy" language (e.g., no "amazing deal!", "must-have!"). The goal is to provide clear, factual information to help a buyer understand the item.
+        You are an expert copywriter for online marketplaces specializing in used goods. Your goal is to create clear, simple, and honest product descriptions that help buyers quickly understand what an item is, what it does, and its condition.
+        Write an objective and informative description (around 2-3 concise sentences) for the item. Focus on the main object and its key functional features.
+        Instructions for the Description:
+        Start with Function: Begin by clearly stating what the item is and its main purpose.
+        Highlight Key Features: Mention the most important features from the list provided.
+        Use a straightforward, helpful, and neutral tone. Avoid overly "salesy" language (like "amazing deal!" or "must-have!").
         Also avoid mentioning the category or title directly in the description, as it should be inferred from the context.
+        Crucially, do not mention the item's material or its physical condition (e.g., do not describe it as 'used', 'like new', or mention scuffs) or visual details of the item from the photo.
         Emphasize details apparent from the provided information and visual cues.
         Respond with ONLY the description in language: {lang}.
         Informative Description:"""

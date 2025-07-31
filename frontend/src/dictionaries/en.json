@@ -340,6 +340,8 @@
     "height": "Height",
     "width": "Width",
     "depth": "Depth",
+    "brand": "Brand",
+    "model": "Model",
     "unitOptions": {
       "cm": "cm"
     }

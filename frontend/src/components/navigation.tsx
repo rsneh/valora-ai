@@ -103,31 +103,53 @@ export function Navigation({ categories = [] }: NavigationProps) {
               <SheetTitle>
                 <Logo />
               </SheetTitle>
-              <nav className="grid gap-6 px-2 py-6">
-                <Link
-                  href={`/browse`}
-                  className="transition-colors hover:text-foreground/80 text-foreground"
-                >
-                  {t("navigation.browse")}
-                </Link>
-                {categories.filter((category) => category.image_path).map((category) => (
+              <nav className="h-full flex flex-col h-full justify-between">
+                <div className="grid gap-6 px-2 py-6">
                   <Link
-                    key={category.id}
-                    href={`/browse/${category.path}`}
+                    href={`/browse`}
                     className="transition-colors hover:text-foreground/80 text-foreground"
                   >
-                    {category.name}
+                    {t("navigation.browse")}
                   </Link>
-                ))}
-                <Link
-                  passHref
-                  href="/sell/"
-                  className="mt-2"
-                >
-                  <Button className="w-[90%]">
-                    {t("navigation.createAd")}
-                  </Button>
-                </Link>
+                  {categories.filter((category) => category.image_path).map((category) => (
+                    <Link
+                      key={category.id}
+                      href={`/browse/${category.path}`}
+                      className="transition-colors hover:text-foreground/80 text-foreground"
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
+                  <Link
+                    passHref
+                    href="/sell/"
+                    className="mt-2"
+                  >
+                    <Button className="w-[90%]">
+                      {t("navigation.createAd")}
+                    </Button>
+                  </Link>
+                </div>
+                {!currentUser && (
+                  <div className="flex flex-col space-y-2 flex-1 justify-end py-6">
+                    <Button
+                      // size="sm"
+                      variant="link"
+                      className="flex text-foreground/80 w-[90%]"
+                      onClick={() => setShowLoginDialog(true)}
+                    >
+                      {t("navigation.login")}
+                    </Button>
+                    <Button
+                      // size="sm"
+                      variant="secondary"
+                      className="flex w-[90%]"
+                      onClick={() => setShowRegisterDialog(true)}
+                    >
+                      {t("navigation.signup")}
+                    </Button>
+                  </div>
+                )}
               </nav>
             </SheetContent>
           </Sheet>
@@ -206,8 +228,8 @@ export function Navigation({ categories = [] }: NavigationProps) {
               </>
             )}
           </div>
-        </div >
-      </header >
+        </div>
+      </header>
       <RegisterDialog
         {...registerDialogDetails}
         open={showRegisterDialog}
