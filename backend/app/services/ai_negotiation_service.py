@@ -138,7 +138,7 @@ async def generate_ai_response(
         "Analyze the buyer's message and the conversation history to determine the most appropriate message type for your response."
     )
     prompt_parts.append(
-        "If a deal is agreed upon, include the signal 'DEAL_AGREED: Price=X.XX, Location=...' within the 'message_text' and set 'message_type' to 'CLOSED_DEAL'."
+        "Crucially, If a deal is agreed upon, include the signal 'DEAL_AGREED: Price=X.XX, Location=...' within the 'message_text' and set 'message_type' to 'CLOSED_DEAL'."
     )
     prompt_parts.append(
         "If the buyer asks about condition, use 'CONDITION_QUESTION'. If about location, use 'LOCATION_QUESTION'. If they propose an offer, use 'OFFER_PROPOSED'. If you accept an offer, use 'OFFER_ACCEPTED'. If you reject, use 'OFFER_REJECTED'. For general conversation, use 'GENERAL'. For the initial AI message, use 'GREETING'. If the product is unavailable, use 'UNAVAILABLE_PRODUCT'."
