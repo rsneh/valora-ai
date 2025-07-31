@@ -11,6 +11,7 @@ def get_all_descendant_category_ids(db: Session, parent_category_key: str) -> Li
     including the ID of the parent_category_key itself.
     """
     all_category_ids = set()
+    parent_category_key = parent_category_key.replace("-", "_")
 
     initial_parent_category = (
         db.query(models.Category.id, models.Category.category_key)
