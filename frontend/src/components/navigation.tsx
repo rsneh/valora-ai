@@ -121,15 +121,17 @@ export function Navigation({ categories = [] }: NavigationProps) {
                       {category.name}
                     </Link>
                   ))}
-                  <Link
-                    passHref
-                    href="/sell/"
-                    className="mt-2"
-                  >
-                    <Button className="w-[90%]">
-                      {t("navigation.createAd")}
-                    </Button>
-                  </Link>
+                  {!isSellPage && (
+                    <Link
+                      passHref
+                      href="/sell/"
+                      className="mt-2"
+                    >
+                      <Button className="w-[90%]">
+                        {t("navigation.createAd")}
+                      </Button>
+                    </Link>
+                  )}
                 </div>
                 {!currentUser && (
                   <div className="flex flex-col space-y-2 flex-1 justify-end py-6">
