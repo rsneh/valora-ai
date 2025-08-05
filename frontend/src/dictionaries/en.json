@@ -218,6 +218,7 @@
     "submitButton": "Submit",
     "submittingButton": "Submitting...",
     "conditionLabel": "Condition",
+    "statusLabel": "Status",
     "featureImage": "Feature Image",
     "imageGalleryTitle": "Image Gallery",
     "attributesLabel": "Product Attributes",
@@ -285,6 +286,12 @@
     "very_good": "Very Good",
     "good": "Good",
     "fair": "Fair"
+  },
+  "status": {
+    "draft": "Draft",
+    "active": "Active",
+    "sold": "Sold",
+    "archived": "Archived"
   },
   "productAttributes": {
     "brand": "Brand",

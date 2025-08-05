@@ -216,6 +216,7 @@
     "submitButton": "שלח",
     "submittingButton": "שולח...",
     "conditionLabel": "מצב המוצר",
+    "statusLabel": "זמינות באתר",
     "featureImage": "תמונה ראשית",
     "imageGalleryTitle": "גלריית תמונות",
     "attributesLabel": "מאפייני המוצר",
@@ -282,6 +283,12 @@
     "very_good": "מצוין",
     "good": "טוב",
     "fair": "סביר"
+  },
+  "status": {
+    "draft": "טיוטה",
+    "active": "פעיל",
+    "sold": "נמכר",
+    "archived": "ארכיון"
   },
   "productAttributes": {
     "brand": "מותג",

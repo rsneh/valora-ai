@@ -1,6 +1,6 @@
 "use client";
 
-import { Product, productConditionEnum, ProductFormData } from "@/types/product";
+import { Product, productConditionEnum, ProductFormData, productStatusEnum } from "@/types/product";
 import { SellerAdForm } from "../seller/ad-form";
 import { useState } from "react";
 import { deleteProduct, updateProduct } from "@/services/api/products";
@@ -39,6 +39,7 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
     location_text: product.location_text || "",
     attributes: product.attributes,
     condition: product.condition as typeof productConditionEnum[number],
+    status: product.status as typeof productStatusEnum[number],
     seller_allowed_to_contact: product.seller_allowed_to_contact || false,
   };
 

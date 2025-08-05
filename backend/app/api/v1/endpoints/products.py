@@ -111,7 +111,10 @@ def read_product(
     Retrieve a specific product by its ID.
     """
     db_product = product_service.get_product(
-        db, product_id=product_id, status=ProductStatusEnum.ACTIVE
+        db,
+        product_id=product_id,
+        status=ProductStatusEnum.ACTIVE,
+        seller_id=current_user["uid"] if current_user else None,
     )
     if db_product is None:
         raise HTTPException(

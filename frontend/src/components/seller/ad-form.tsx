@@ -19,7 +19,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useI18nContext } from "../locale-context";
 import { Category } from "@/types/category";
 import { getCategories, getCategoryBreadcrumbs } from "@/services/api/categories";
-import { productConditionEnum, ProductFormData } from "@/types/product";
+import { productConditionEnum, ProductFormData, productStatusEnum } from "@/types/product";
 import PriceInput from "../ui/price-input";
 import { getLocalCurrency } from "@/lib/utils";
 import Image from "next/image";
@@ -44,6 +44,7 @@ const productFormSchema = z.object({
   seller_phone: z.string({ required_error: "Phone number is required." }).optional(),
   seller_name: z.string({ required_error: "Name is required." }).min(1, { message: "Name must be at least 1 character long." }).optional(),
   seller_allowed_to_contact: z.boolean().optional(),
+  status: z.enum(productStatusEnum).optional(),
   images: z.array(z.object({
     src: z.string(),
     file: z.instanceof(File),
@@ -445,6 +446,29 @@ export function SellerAdForm({
 
           {/* Right Column */}
           <div>
+            {editMode && (
+              <FormItem>
+                <FormLabel>{t("adForm.statusLabel")}</FormLabel>
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormControl>
+                      <Select value={(field.value as unknown as string)} onValueChange={field.onChange} dir={locale === "he" ? "rtl" : "ltr"}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {productStatusEnum.map((status, i) => (
+                            <SelectItem key={i} value={status}>{t(`status.${status.toLowerCase()}`)}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                  )}
+                />
+              </FormItem>
+            )}
             <div className="p-4 space-y-6">
               <FormItem>
                 <h3 className="text-lg font-semibold mb-3">{t("adForm.featureImage")}</h3>

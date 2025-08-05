@@ -8,6 +8,13 @@ export const productConditionEnum = [
   "FAIR",
 ] as const;
 
+export const productStatusEnum = [
+  "DRAFT",
+  "ACTIVE",
+  "SOLD",
+  "ARCHIVED",
+] as const;
+
 export type ImageItem = {
   src: string;
   file?: File;
@@ -26,6 +33,7 @@ export interface Product {
   description?: string;
   price: number;
   condition?: typeof productConditionEnum[number];
+  status?: typeof productStatusEnum[number];
   currency?: string;
   image_url?: string;
   // seller_id: string;
@@ -51,6 +59,7 @@ export interface ProductFormData {
   description?: string;
   price: number;
   condition?: typeof productConditionEnum[number];
+  status?: typeof productStatusEnum[number];
   category_id?: number;
   currency?: string;
   image_url?: string;

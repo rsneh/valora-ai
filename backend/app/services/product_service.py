@@ -161,14 +161,18 @@ def get_products(
 
 
 def get_product(
-    db: Session, product_id: int, status: Optional[str] = None
+    db: Session,
+    product_id: int,
+    status: Optional[str] = None,
+    seller_id: Optional[str] = None,
 ) -> models.Product | None:
     """
     Retrieves a single product by its ID.
     """
     query = db.query(models.Product)
-
-    if status:
+    if seller_id:
+        query = query.filter(models.Product.seller_id == seller_id)
+    elif status:
         query = query.filter(models.Product.status == status)
 
     return query.filter(models.Product.id == product_id).first()
@@ -208,7 +212,8 @@ async def update_product(
         product_in.latitude = latitude
         product_in.longitude = longitude
 
-    product_in.status = models.ProductStatusEnum.ACTIVE
+    if product_in.status is None:
+        product_in.status = models.ProductStatusEnum.ACTIVE
 
     update_data_dict = product_in.model_dump(exclude_unset=True)
     needs_commit = False
