@@ -513,7 +513,7 @@ export function SellerAdForm({
             </AlertDialog>
           )}
           <Button type="submit" size="lg" className="font-bold" disabled={loading}>
-            {editMode ? loading ? t("adForm.editingButton") : t("adForm.editButton") : loading ? t("adForm.submitingButton") : t("adForm.submitButton")}
+            {editMode ? loading ? t("adForm.editingButton") : t("adForm.editButton") : loading ? t("adForm.submittingButton") : t("adForm.submitButton")}
           </Button>
         </div>
       </form>
