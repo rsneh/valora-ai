@@ -475,7 +475,7 @@ export function SellerAdForm({
             </div>
           </div>
         </div>
-        <div className="flex justify-end mt-6 border-t pt-4">
+        <div className="flex justify-end mt-6 border-t pt-4 px-4">
           {editMode && (
             <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
               <AlertDialogTrigger asChild>
@@ -513,7 +513,7 @@ export function SellerAdForm({
             </AlertDialog>
           )}
           <Button type="submit" size="lg" className="font-bold" disabled={loading}>
-            {loading ? t("adForm.editingButton") : t("adForm.editButton")}
+            {editMode ? loading ? t("adForm.editingButton") : t("adForm.editButton") : loading ? t("adForm.submitingButton") : t("adForm.submitButton")}
           </Button>
         </div>
       </form>
