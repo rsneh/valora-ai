@@ -350,11 +350,14 @@
     }
   },
   "attributeInput": {
+    "select": "Select",
     "height": "Height",
     "width": "Width",
     "depth": "Depth",
     "brand": "Brand",
     "model": "Model",
+    "size": "Size",
+    "gender": "Gender",
     "unitOptions": {
       "cm": "cm"
     }

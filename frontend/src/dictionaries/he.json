@@ -351,11 +351,14 @@
     }
   },
   "attributeInput": {
+    "select": "בחירת",
     "height": "גובה",
     "width": "רוחב",
     "depth": "עומק",
     "brand": "מותג",
     "model": "דגם",
+    "size": "מידה",
+    "gender": "מגדר",
     "unitOptions": {
       "cm": "ס\"מ"
     }
