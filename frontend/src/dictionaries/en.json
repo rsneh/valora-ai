@@ -357,6 +357,7 @@
     "brand": "Brand",
     "model": "Model",
     "size": "Size",
+    "material": "Material",
     "gender": "Gender",
     "unitOptions": {
       "cm": "cm"

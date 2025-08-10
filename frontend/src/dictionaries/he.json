@@ -359,6 +359,7 @@
     "model": "דגם",
     "size": "מידה",
     "gender": "מגדר",
+    "material": "בד",
     "unitOptions": {
       "cm": "ס\"מ"
     }
