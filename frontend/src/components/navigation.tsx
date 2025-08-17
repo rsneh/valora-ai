@@ -211,9 +211,9 @@ export function Navigation({ categories = [] }: NavigationProps) {
                   <DropdownMenuTrigger asChild className="flex items-center">
                     <div className="flex items-center justify-center text-sm font-medium text-foreground hover:ring-foreground/80">
                       <span className="hidden lg:inline-block">{currentUser.full_name}</span>
-                      {currentUser.photoURL ? (
+                      {false ? (
                         <Image
-                          src={currentUser.photoURL}
+                          src={""} //{currentUser.photoURL}
                           alt="User Avatar"
                           width={32}
                           height={32}
