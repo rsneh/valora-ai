@@ -33,8 +33,6 @@ def upgrade() -> None:
         postgresql_using="sender_id::integer",
     )
 
-    op.drop_index(op.f("ix_chat_messages_sender_id"), table_name="chat_messages")
-
 
 def downgrade() -> None:
     """Downgrade schema."""
