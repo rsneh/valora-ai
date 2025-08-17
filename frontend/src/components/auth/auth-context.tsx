@@ -72,6 +72,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setCurrentUser(_backendUser);
           } catch (error) {
             // Assuming a 404 error means the user doesn't exist in the backend
+            console.info("User not found in backend, creating new user record.", error);
             const newUser = await createUser({ uid: user.uid, full_name: user.displayName ?? undefined }, token);
             setCurrentUser(newUser);
           }
