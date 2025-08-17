@@ -36,10 +36,10 @@ async def create_product(
         created_product = await product_service.create_product(
             db=db,
             product_in=product_data,  # Pass the Pydantic model directly
-            seller_id=current_user.uid,
+            owner_id=current_user.id,
         )
         await gcp_services.delete_gcs_image(
-            image_key=product_data.image_key, current_user_id=current_user.uid
+            image_key=product_data.image_key, current_user_id=current_user.id
         )
         return created_product
     except HTTPException as e:
@@ -72,7 +72,7 @@ def read_products(
     category: Optional[str] = Query(
         None, description="Filter products by category name"
     ),
-    seller_id: Optional[str] = Query(None, description="Filter products by seller ID"),
+    owner_id: Optional[int] = Query(None, description="Filter products by owner ID"),
     current_user: Optional[user_schema.User] = Depends(get_optional_current_user),
 ):
     """
@@ -81,7 +81,7 @@ def read_products(
     Optionally filters by category.
     """
     status = ProductStatusEnum.ACTIVE
-    if current_user and seller_id and current_user["uid"] == seller_id:
+    if current_user and owner_id and current_user.id == owner_id:
         status = "ALL"
 
     products = product_service.get_products(
@@ -89,7 +89,7 @@ def read_products(
         skip=skip,
         limit=limit,
         category=category,
-        seller_id=seller_id,
+        owner_id=owner_id,
         user_latitude=lat,
         user_longitude=lng,
         sort_by_distance=True,
@@ -114,14 +114,14 @@ def read_product(
         db,
         product_id=product_id,
         status=ProductStatusEnum.ACTIVE,
-        seller_id=current_user["uid"] if current_user else None,
+        owner_id=current_user.id if current_user else None,
     )
     if db_product is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
         )
 
-    if current_user and current_user["uid"] == db_product.seller_id:
+    if current_user and current_user.id == db_product.owner_id:
         return product_schema.ProductForEdit.model_validate(db_product)
     else:
         return product_schema.Product.model_validate(db_product)
@@ -143,7 +143,7 @@ async def update_product(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
         )
-    if db_product.seller_id != current_user.uid:
+    if db_product.owner_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to update this product",
@@ -154,7 +154,7 @@ async def update_product(
             db=db,
             product_id=product_id,
             product_in=product_data,
-            seller_id=current_user.uid,
+            owner_id=current_user.id,
         )
 
         return updated_product
@@ -182,7 +182,7 @@ async def delete_product(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
         )
-    if db_product.seller_id != current_user.uid:
+    if getattr(db_product, "owner_id", None) != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to delete this product",
@@ -190,7 +190,7 @@ async def delete_product(
 
     try:
         await product_service.delete_product(
-            db=db, product_id=product_id, seller_id=current_user.uid
+            db=db, product_id=product_id, owner_id=current_user.id
         )
         return  # 204 No Content doesn't return a body
     except HTTPException as e:

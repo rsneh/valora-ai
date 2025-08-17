@@ -10,13 +10,13 @@ import { useState } from "react"
 
 export default function ProfileForm() {
   const { currentUser, updateProfile } = useAuth();
-  const [displayName, setDisplayName] = useState(currentUser?.displayName || "");
+  const [fullName, setFullName] = useState(currentUser?.full_name || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
 
-  const handleDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDisplayName(e.target.value);
+  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFullName(e.target.value);
   }
 
   const handleProfileUpdate = async () => {
@@ -24,7 +24,7 @@ export default function ProfileForm() {
     setLoading(true);
     setError(null);
     try {
-      await updateProfile(currentUser, { displayName });
+      await updateProfile({ fullName });
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -37,25 +37,25 @@ export default function ProfileForm() {
     <div className="p-8 min-h-screen">
       <h2 className="text-2xl font-bold mb-8 text-center">Profile</h2>
       <div className="w-full max-w-2xl mx-auto space-y-8 p-6 bg-white/50 dark:bg-zinc-950/50 backdrop-blur-xs rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs">
-        {currentUser?.photoURL && (
+        {/* {currentUser?.photoURL && (
           <div className="flex items-center justify-center gap-6">
             <Avatar className="h-24 w-24 rounded-full border-2 border-zinc-200/80 dark:border-zinc-800/80 shadow-xs">
               <AvatarImage src={currentUser?.photoURL} className="rounded-full object-cover" />
             </Avatar>
           </div>
-        )}
+        )} */}
 
         <div className="grid gap-6">
           <div className="grid gap-2">
             <Label htmlFor="name" className="text-zinc-700 dark:text-zinc-300">
-              Display Name
+              Full Name
             </Label>
             <Input
               id="name"
               placeholder="Your full name"
-              value={displayName}
+              value={fullName}
               autoComplete="off"
-              onChange={handleDisplayNameChange}
+              onChange={handleFullNameChange}
             />
           </div>
 

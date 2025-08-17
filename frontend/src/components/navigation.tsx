@@ -210,7 +210,7 @@ export function Navigation({ categories = [] }: NavigationProps) {
                 <DropdownMenu dir={locale === "he" ? "rtl" : "ltr"}>
                   <DropdownMenuTrigger asChild className="flex items-center">
                     <div className="flex items-center justify-center text-sm font-medium text-foreground hover:ring-foreground/80">
-                      <span className="hidden lg:inline-block">{currentUser.displayName}</span>
+                      <span className="hidden lg:inline-block">{currentUser.full_name}</span>
                       {currentUser.photoURL ? (
                         <Image
                           src={currentUser.photoURL}

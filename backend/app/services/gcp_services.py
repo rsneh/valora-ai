@@ -2,7 +2,7 @@ import json
 import uuid
 import vertexai
 from pydantic import BaseModel
-from requests import Session
+from sqlalchemy.orm import Session
 from fastapi import UploadFile
 from typing import Any, Dict, Optional, Tuple
 from google.cloud import storage
@@ -54,12 +54,14 @@ async def upload_image_to_gcs_temp(
     if not storage_client:
         print("GCP clients not initialized.")
         return None, None
+
+    unique_suffix = f"{uuid.uuid4()}-{filename}"
+    gcs_object_name_key = f"{TEMP_UPLOAD_PREFIX}{unique_suffix}"
+
+    blob = None
     try:
         bucket_name = settings.GCS_BUCKET_NAME
         bucket = storage_client.bucket(bucket_name)
-
-        unique_suffix = f"{uuid.uuid4()}-{filename}"
-        gcs_object_name_key = f"{TEMP_UPLOAD_PREFIX}{unique_suffix}"
         blob = bucket.blob(gcs_object_name_key)
 
         blob.upload_from_file(file.file, content_type=file.content_type)
@@ -71,7 +73,7 @@ async def upload_image_to_gcs_temp(
         return gcs_object_name_key, blob.public_url
     except Exception as e:
         print(f"Error in upload_image_to_gcs_temp: {e}")
-        if "blob" in locals() and blob.exists():
+        if blob is not None and blob.exists():
             try:
                 blob.delete()
                 print(f"Cleaned up GCS blob {gcs_object_name_key} due to error.")
@@ -80,9 +82,7 @@ async def upload_image_to_gcs_temp(
         return None, None
 
 
-async def move_gcs_image_to_permanent(
-    temp_image_key: str, seller_id: str
-) -> str | None:
+async def move_gcs_image_to_permanent(temp_image_key: str, owner_id: int) -> str | None:
     """
     Moves an image from a temporary GCS location to a permanent one.
     Returns the public URL of the image in the permanent location or None on failure.
@@ -110,7 +110,7 @@ async def move_gcs_image_to_permanent(
         filename_only = temp_image_key.split("/")[
             -1
         ]  # Get the "uuid-filename.ext" part
-        permanent_object_name = f"{PRODUCT_IMAGE_PREFIX}{seller_id}/{filename_only}"
+        permanent_object_name = f"{PRODUCT_IMAGE_PREFIX}{owner_id}/{filename_only}"
 
         destination_blob = bucket.copy_blob(source_blob, bucket, permanent_object_name)
         source_blob.delete()  # Delete the temporary file
@@ -142,7 +142,7 @@ def get_gcs_image_key(image_url: str) -> Optional[str]:
     return parts[3]  # Return the path after bucket name
 
 
-async def delete_gcs_image(image_key: str, current_user_id: str) -> bool:
+async def delete_gcs_image(image_key: str, current_user_id: int) -> bool:
     """
     Deletes an image from the GCS location.
     For enhanced security (post-PoC), one might also check if the current_user_id somehow matches
@@ -210,7 +210,7 @@ async def translate_text_gemini(
     text_to_translate: str,
     target_language: str,
     source_language: str = "English",
-) -> str | None:
+) -> str:
     """
     Translates text from a source language to a target language using the Gemini API.
 
@@ -237,7 +237,7 @@ async def translate_text_gemini(
         return translate_result
     else:
         print(f"Translation failed for text: {text_to_translate}")
-        return None
+        raise ValueError("Translation failed")
 
 
 # async def get_ai_condition(
@@ -398,13 +398,11 @@ def generate_product_data_from_gcs(
         response_mime_type="application/json",
     )
 
-    # Combine the image and the prompt into a single request
-    contents = [image_part, Part.from_text(prompt)]
-
     print("Generating product data from image...")
     # Send the request to the model
     response = model.generate_content(
-        contents=contents, generation_config=generation_config
+        contents=[image_part, Part.from_text(prompt)],
+        generation_config=generation_config,
     )
 
     # The response text is a JSON string, so we parse it into a Python dictionary

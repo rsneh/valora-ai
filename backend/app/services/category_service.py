@@ -1,4 +1,3 @@
-# backend/app/services/category_service.py
 from sqlalchemy.orm import Session
 from typing import List, Dict, Optional
 from app.schemas import category as category_schema

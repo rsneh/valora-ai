@@ -92,6 +92,7 @@ export default function SellerPostWizard() {
     const newData = {
       ...location,
       ...formData,
+      status: "ACTIVE",
     };
 
     setLoading(true);
@@ -226,7 +227,7 @@ export default function SellerPostWizard() {
                 defaultValues={{
                   product_id: product?.id,
                   email: currentUser?.email || '',
-                  seller_name: currentUser?.displayName || '',
+                  seller_name: currentUser?.full_name || '',
                   location_text: productFormData.location_text || location?.location_text || '',
                 }}
                 onSubmit={handleContactSubmit}

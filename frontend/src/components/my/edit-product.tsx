@@ -20,7 +20,7 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
   const productId = product.id;
   const [loading, setLoading] = useState(false);
   const { categories } = useCategories();
-  const { firebaseIdToken } = useAuth();
+  const { firebaseIdToken, currentUser } = useAuth();
   const { toast } = useToast();
   const { t } = useI18nContext();
 
@@ -34,13 +34,13 @@ export function MyEditProductPage({ product }: MyEditProductPageProps) {
     image_url: product.image_url,
     min_acceptable_price: product.min_acceptable_price,
     // negotiation_notes_for_ai: product.negotiation_notes_for_ai,
-    seller_name: product.seller_name || "",
-    seller_phone: product.seller_phone || "",
+    seller_name: currentUser?.full_name || "",
+    seller_phone: currentUser?.phone_number || "",
     location_text: product.location_text || "",
     attributes: product.attributes,
     condition: product.condition as typeof productConditionEnum[number],
     status: product.status as typeof productStatusEnum[number],
-    seller_allowed_to_contact: product.seller_allowed_to_contact || false,
+    seller_allowed_to_contact: currentUser?.allowed_to_contact || false,
   };
 
   async function handleUpdateProduct(formData: ProductFormData): Promise<void> {

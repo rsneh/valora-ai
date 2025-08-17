@@ -8,7 +8,7 @@ from fastapi import (
     Path,
     File,
 )
-from requests import Session
+from sqlalchemy.orm import Session
 from app.services import gcp_services, category_service, product_service
 from app.schemas import image as image_schema, user as user_schema
 from app.db.database import get_db
@@ -36,10 +36,16 @@ async def upload_image_and_get_suggestions(
             detail="User not authenticated.",
         )
 
-    if not image.content_type.startswith("image/"):
+    if not image and not image.content_type.startswith("image/"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid file type. Only images are allowed.",
+        )
+
+    if not image.filename:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid file name.",
         )
 
     suggestions = await gcp_services.process_image_for_suggestions(
@@ -94,7 +100,7 @@ async def upload_multiple_images_to_product(
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found."
         )
 
-    if product.seller_id != current_user.uid:
+    if product.owner_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have permission to modify this product.",
@@ -105,12 +111,12 @@ async def upload_multiple_images_to_product(
     failed_uploads = 0
 
     for image in images:
-        if not image.content_type.startswith("image/"):
+        if not image and not image.content_type.startswith("image/"):
             failed_uploads += 1
             continue
 
         image_key, image_url = await gcp_services.upload_image_to_gcs_temp(
-            image, image.filename
+            image, image.filename  # type: ignore
         )
 
         if not image_key or not image_url:
@@ -129,7 +135,7 @@ async def upload_multiple_images_to_product(
         db=db,
         product_id=product_id,
         temp_image_keys=temp_image_keys,
-        seller_id=current_user.uid,
+        owner_id=current_user.id,
     )
 
     # Construct response

@@ -1,10 +1,11 @@
 import re
-from typing import List, Optional
+from typing import Optional
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.db import models
 from app.lib.brevo import send_email_template
 from app.services import ai_negotiation_service, gcp_services
+from app.schemas import chat as chat_schema
 from app.schemas.chat import SellerContactInfo
 from app.security.firebase_auth import auth as firebase_auth_admin
 
@@ -13,7 +14,6 @@ def send_seller_deal_notification_email(
     seller_email: str,
     seller_name: str,
     product_title: str,
-    # buyer_id: str,
     agreed_price: str,
 ):
     email_context = {
@@ -34,8 +34,8 @@ async def finalize_deal_from_ai(
     db: Session,
     product_id: int,
     conversation_id: int,
-    buyer_id: str,  # Authenticated buyer
-    agreed_price: float,  # Extracted from AI signal
+    buyer_id: int,
+    agreed_price: float,
 ) -> Optional[SellerContactInfo]:
     """
     Updates product and conversation status, notifies seller, returns contact info.
@@ -78,13 +78,15 @@ async def finalize_deal_from_ai(
     seller_email = None
     seller_name = "Seller"
 
-    if product.seller_allowed_to_contact:
+    if product.owner.allowed_to_contact:
         # If seller allowed to contact, we can fetch their phone number
-        seller_phone = product.seller_phone if product.seller_phone else None
-        seller_name = product.seller_name if product.seller_name else "Seller"
+        seller_phone = (
+            product.owner.phone_number if product.owner.phone_number else None
+        )
+        seller_name = product.owner.full_name if product.owner.full_name else "Seller"
 
     try:
-        seller_firebase_user = firebase_auth_admin.get_user(product.seller_id)
+        seller_firebase_user = firebase_auth_admin.get_user(product.owner.uid)
         seller_email = seller_firebase_user.email
     except Exception as e:
         print(f"Could not fetch seller email for notification: {e}")
@@ -114,8 +116,8 @@ async def finalize_deal_from_ai(
 async def get_or_create_conversation_with_greeting(
     db: Session,
     product_id: int,
-    buyer_id: str,
-    seller_id: str,
+    buyer_id: int,
+    seller_id: int,
     locale: str = "en",
 ) -> models.Conversation:
     """
@@ -126,7 +128,7 @@ async def get_or_create_conversation_with_greeting(
         .filter(
             models.Conversation.product_id == product_id,
             models.Conversation.buyer_id == buyer_id,
-            models.Conversation.seller_id == seller_id,  # Ensure seller_id also matches
+            models.Conversation.seller_id == seller_id,
         )
         .first()
     )
@@ -156,7 +158,7 @@ async def get_or_create_conversation_with_greeting(
         add_message_to_conversation(
             db=db,
             conversation_id=conversation.id,
-            sender_id="VALORA_AI_ASSISTANT",
+            sender_id=None,
             sender_type=models.MessageSenderType.AI_ASSISTANT,
             message_text=ai_greeting_text,
             update_last_message_at=False,
@@ -169,7 +171,7 @@ async def get_or_create_conversation_with_greeting(
 def add_message_to_conversation(
     db: Session,
     conversation_id: int,
-    sender_id: str,
+    sender_id: int | None,
     sender_type: models.MessageSenderType,
     message_text: str,
     update_last_message_at: bool = True,  # Added flag
@@ -202,7 +204,7 @@ def add_message_to_conversation(
 async def process_buyer_message_and_get_ai_response(
     db: Session,
     product_id: int,
-    buyer_id: str,
+    buyer_id: int,
     buyer_message_text: str,
     locale: str = "en",
 ) -> models.ChatMessage:
@@ -218,7 +220,7 @@ async def process_buyer_message_and_get_ai_response(
         db=db,
         product_id=product_id,
         buyer_id=buyer_id,
-        seller_id=product.seller_id,
+        seller_id=product.owner_id,
         locale=locale,
     )
 
@@ -234,7 +236,7 @@ async def process_buyer_message_and_get_ai_response(
         ai_message_db = add_message_to_conversation(
             db=db,
             conversation_id=conversation.id,
-            sender_id="VALORA_AI_ASSISTANT",
+            sender_id=None,
             sender_type=models.MessageSenderType.AI_ASSISTANT,
             message_text=unavailable_msg,
             message_type=models.MessageType.UNAVAILABLE_PRODUCT,  # Assign UNAVAILABLE type
@@ -272,7 +274,7 @@ async def process_buyer_message_and_get_ai_response(
         locale=locale,
     )
     print(f"DEBUG: AI Response Data: {ai_response_data}")
-    ai_message_for_buyer = ai_response_data.get("message_text", "")
+    ai_message_for_buyer: str = ai_response_data.get("message_text", "")
     ai_message_type = ai_response_data.get(
         "message_type",
         models.MessageType.GENERAL.value,
@@ -316,7 +318,7 @@ async def process_buyer_message_and_get_ai_response(
             )
             # Append contact info to the AI's message if available
             # The AI's text should ideally confirm the deal, we just add contact info
-            close_deal_message_for_buyer = ""
+            close_deal_message_for_buyer: str = ""
             if (
                 not ai_message_for_buyer.strip()
             ):  # If AI returned empty text but CLOSED_DEAL type
@@ -344,9 +346,11 @@ async def process_buyer_message_and_get_ai_response(
 
             # Translate the final message if needed
             if locale != "en":
-                close_deal_message_for_buyer = await gcp_services.translate_text_gemini(
+                translated_str = await gcp_services.translate_text_gemini(
                     text_to_translate=close_deal_message_for_buyer, target_language=lang
                 )
+                if translated_str:
+                    close_deal_message_for_buyer = translated_str
 
             ai_message_for_buyer = close_deal_message_for_buyer
 
@@ -367,7 +371,7 @@ async def process_buyer_message_and_get_ai_response(
     ai_message_db = add_message_to_conversation(
         db=db,
         conversation_id=conversation.id,
-        sender_id="VALORA_AI_ASSISTANT",
+        sender_id=None,
         sender_type=models.MessageSenderType.AI_ASSISTANT,
         message_text=ai_message_for_buyer,
         message_type=ai_message_type_enum,  # Use the AI's message type
@@ -375,13 +379,13 @@ async def process_buyer_message_and_get_ai_response(
     return ai_message_db
 
 
-async def get_chat_history_with_greeting(  # Renamed for clarity
+async def get_chat_history_with_greeting(
     db: Session,
     product_id: int,
-    buyer_id: str,
-    seller_id: str,
+    buyer_id: int,
+    seller_id: int,
     locale: str,
-) -> models.Conversation:
+) -> chat_schema.Conversation:
     """
     Retrieves chat history. If conversation is new, it creates it with an AI greeting.
     """
@@ -404,13 +408,16 @@ async def get_chat_history_with_greeting(  # Renamed for clarity
         .all()
     )
 
-    return {
-        "id": conversation.id,
-        "product_id": conversation.product_id,
-        "buyer_id": conversation.buyer_id,
-        "seller_id": conversation.seller_id,
-        "created_at": conversation.created_at,
-        "last_message_at": conversation.last_message_at,
-        "status": conversation.status,
-        "messages": messages,
-    }
+    # Convert ORM objects to Pydantic schema objects
+    messages_schema = [chat_schema.ChatMessage.model_validate(msg) for msg in messages]
+
+    return chat_schema.Conversation(
+        id=conversation.id,
+        product_id=conversation.product_id,
+        buyer_id=conversation.buyer_id,
+        seller_id=conversation.seller_id,
+        created_at=conversation.created_at,
+        last_message_at=conversation.last_message_at,
+        status=conversation.status,
+        messages=messages_schema,
+    )

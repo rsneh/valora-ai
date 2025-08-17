@@ -7,11 +7,11 @@ import {
   signInWithPopup,
   UserCredential,
   signInWithEmailAndPassword,
-  updateProfile,
-  type User as FirebaseUser,
   sendPasswordResetEmail,
 } from 'firebase/auth';
 import { auth, googleProvider, twitterProvider, facebookProvider } from '@/services/firebase';
+import { getMyUser, createUser, updateMyUser } from '@/services/api/user';
+import { User } from '@/types/user';
 
 export type RegisterDialogDetails = {
   title: string;
@@ -20,13 +20,13 @@ export type RegisterDialogDetails = {
 }
 
 interface AuthContextType {
-  currentUser: FirebaseUser | null;
+  currentUser: User | null;
   firebaseIdToken: string | null;
   loadingAuth: boolean;
   showRegisterDialog: boolean;
   showLoginDialog: boolean;
   registerDialogDetails?: RegisterDialogDetails;
-  updateProfile: (user: FirebaseUser, { displayName, photoUrl }: { displayName?: string; photoUrl?: string }) => Promise<void>
+  updateProfile: ({ fullName }: { fullName?: string; }) => Promise<void>
   setShowRegisterDialog: (value: boolean) => void;
   setRegisterDialogDetails: (details: RegisterDialogDetails) => void;
   setShowLoginDialog: (value: boolean) => void;
@@ -54,7 +54,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [firebaseIdToken, setFirebaseIdToken] = useState<string | null>(null);
   const [showRegisterDialog, setShowRegisterDialog] = useState<boolean>(false);
@@ -63,19 +63,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
       if (user) {
         try {
           const token = await user.getIdToken(true);
           setFirebaseIdToken(token);
+          try {
+            const _backendUser = await getMyUser(token);
+            setCurrentUser(_backendUser);
+          } catch (error) {
+            // Assuming a 404 error means the user doesn't exist in the backend
+            const newUser = await createUser({ uid: user.uid, full_name: user.displayName ?? undefined }, token);
+            setCurrentUser(newUser);
+          }
         } catch (error) {
-          console.error("Error getting ID token:", error);
+          console.error("Error during auth process:", error);
           setFirebaseIdToken(null);
+          setCurrentUser(null);
           // Optionally sign out the user if token refresh fails critically
           await firebaseSignOut(auth);
         }
       } else {
         setFirebaseIdToken(null);
+        setCurrentUser(null);
       }
       setLoading(false);
     });
@@ -101,6 +110,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     email: string,
     password: string
   ): Promise<UserCredential> => signInWithEmailAndPassword(auth, email, password);
+
+  const updateProfile = async ({ fullName }: { fullName?: string; }) => {
+    if (!firebaseIdToken) return;
+    await updateMyUser({ full_name: fullName }, firebaseIdToken);
+  };
 
   const value: AuthContextType = {
     currentUser,

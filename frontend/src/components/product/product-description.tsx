@@ -41,9 +41,6 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
     }, []);
   }, [product]);
 
-  console.log({ categoryAttributeSchema });
-
-
   const productLocation = product.latitude && product.longitude ? {
     lat: product.latitude,
     lng: product.longitude,

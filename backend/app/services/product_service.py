@@ -38,8 +38,8 @@ def calculate_haversine_distance(lat1, lon1, lat2, lon2):
 
 async def create_product(
     db: Session,
-    product_in: product_schema.ProductCreate,  # Now contains title, price, image_key
-    seller_id: str,
+    product_in: product_schema.ProductCreate,
+    owner_id: int,
 ) -> models.Product:
     """
     Creates a product listing using a pre-uploaded image key.
@@ -47,7 +47,7 @@ async def create_product(
     # 1. Validate image_key and move image from temp to permanent GCS location
     # The temp_image_key is product_in.image_key
     permanent_image_url = await gcp_services.move_gcs_image_to_permanent(
-        temp_image_key=product_in.image_key, seller_id=seller_id
+        temp_image_key=product_in.image_key, owner_id=owner_id
     )
     if not permanent_image_url:
         raise HTTPException(
@@ -63,7 +63,7 @@ async def create_product(
         category_id=product_in.category_id,
         image_url=permanent_image_url,
         condition=product_in.condition,
-        seller_id=seller_id,
+        owner_id=owner_id,
         min_acceptable_price=product_in.min_acceptable_price,
         attributes=product_in.attributes,
         currency=product_in.currency,
@@ -79,7 +79,7 @@ def get_products(
     skip: int = 0,
     limit: int = 100,
     category: Optional[str] = None,
-    seller_id: Optional[str] = None,
+    owner_id: Optional[int] = None,
     # Add other filters like location, price_range etc. as needed
     user_latitude: Optional[float] = None,
     user_longitude: Optional[float] = None,
@@ -97,8 +97,8 @@ def get_products(
     if status and status != "ALL":
         query = query.filter(models.Product.status == status)
 
-    if seller_id:
-        query = query.filter(models.Product.seller_id == seller_id)
+    if owner_id:
+        query = query.filter(models.Product.owner_id == owner_id)
 
     if category:
         target_category_ids = category_service.get_all_descendant_category_ids(
@@ -164,14 +164,14 @@ def get_product(
     db: Session,
     product_id: int,
     status: Optional[str] = None,
-    seller_id: Optional[str] = None,
+    owner_id: Optional[int] = None,
 ) -> models.Product | None:
     """
     Retrieves a single product by its ID.
     """
     query = db.query(models.Product)
-    if seller_id:
-        query = query.filter(models.Product.seller_id == seller_id)
+    if owner_id:
+        query = query.filter(models.Product.owner_id == owner_id)
     elif status:
         query = query.filter(models.Product.status == status)
 
@@ -182,7 +182,7 @@ async def update_product(
     db: Session,
     product_id: int,
     product_in: product_schema.ProductUpdate,
-    seller_id: str,
+    owner_id: int,
 ) -> models.Product:
     """
     Updates an existing product.
@@ -197,7 +197,7 @@ async def update_product(
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
         )
 
-    if db_product.seller_id != seller_id:
+    if getattr(db_product, "owner_id", None) != owner_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to update this product",
@@ -232,7 +232,7 @@ async def update_product(
     return db_product
 
 
-async def delete_product(db: Session, product_id: int, seller_id: str) -> bool:
+async def delete_product(db: Session, product_id: int, owner_id: int) -> bool:
     """
     Deletes a product from the database after authorization check.
     Also attempts to delete the associated image from GCS.
@@ -248,7 +248,7 @@ async def delete_product(db: Session, product_id: int, seller_id: str) -> bool:
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
         )
 
-    if db_product.seller_id != seller_id:
+    if getattr(db_product, "owner_id", None) != owner_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to delete this product",
@@ -260,7 +260,7 @@ async def delete_product(db: Session, product_id: int, seller_id: str) -> bool:
     # This would require running it in an event loop (e.g., asyncio.run())
     # or making this service function async (which would require the API endpoint to be async).
     # For now, assuming it can be called, but this needs careful handling in a mixed sync/async codebase.
-    if db_product.image_url:
+    if getattr(db_product, "image_url", None):
         try:
             print(
                 f"INFO: Attempting to delete GCS image {db_product.image_url} for product {product_id}"
@@ -276,7 +276,13 @@ async def delete_product(db: Session, product_id: int, seller_id: str) -> bool:
             # This is a simplified way; proper async handling in FastAPI/SQLAlchemy sync sessions is nuanced.
             # For a truly async gcp_services call, this delete_product service and its endpoint should be async.
             # If delete_gcs_permanent_image is synchronous, this is fine.
-            image_url = db_product.image_url
+            image_url = getattr(db_product, "image_url", None)
+            if not image_url:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Product has no associated image URL.",
+                )
+
             image_key = gcp_services.get_gcs_image_key(image_url)
             if not image_key:
                 raise HTTPException(
@@ -285,7 +291,7 @@ async def delete_product(db: Session, product_id: int, seller_id: str) -> bool:
                 )
             print(f"INFO: Deleting GCS image with key {image_key}")
             await gcp_services.delete_gcs_image(
-                image_key=image_key, current_user_id=seller_id
+                image_key=image_key, current_user_id=owner_id
             )
         except Exception as e:
             print(
@@ -298,16 +304,18 @@ async def delete_product(db: Session, product_id: int, seller_id: str) -> bool:
         .all()
     )
     for image in associated_images:
+        image_url = getattr(image, "image_url", None)
         try:
             print(
-                f"INFO: Attempting to delete GCS image {image.image_url} for product image {image.id}"
+                f"INFO: Attempting to delete GCS image {image_url} for product image {image.id}"
             )
-            await gcp_services.delete_gcs_image(
-                image_key=image.image_url, current_user_id=seller_id
-            )
+            if image_url:
+                await gcp_services.delete_gcs_image(
+                    image_key=image_url, current_user_id=owner_id
+                )
         except Exception as e:
             print(
-                f"Error deleting GCS image {image.image_url} during product image deletion: {e}. Continuing with DB deletion."
+                f"Error deleting GCS image {image_url} during product image deletion: {e}. Continuing with DB deletion."
             )
 
     # Now delete the product from the database
@@ -327,7 +335,7 @@ async def add_product_images(
     db: Session,
     product_id: int,
     temp_image_keys: List[str],
-    seller_id: str,
+    owner_id: int,
 ) -> List[models.ProductImage]:
     """
     Adds multiple images to an existing product.
@@ -336,7 +344,7 @@ async def add_product_images(
         db: Database session
         product_id: ID of the product to add images to
         temp_image_keys: List of temporary image keys from GCS
-        seller_id: ID of the seller (for authorization)
+        owner_id: ID of the owner (for authorization)
 
     Returns:
         List of created ProductImage objects
@@ -353,7 +361,7 @@ async def add_product_images(
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
         )
 
-    if db_product.seller_id != seller_id:
+    if getattr(db_product, "owner_id", None) != owner_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to modify this product",
@@ -364,7 +372,7 @@ async def add_product_images(
     for temp_key in temp_image_keys:
         # Move image from temporary to permanent storage
         permanent_image_url = await gcp_services.move_gcs_image_to_permanent(
-            temp_image_key=temp_key, seller_id=seller_id
+            temp_image_key=temp_key, owner_id=owner_id
         )
 
         if not permanent_image_url:

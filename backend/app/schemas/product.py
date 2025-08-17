@@ -5,18 +5,19 @@ from datetime import datetime
 from app.db.models import ProductConditionEnum, ProductStatusEnum
 from app.schemas.category import Category
 from app.schemas.product_image import ProductImage
+from app.schemas.user import User
 
 
 # Properties to receive on item creation
 class ProductCreate(BaseModel):
     title: str
-    description: str = None
-    category_id: int = None
+    description: Optional[str] = None
+    category_id: Optional[int] = None
     attributes: Optional[Dict[str, Any]] = None
     condition: Optional[ProductConditionEnum] = None
     price: float
     currency: str
-    image_url: HttpUrl = None
+    image_url: Optional[HttpUrl] = None
     image_key: str
     min_acceptable_price: Optional[float] = None
 
@@ -30,9 +31,6 @@ class ProductUpdate(BaseModel):
     status: ProductStatusEnum = ProductStatusEnum.DRAFT
     currency: Optional[str] = None
     condition: Optional[ProductConditionEnum] = None
-    seller_name: Optional[str] = None
-    seller_phone: Optional[str] = None
-    seller_allowed_to_contact: bool = False
     min_acceptable_price: Optional[float] = None
     attributes: Optional[Dict[str, Any]] = None
     location_text: str
@@ -52,10 +50,7 @@ class ProductInDBBase(BaseModel):
     condition: Optional[ProductConditionEnum] = None
     status: ProductStatusEnum = ProductStatusEnum.DRAFT
     image_url: Optional[str] = None
-    seller_id: str
-    seller_name: Optional[str] = None
-    seller_phone: Optional[str] = None
-    seller_allowed_to_contact: bool = False
+    owner_id: int
     time_created: datetime
     time_updated: Optional[datetime] = None
     location_text: Optional[str] = None
@@ -90,6 +85,7 @@ class Product(BaseModel):
     longitude: Optional[float] = None
 
     # Relationships
+    owner: Optional[User] = None
     category: Optional[Category] = None
     images: Optional[list[ProductImage]] = None
 
@@ -108,9 +104,6 @@ class ProductForEdit(BaseModel):
     status: ProductStatusEnum = ProductStatusEnum.DRAFT
     image_url: Optional[str] = None
     location_text: Optional[str] = None
-    seller_name: Optional[str] = None
-    seller_phone: Optional[str] = None
-    seller_allowed_to_contact: Optional[bool] = False
     min_acceptable_price: Optional[float] = None
     attributes: Optional[Dict[str, Any]] = None
 

@@ -1,0 +1,10 @@
+{
+  "include": [
+    "."
+  ], // Adjust if your source code is in a subdirectory
+  "exclude": [
+    "**/__pycache__",
+    "venv"
+  ], // Add other directories to exclude if needed
+  "reportArgumentType": false
+}

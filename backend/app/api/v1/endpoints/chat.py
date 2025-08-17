@@ -20,7 +20,7 @@ async def send_chat_message(
         ai_message_db = await chat_service.process_buyer_message_and_get_ai_response(
             db=db,
             product_id=message_in.product_id,
-            buyer_id=current_user.uid,
+            buyer_id=current_user.id,
             buyer_message_text=message_in.message_text,
             locale=locale,
         )
@@ -62,7 +62,7 @@ async def get_conversation_history(  # Made async to align with service
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
         )
 
-    if current_user.uid == product.seller_id:
+    if current_user.uid == product.owner.uid:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Sellers cannot access chat history through this buyer endpoint.",
@@ -72,8 +72,8 @@ async def get_conversation_history(  # Made async to align with service
     history = await chat_service.get_chat_history_with_greeting(
         db=db,
         product_id=product_id,
-        buyer_id=current_user.uid,
-        seller_id=product.seller_id,
+        buyer_id=current_user.id,
+        seller_id=product.owner.id,
         locale=locale,
     )
     return history

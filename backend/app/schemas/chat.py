@@ -19,7 +19,7 @@ class ChatMessageCreate(ChatMessageBase):
 class ChatMessage(ChatMessageBase):
     id: int
     conversation_id: int
-    sender_id: str  # Firebase UID or "VALORA_AI"
+    sender_id: Optional[int] = None
     sender_type: MessageSenderType
     message_type: Optional[MessageType] = None
     timestamp: datetime
@@ -30,8 +30,6 @@ class ChatMessage(ChatMessageBase):
 
 class ConversationBase(BaseModel):
     product_id: int
-    buyer_id: str
-    seller_id: str
 
 
 class Conversation(ConversationBase):
@@ -40,6 +38,8 @@ class Conversation(ConversationBase):
     last_message_at: datetime
     status: ConversationStatus
     messages: List[ChatMessage] = []  # Include messages when returning a conversation
+    buyer_id: int
+    seller_id: int
 
     class Config:
         from_attributes = True
