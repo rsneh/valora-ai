@@ -9,7 +9,7 @@ def get_user_by_firebase_uid(db: Session, firebase_uid: str):
 
 def create_user(db: Session, user: user_schema.UserCreate):
     db_user = models.User(
-        firebase_uid=user.uid,
+        uid=user.uid,
         full_name=user.full_name,
         phone_number=user.phone_number,
         allowed_to_contact=user.allowed_to_contact,
