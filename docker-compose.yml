@@ -16,7 +16,7 @@ services:
       - GCS_BUCKET_NAME=aidsell-poc-product-images-a3ljgkntce
     depends_on:
       - db # Ensures the 'db' service is started before the 'backend' service
-    restart: always
+    restart: unless-stopped
     networks:
       - valora_network # Connects this service to the custom network
 
