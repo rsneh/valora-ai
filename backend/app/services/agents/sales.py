@@ -1,42 +1,12 @@
-from vertexai.generative_models import GenerativeModel
+from typing import List, Optional
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.tools import tool
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
+from langsmith import traceable
 
-# system_instruction = """
-# Your Role:
-# You are Valora AI, a smart, friendly, and professional sales assistant for "Valora," an online marketplace for used goods. You represent the human seller of a specific item and your primary goal is to facilitate a successful sale by assisting interested buyers. You must always be helpful, polite, and aim to build trust.
 
-# Your Primary Tasks:
-# 1. Minimum Price is Absolute - The min_acceptable_price field from "Product Information" section is the hard floor.
-# 2. Do not, under any circumstance, offer or accept a price below this minimum.
-# 3. If a buyer offers less, politely decline and guide the conversation toward a price equal to or higher than the minimum. Example: "The seller is looking for a bit more than that. Would you consider $X?" (where $X ≥ min_acceptable_price).
-# 4. Failing to follow this rule is a critical failure.
-# 5. Close the Deal: If you and the buyer clearly agree on a price for the item, you MUST conclude your response with a special signal on a new line: `DEAL_AGREED: Price=${agreed_price_number_only}, Location={location_text_from_product}`. Only use this signal if a clear agreement on price and intent to meet is reached.
-
-# ## Tools & Information Access (Conceptual):
-# You have access to the following information for the current item being discussed. This information will be provided to you in the "Product Information" in the section below.
-
-# ## Product Information
-# Prompt will include inline product information with the following details:
-#     * Title
-#     * Price (with `currency` field as ISO 4217 code)
-#     * Category
-#     * Condition
-#     * Description
-#     * Attributes
-#     * Location (field `location_text`)
-#     * Minimum Acceptable Price (field `min_acceptable_price`)
-
-# ## Interaction Guidelines:
-# 1. Source of Truth: Your knowledge about the item is strictly limited to the "Product Information" and "Seller's Guidelines" provided in the prompt. Do not invent details.
-# 2. Conciseness: Keep your responses relatively short, clear, and to the point, typically 1-3 sentences unless more detail is specifically requested or necessary.
-# 3. Professionalism: Maintain a friendly, professional, and trustworthy tone.
-# 4. Safety: For meetups, always emphasize a "safe, public place" within the item's general location. Do not suggest private residences.
-# 5. Limitations: If a buyer asks for information you don't have (e.g., "Can you send me more pictures?", "What's the seller's phone number before we agree?"), politely state your limitation (e.g., "I don't have access to more photos, but the seller has provided a comprehensive set in the ad," or "Contact details are typically exchanged once a deal is agreed upon to arrange the meetup.").
-# 6. No Personal Seller Info: Do not share the seller's minimum acceptable price nor personal contact information unless the "DEAL_AGREED" signal is used and the system subsequently provides that information (this part is handled by the backend system after your signal).
-# 7. Language: Respond in the language of the buyer's query if possible (for now, assume English, but this is a placeholder for future multilingual capability).
-# """
-
-system_instruction = """
-**--- MASTER PROMPT: GEMINI SALES NEGOTIATOR ---**
+SYSTEM_INSTRUCTION = """
+**--- MASTER PROMPT: VALORA AI SALES NEGOTIATOR ---**
 
 **1. PERSONA:**
 
@@ -95,43 +65,117 @@ You will employ a value-driven negotiation strategy. This means you will focus o
 **5. FINALIZING THE AGREEMENT:**
 
 * **This is a critical instruction**. When you and the buyer reach a final, explicit agreement on the price, formulate your complete confirmation message first (e.g., "Perfect, we have a deal at $150! We can coordinate a time for pickup."). Then, as the absolute final part of your response, on a new line by itself, you MUST add the following signal:
-* **Signal Format**: DEAL_AGREED: Price=${agreed_price_number_only}, Location={location_text_from_product}
+* **Signal Format**: DEAL_AGREED: Price=${{agreed_price_number_only}}, Location={{location_text_from_product}}
 * **Example**: If you agree on a price of $450 and the location from the context is "Midtown", your final response would look like this:
 Excellent! We have an agreement at $450. I'm available to meet this afternoon.
 
 DEAL_AGREED: Price=450, Location=Midtown
 
 * **Crucial**: Only use this signal on the one message that confirms the final deal. Do not use it during the back-and-forth negotiation phase.
+
+**6. TOOLS:**
+
+You have access to tools that can help you during the negotiation. Use them when appropriate.
 """
 
 
+# Placeholder tool for future use
+@tool
+def get_product_details(product_id: str) -> str:
+    """
+    Retrieves additional product details by product ID.
+    This is a placeholder tool for future implementation.
+
+    Args:
+        product_id: The unique identifier of the product
+
+    Returns:
+        Product details as a string
+    """
+    # TODO: Implement actual product lookup logic
+    return f"Product details for ID {product_id} will be retrieved here in future implementation."
+
+
+@traceable(run_type="chain")
+async def sales_agent_with_conversation(
+    message: str,
+    chat_history: Optional[List[BaseMessage]] = None,
+    product_context: str = "",
+    model_name: str = "gemini-2.0-flash-001",
+) -> str:
+    """
+    Handles sales negotiation with conversation history using LangChain.
+
+    Args:
+        message: The current user message
+        chat_history: List of previous messages in the conversation
+        product_context: Product information to include in the context
+        model_name: The name of the Gemini model to use
+
+    Returns:
+        The agent's response as a string
+    """
+    try:
+        # Initialize the LLM with tool binding
+        llm = ChatGoogleGenerativeAI(
+            model=model_name, temperature=0.7, convert_system_message_to_human=True
+        )
+
+        # Bind tools to the LLM
+        tools = [get_product_details]
+        llm_with_tools = llm.bind_tools(tools)
+
+        # Build the message list
+        messages: List[BaseMessage] = [SystemMessage(content=SYSTEM_INSTRUCTION)]
+
+        # Add chat history if available
+        if chat_history:
+            messages.extend(chat_history)
+
+        # Add the current message with product context
+        if product_context:
+            user_message = f"{product_context}\n\n{message}"
+        else:
+            user_message = message
+
+        messages.append(HumanMessage(content=user_message))
+
+        # Invoke the LLM
+        response = await llm_with_tools.ainvoke(messages)
+
+        # Extract the output
+        if hasattr(response, "content"):
+            output = response.content
+            if isinstance(output, str):
+                return output.strip()
+            else:
+                return str(output).strip()
+        else:
+            return str(response).strip()
+
+    except Exception as e:
+        print(f"Error in sales agent: {e}")
+        import traceback
+
+        traceback.print_exc()
+        return "I apologize, but I'm having trouble processing your request. Please try again."
+
+
+# Legacy function for backward compatibility
 async def sales_agent_content_gemini(
     prompt: str, model_name: str = "gemini-2.0-flash-001"
 ) -> str:
     """
-    Generates text using a Google Vertex AI Gemini model.
-    """
-    try:
-        model = GenerativeModel(model_name, system_instruction=system_instruction)
-        response = await model.generate_content_async(prompt)
+    Legacy function for backward compatibility.
+    Generates text using LangChain-based sales agent.
 
-        # Accessing the text response - this might vary slightly based on SDK version and model
-        # Check the structure of `response.candidates[0].content.parts[0].text`
-        if (
-            response.candidates
-            and response.candidates[0].content
-            and response.candidates[0].content.parts
-        ):
-            generated_text = response.candidates[0].content.parts[0].text
-            print(
-                f"Gemini AI - Generated text: {generated_text[:100]}..."
-            )  # Log snippet
-            return generated_text.strip()
-        else:
-            print(
-                f"Gemini AI - No content generated or unexpected response structure: {response}"
-            )
-            return ""
-    except Exception as e:
-        print(f"Error generating text with Vertex AI Gemini: {e}")
-        return ""
+    Args:
+        prompt: The input prompt including product context
+        model_name: The name of the Gemini model to use
+
+    Returns:
+        The generated response as a string
+    """
+    return await sales_agent_with_conversation(
+        message=prompt, chat_history=None, model_name=model_name
+    )

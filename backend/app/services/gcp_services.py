@@ -6,10 +6,10 @@ from sqlalchemy.orm import Session
 from fastapi import UploadFile
 from typing import Any, Dict, Optional, Tuple
 from google.cloud import storage
-from vertexai.generative_models import GenerativeModel, GenerationConfig, Part
 from app.core.config import settings
 from app.services import category_service
 from app.db.models import ProductConditionEnum
+from app.services.langchain.gemini import invoke_llm, invoke_gemini_with_image
 
 
 TEMP_UPLOAD_PREFIX = "temp-uploads/"
@@ -170,32 +170,21 @@ async def delete_gcs_image(image_key: str, current_user_id: int) -> bool:
         return False
 
 
-async def generate_text_with_gemini(
-    prompt: str, model_name: str = "gemini-2.0-flash-001"
-) -> str:
+async def generate_text_with_gemini(prompt: str) -> str:
     """
     Generates text using a Google Vertex AI Gemini model.
     """
-    generation_config = GenerationConfig(
-        temperature=0.2,
-    )
-
     try:
-        model = GenerativeModel(model_name, generation_config=generation_config)
-        response = await model.generate_content_async(prompt)
+        response = invoke_llm(prompt)
 
         # Accessing the text response - this might vary slightly based on SDK version and model
-        # Check the structure of `response.candidates[0].content.parts[0].text`
-        if (
-            response.candidates
-            and response.candidates[0].content
-            and response.candidates[0].content.parts
-        ):
-            generated_text = response.candidates[0].content.parts[0].text
+        # Check the structure of `response.content.parts[0].text`
+        if response.content:
+            generated_text = response.content
             print(
                 f"Gemini AI - Generated text: {generated_text[:100]}..."
             )  # Log snippet
-            return generated_text.strip()
+            return str(generated_text)
         else:
             print(
                 f"Gemini AI - No content generated or unexpected response structure: {response}"
@@ -341,9 +330,6 @@ def generate_product_data_from_gcs(
     gcs_uri: str,
     locale: str = "en",
 ) -> dict:
-    # Load the specified Gemini model.
-    model = GenerativeModel("gemini-2.0-flash-001")
-
     # Define the mime type based on the GCS URI file extension
     if gcs_uri.lower().endswith(".png"):
         mime_type = "image/png"
@@ -352,9 +338,6 @@ def generate_product_data_from_gcs(
     else:
         # Add other mime types as needed
         raise ValueError("Unsupported image format. Please use PNG or JPEG.")
-
-    # Create a Part object for the image directly from the GCS URI
-    image_part = Part.from_uri(uri=gcs_uri, mime_type=mime_type)
 
     # Fetch categories from DB for the prompt
     db_categories = category_service.get_all_active_categories_for_ai(db)
@@ -393,20 +376,12 @@ def generate_product_data_from_gcs(
     }}
     """
 
-    # Configure the model to return a JSON response
-    generation_config = GenerationConfig(
-        response_mime_type="application/json",
-    )
-
     print("Generating product data from image...")
     # Send the request to the model
-    response = model.generate_content(
-        contents=[image_part, Part.from_text(prompt)],
-        generation_config=generation_config,
-    )
+    response = invoke_gemini_with_image(prompt, gcs_uri)
 
     # The response text is a JSON string, so we parse it into a Python dictionary
-    response_text = response.candidates[0].content.text
+    response_text = str(response.content)
     product_data = json.loads(response_text)
 
     print("✅ Successfully generated product data!")

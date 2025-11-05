@@ -1,7 +1,71 @@
 import json
 from typing import List, Dict
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from app.db.models import Product as ProductModel, MessageSenderType, MessageType
-from app.services.agents.sales import sales_agent_content_gemini
+from app.services.agents.sales import sales_agent_with_conversation
+
+
+def _build_product_context(product: ProductModel, locale: str = "en") -> str:
+    """
+    Builds a comprehensive product context string for the AI agent.
+
+    Args:
+        product: The product model instance
+        locale: The language locale (default: "en")
+
+    Returns:
+        Formatted product context string
+    """
+    lang = "Hebrew" if locale == "he" else "English"
+    context_parts = [f"Respond in language: {lang}"]
+    context_parts.append("\n--- Product Information ---")
+    context_parts.append(f"Title: {product.title}")
+    context_parts.append(f"Listed Price: {product.price:.2f} {product.currency}")
+
+    if product.category and product.category.name_en:
+        context_parts.append(f"Category: {product.category.name_en}")
+
+    if product.condition:
+        context_parts.append(f"Condition: {product.condition}")
+
+    if product.description:
+        context_parts.append(f"Description: {product.description}")
+
+    if product.location_text:
+        context_parts.append(f"Location: {product.location_text}")
+
+    # Add seller's negotiation guidelines
+    context_parts.append("\n--- Seller's Guidelines ---")
+    if product.min_acceptable_price is not None:
+        context_parts.append(
+            f"Minimum Acceptable Price: {product.min_acceptable_price:.2f} {product.currency}"
+        )
+
+    if product.negotiation_notes_for_ai:
+        context_parts.append(f"Seller's Notes: {product.negotiation_notes_for_ai}")
+
+    return "\n".join(context_parts)
+
+
+def _convert_history_to_messages(conversation_history: List[Dict]) -> List[BaseMessage]:
+    """
+    Converts conversation history from dict format to LangChain message objects.
+
+    Args:
+        conversation_history: List of message dictionaries
+
+    Returns:
+        List of LangChain BaseMessage objects
+    """
+    messages: List[BaseMessage] = []
+
+    for msg_data in conversation_history:
+        if msg_data["sender_type"] == MessageSenderType.BUYER:
+            messages.append(HumanMessage(content=msg_data["text"]))
+        else:  # AI or SELLER
+            messages.append(AIMessage(content=msg_data["text"]))
+
+    return messages
 
 
 async def generate_initial_ai_greeting(product: ProductModel, locale: str) -> str:
@@ -9,36 +73,33 @@ async def generate_initial_ai_greeting(product: ProductModel, locale: str) -> st
     Generates an initial greeting message from the AI when a buyer starts a chat.
     """
     lang = "Hebrew" if locale == "he" else "English"
-    prompt_parts = [
-        # "You are Valora AI, a friendly and helpful assistant for a marketplace selling used goods. "
-        # "A buyer has just started a chat to inquire about an item. "
-        # "Your goal is to greet the buyer, introduce yourself, mention the item they are interested in, "
-        # "and briefly explain what you can help with (answer questions, discuss price/terms for an in-person exchange). "
-        # "Keep it welcoming, concise, and clear."
-        f"Respond with the greeting message in language: {lang}."
-        # f"{lang}. "
-        # "Do not include any additional instructions or system prompts in your response."
-    ]
-    prompt_parts.append("\n--- Product Information ---")
-    prompt_parts.append(f"Item: {product.title}")
-    prompt_parts.append(f"Listed Price: ${product.price:.2f}")
-    if product.location_text:
-        prompt_parts.append(f"Item Location: {product.location_text}")
 
-    prompt_parts.append("\n--- Your Greeting Task ---")
-    prompt_parts.append(
-        "Craft a greeting message to the buyer. Example: '👋 Hi there! I'm Valora AI, your assistant for the \"{Product Title}\". I can answer questions about it and help with price or meetup details in {Product Location}. How can I help you today?'"
+    # Build product context
+    product_context = _build_product_context(product, locale)
+
+    # Build the greeting request message
+    message = f"""A buyer has just started a chat about this item. Generate a welcoming greeting message in {lang}.
+
+Your greeting should:
+- Welcome the buyer warmly
+- Introduce yourself as Valora AI
+- Mention the item they're interested in
+- Offer to help with questions and price discussion
+- Keep it concise and friendly
+
+Example format: "👋 Hi there! I'm Valora AI, your assistant for the \"{product.title}\". I can answer questions about it and help with price or meetup details in {product.location_text}. How can I help you today?"
+
+Provide ONLY the greeting message, nothing else."""
+
+    print(f"DEBUG: Generating initial greeting for product: {product.title}")
+
+    # Use the new LangChain agent with conversation
+    ai_greeting_text = await sales_agent_with_conversation(
+        message=message,
+        chat_history=None,
+        product_context=product_context,
+        model_name="gemini-2.0-flash-001",
     )
-    prompt_parts.append("Your response should be just the greeting message itself.")
-    prompt_parts.append("\nAI Greeting:")
-
-    full_prompt = "\n".join(prompt_parts)
-
-    print(
-        f"DEBUG: AI Prompt for Initial Greeting:\n{full_prompt}\n--------------------"
-    )
-
-    ai_greeting_text = await sales_agent_content_gemini(prompt=full_prompt)
 
     if not ai_greeting_text:
         # Fallback greeting if Gemini fails
@@ -54,110 +115,67 @@ async def generate_ai_response(
     locale: str,
 ) -> Dict[str, str]:  # Return a dictionary with text and type
     """
-    Generates an AI response for the chat using Gemini.
+    Generates an AI response for the chat using the LangChain sales agent.
     """
     lang = "Hebrew" if locale == "he" else "English"
-    # 1. Construct the prompt for Gemini
-    # System Message / Role
-    prompt_parts = [
-        #     "You are Valora AI, a helpful, polite, and efficient assistant representing the seller of a used item. "
-        #     "Your goal is to answer buyer questions accurately based on the product information and engage in "
-        #     "fair negotiation if the buyer discusses price or terms for an in-person exchange. "
-        f"Respond with the greeting message in language: {lang}"
-        #     f"{lang}. "
-        #     "Be concise and friendly."
-    ]
 
-    # Product Context
-    prompt_parts.append("\n--- Product Information ---")
-    prompt_parts.append(f"Item: {product.title}")
-    prompt_parts.append(f"Listed Price: {product.price:.2f} {product.currency}")
-    if product.category.name_en:
-        prompt_parts.append(f"Category: {product.category.name_en}")
-    if product.description:
-        prompt_parts.append(f"Description: {product.description}")
-    if product.location_text:
-        prompt_parts.append(f"Item Location: {product.location_text}")
+    # Build product context
+    product_context = _build_product_context(product, locale)
 
-    # Seller's Negotiation Guidelines (from Product model)
-    prompt_parts.append("\n--- Seller's Guidelines ---")
-    if product.min_acceptable_price is not None:
-        prompt_parts.append(
-            f"The seller might consider offers, but the absolute minimum price is ${product.min_acceptable_price:.2f}."
-        )
-        prompt_parts.append(
-            "If the buyer offers below this, politely decline or steer them towards the minimum price."
-        )
-    else:
-        prompt_parts.append(
-            "The seller is generally looking for the listed price but might be open to reasonable discussion."
-        )
-
-    if product.negotiation_notes_for_ai:
-        prompt_parts.append(
-            f"Additional notes from seller for you (the AI): {product.negotiation_notes_for_ai}"
-        )
-
-    prompt_parts.append(
-        "When discussing price, if you make a counter-offer, state it clearly."
+    # Convert conversation history to LangChain messages
+    # Take only the last 10 messages to avoid context overflow
+    recent_history = (
+        conversation_history[-10:]
+        if len(conversation_history) > 10
+        else conversation_history
     )
-    prompt_parts.append("If a price is agreed, confirm the agreed price and item.")
-    prompt_parts.append(
-        f"For meetups, suggest a safe public place within '{product.location_text}'. Do not arrange specific times, just general availability like 'weekdays' or 'weekends' if mentioned in seller notes."
-    )
-    prompt_parts.append(
-        "If you cannot answer a specific question or if the buyer asks something beyond your capability (e.g., to see more photos not in the listing, or very specific personal seller details), politely state that you'll need to ask the seller or that some details are best discussed directly if they proceed with the purchase."
-    )
-    prompt_parts.append("Keep your responses relatively short and to the point.")
+    chat_history = _convert_history_to_messages(recent_history)
 
-    # Conversation History
-    if conversation_history:
-        prompt_parts.append("\n--- Conversation History (Last 5 exchanges) ---")
-        for msg_data in conversation_history[-10:]:  # Max 5 buyer + 5 AI messages
-            role = (
-                "Buyer"
-                if msg_data["sender_type"] == MessageSenderType.BUYER
-                else "You (Valora AI)"
-            )
-            prompt_parts.append(f"{role}: {msg_data['text']}")
-
-    # Buyer's Current Message
-    prompt_parts.append("\n--- Current Interaction ---")
-    prompt_parts.append(f"Buyer: {buyer_message_text}")
-
-    # Instruction for structured output and message type classification
+    # Build the current buyer message with instructions for structured output
     message_types = [e.value for e in MessageType]
-    prompt_parts.append("\n--- Response Format ---")
-    prompt_parts.append(
-        f"Respond ONLY with a JSON object containing two keys: 'message_text' (string) and 'message_type' (string)."
-    )
-    prompt_parts.append(
-        f"The 'message_type' must be one of the following values: {', '.join(message_types)}."
-    )
-    prompt_parts.append(
-        "Analyze the buyer's message and the conversation history to determine the most appropriate message type for your response."
-    )
-    prompt_parts.append(
-        "Crucially, If a deal is agreed upon, include the signal 'DEAL_AGREED: Price=X.XX, Location=...' within the 'message_text' and set 'message_type' to 'CLOSED_DEAL'."
-    )
-    prompt_parts.append(
-        "If the buyer asks about condition, use 'CONDITION_QUESTION'. If about location, use 'LOCATION_QUESTION'. If they propose an offer, use 'OFFER_PROPOSED'. If you accept an offer, use 'OFFER_ACCEPTED'. If you reject, use 'OFFER_REJECTED'. For general conversation, use 'GENERAL'. For the initial AI message, use 'GREETING'. If the product is unavailable, use 'UNAVAILABLE_PRODUCT'."
-    )
-    prompt_parts.append("Ensure the JSON is valid and contains only these two keys.")
-    prompt_parts.append("\nAI Response (JSON):")
+    buyer_message = f"""{buyer_message_text}
 
-    full_prompt = "\n".join(prompt_parts)
+--- IMPORTANT INSTRUCTIONS ---
+You must respond with VALID JSON containing exactly two keys: 'message_text' and 'message_type'.
 
-    print(
-        f"DEBUG: AI Prompt for Gemini:\n{full_prompt}\n--------------------"
-    )  # For debugging
+The 'message_type' must be one of: {', '.join(message_types)}
 
-    # 2. Call Gemini API (using the existing gcp_services function)
-    ai_generated_text = await sales_agent_content_gemini(prompt=full_prompt)
+Guidelines for message_type selection:
+- GREETING: For initial messages or re-greetings
+- CONDITION_QUESTION: When buyer asks about item condition
+- LOCATION_QUESTION: When buyer asks about location or meetup
+- OFFER_PROPOSED: When buyer makes a price offer
+- OFFER_ACCEPTED: When you accept their offer
+- OFFER_REJECTED: When you decline their offer
+- CLOSED_DEAL: When a deal is finalized (include "DEAL_AGREED: Price=X, Location=Y" in message_text)
+- GENERAL: For other questions or conversation
+- UNAVAILABLE_PRODUCT: If product is no longer available
+
+Response format:
+{{
+    "message_text": "your response here",
+    "message_type": "one of the types above"
+}}
+
+Respond ONLY with the JSON object, nothing else."""
+
+    print(f"DEBUG: Generating AI response for product: {product.title}")
+    print(f"DEBUG: Buyer message: {buyer_message_text}")
+    print(f"DEBUG: History length: {len(chat_history)} messages")
+
+    # Use the new LangChain agent with conversation history
+    ai_generated_text = await sales_agent_with_conversation(
+        message=buyer_message,
+        chat_history=chat_history,
+        product_context=product_context,
+        model_name="gemini-2.0-flash-001",
+    )
+
     print(f"DEBUG: AI Generated Text:\n{ai_generated_text}\n--------------------")
-    # 3. Parse the JSON response
+
+    # Parse the JSON response
     if not ai_generated_text:
-        # Fallback response if Gemini fails or returns empty
+        # Fallback response if generation fails
         return {
             "message_text": "I'm having a little trouble connecting right now. Could you please try asking that again in a moment?",
             "message_type": MessageType.GENERAL.value,
