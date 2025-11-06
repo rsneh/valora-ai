@@ -179,8 +179,8 @@ async def generate_text_with_gemini(prompt: str) -> str:
 
         # Accessing the text response - this might vary slightly based on SDK version and model
         # Check the structure of `response.content.parts[0].text`
-        if response.content:
-            generated_text = response.content
+        if response:
+            generated_text = response
             print(
                 f"Gemini AI - Generated text: {generated_text[:100]}..."
             )  # Log snippet
@@ -381,7 +381,7 @@ def generate_product_data_from_gcs(
     response = invoke_gemini_with_image(prompt, gcs_uri)
 
     # The response text is a JSON string, so we parse it into a Python dictionary
-    response_text = str(response.content)
+    response_text = str(response)
     product_data = json.loads(response_text)
 
     print("✅ Successfully generated product data!")
