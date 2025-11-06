@@ -3,6 +3,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.tools import tool
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langsmith import traceable
+from app.services.langchain.gemini import parse_output
 
 
 SYSTEM_INSTRUCTION = """
@@ -143,15 +144,7 @@ async def sales_agent_with_conversation(
         # Invoke the LLM
         response = await llm_with_tools.ainvoke(messages)
 
-        # Extract the output
-        if hasattr(response, "content"):
-            output = response.content
-            if isinstance(output, str):
-                return output.strip()
-            else:
-                return str(output).strip()
-        else:
-            return str(response).strip()
+        return parse_output(response)
 
     except Exception as e:
         print(f"Error in sales agent: {e}")
