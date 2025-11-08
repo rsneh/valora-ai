@@ -51,7 +51,7 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
       try {
         await navigator.share({
           title: product.title,
-          text: t("productDescription.share"),
+          text: `היי, פרסמתי עכשיו ${product.title} למכירה! 🤩\nכל הפרטים, התמונות, והמשא ומתן מתנהלים בצ'אט החכם של Valora AI.`,
           url: window.location.href,
         });
       } catch (error) {
