@@ -152,23 +152,3 @@ async def sales_agent_with_conversation(
 
         traceback.print_exc()
         return "I apologize, but I'm having trouble processing your request. Please try again."
-
-
-# Legacy function for backward compatibility
-async def sales_agent_content_gemini(
-    prompt: str, model_name: str = "gemini-2.0-flash-001"
-) -> str:
-    """
-    Legacy function for backward compatibility.
-    Generates text using LangChain-based sales agent.
-
-    Args:
-        prompt: The input prompt including product context
-        model_name: The name of the Gemini model to use
-
-    Returns:
-        The generated response as a string
-    """
-    return await sales_agent_with_conversation(
-        message=prompt, chat_history=None, model_name=model_name
-    )
