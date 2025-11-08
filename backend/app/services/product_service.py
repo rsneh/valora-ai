@@ -320,9 +320,24 @@ async def delete_product(db: Session, product_id: int, owner_id: int) -> bool:
 
     # Now delete the product from the database
     print(f"INFO: Deleting product {product_id} from database.")
-    # Delete associated conversations if needed
+    # Delete associated conversations and their messages
 
-    db.query(models.Conversation).where(
+    # First, get all conversation IDs for this product
+    conversation_ids = [
+        conv.id
+        for conv in db.query(models.Conversation.id)
+        .filter(models.Conversation.product_id == product_id)
+        .all()
+    ]
+
+    # Delete chat messages first (child records)
+    if conversation_ids:
+        db.query(models.ChatMessage).filter(
+            models.ChatMessage.conversation_id.in_(conversation_ids)
+        ).delete(synchronize_session=False)
+
+    # Then delete conversations (parent records)
+    db.query(models.Conversation).filter(
         models.Conversation.product_id == product_id
     ).delete(synchronize_session=False)
 

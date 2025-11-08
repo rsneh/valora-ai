@@ -182,6 +182,7 @@ async def delete_product(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Product not found"
         )
+
     if getattr(db_product, "owner_id", None) != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
