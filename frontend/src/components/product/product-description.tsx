@@ -111,13 +111,13 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
             ))}
           </ul>
         </div>
-        <div className="mb-4 md:mb-6">
+        <div className="sticky bottom-0 bg-white z-10 w-full py-4">
           <StartChatButton
             productId={product.id.toString()}
             buttonTxt={t("productDescription.startChat")}
           />
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:gap-8 sticky bottom-0 bg-white z-10 w-full">
+        <div className="grid grid-cols-2 gap-4 sm:gap-8">
           <Button
             variant="secondary"
             size="lg"
