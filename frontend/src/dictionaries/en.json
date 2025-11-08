@@ -154,7 +154,8 @@
     "removedFromFavorites": "Removed from Favorites",
     "attributes": "Attributes",
     "conditionLabel": "Condition",
-    "itemDetails": "Item Details"
+    "itemDetails": "Item Details",
+    "share": "Share"
   },
   "chat": {
     "valoraAIAlt": "Valora AI",
@@ -359,6 +360,8 @@
     "size": "Size",
     "material": "Material",
     "gender": "Gender",
+    "condition": "Condition",
+    "ageRange": "Age Range",
     "unitOptions": {
       "cm": "cm"
     }

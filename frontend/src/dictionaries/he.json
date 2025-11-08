@@ -152,7 +152,8 @@
     "removedFromFavorites": "הוסר מהמועדפים!",
     "attributes": "פרטים נוספים",
     "conditionLabel": "מצב המוצר",
-    "itemDetails": "פרטי המוצר"
+    "itemDetails": "פרטי המוצר",
+    "share": "שיתוף"
   },
   "chat": {
     "valoraAIAlt": "Valora AI",
@@ -360,6 +361,8 @@
     "size": "מידה",
     "gender": "מגדר",
     "material": "בד",
+    "condition": "מצב",
+    "ageRange": "טווח גילאים",
     "unitOptions": {
       "cm": "ס\"מ"
     }

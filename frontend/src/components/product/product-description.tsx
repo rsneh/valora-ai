@@ -5,7 +5,7 @@ import { StartChatButton } from "./start-chat-button";
 import { useI18nContext } from "../locale-context";
 import { getCurrencySymbol } from "@/lib/currency";
 import { Button } from "../ui/button";
-import { Heart } from "lucide-react";
+import { Heart, Share2Icon } from "lucide-react";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useMemo, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -45,6 +45,26 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
     lat: product.latitude,
     lng: product.longitude,
   } : null;
+
+  const handleOnShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: product.title,
+          text: t("productDescription.share"),
+          url: window.location.href,
+        });
+      } catch (error) {
+        console.error("Error sharing:", error);
+      }
+    } else {
+      toast({
+        title: t("productDescription.share"),
+        description: window.location.href,
+        variant: "default",
+      });
+    }
+  }
 
   return (
     <div className="lg:col-span-3">
@@ -91,14 +111,17 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
             ))}
           </ul>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:gap-8 sticky bottom-0 bg-white z-10 p-4 w-full">
+        <div className="mb-4 md:mb-6">
           <StartChatButton
             productId={product.id.toString()}
             buttonTxt={t("productDescription.startChat")}
           />
+        </div>
+        <div className="grid grid-cols-2 gap-4 sm:gap-8 sticky bottom-0 bg-white z-10 w-full">
           <Button
             variant="secondary"
             size="lg"
+            className="flex-1"
             onClick={() => {
               toggleFavorite(product.id);
               const newFavState = !isFavorited;
@@ -113,9 +136,15 @@ export const ProductDescription: React.FC<ProductDescriptionProps> = ({ product 
             }}
           >
             <Heart className={`h-5 w-5 ${isFavorited ? "fill-current text-red-500" : ""}`} />
-            {isFavorited
-              ? t("productDescription.removeFromFavorites")
-              : t("productDescription.addToFavorites")}
+            <span>
+              {isFavorited
+                ? t("productDescription.removeFromFavorites")
+                : t("productDescription.addToFavorites")}
+            </span>
+          </Button>
+          <Button variant="secondary" size="lg" onClick={handleOnShare}>
+            <Share2Icon className={`h-5 w-5`} />
+            <span>{t("productDescription.share")}</span>
           </Button>
         </div>
       </div>
