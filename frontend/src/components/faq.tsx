@@ -41,7 +41,7 @@ function FAQItem({ question, answer, index }: FAQItemProps) {
       >
         <h3
           className={cn(
-            "text-base font-medium transition-colors duration-200 text-left",
+            "text-base font-medium transition-colors duration-200 text-start",
             "text-gray-700 dark:text-gray-300",
             isOpen && "text-gray-900 dark:text-white",
           )}
