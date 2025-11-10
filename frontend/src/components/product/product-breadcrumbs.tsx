@@ -14,7 +14,7 @@ interface ProductBreadcrumbsProps {
 
 export const ProductBreadcrumbs = ({ product, categories }: ProductBreadcrumbsProps) => {
   return (
-    <Breadcrumb className="flex list-none space-x-2 rtl:space-x-reverse text-sm text-gray-400 mb-2 items-center">
+    <Breadcrumb className="flex list-none space-x-2 rtl:space-x-reverse text-sm text-gray-400 mb-2 items-center md:mb-8 pb-4 md:border-b border-gray-200/50">
       <BreadcrumbItem className="">
         <BreadcrumbLink asChild className="hover:text-gray-800">
           <Link href="/" className="flex items-center">

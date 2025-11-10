@@ -85,7 +85,9 @@ export default async function ProductPage(props: { params: Promise<{ productId: 
           __html: JSON.stringify(productJsonLd)
         }}
       />
-      <ProductBreadcrumbs product={product} categories={breadcrumbCategories} />
+      <div className="hidden md:block">
+        <ProductBreadcrumbs product={product} categories={breadcrumbCategories} />
+      </div>
       <Suspense fallback={<div className="animate-pulse">Loading...</div>}>
         <div className="grid grid-cols-1 lg:grid-cols-7 gap-8 md:gap-12 lg:gap-x-16 lg:gap-y-10">
           <Gallery product={product} />
