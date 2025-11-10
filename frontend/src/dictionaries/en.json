@@ -268,7 +268,9 @@
       "adUpdatedDescription": "Your ad has been successfully updated.",
       "errorUpdatingAd": "Error updating ad.",
       "errorUpdatingAdDescription": "There was an issue updating your ad. Please check the form for errors and try again."
-    }
+    },
+    "dashboardTitle": "Manage Your Ads",
+    "dashboardDescription": "This is your personal dashboard where you can create, edit, and manage all your listings. Please sign in to access your ads and start selling."
   },
   "favorites": {
     "title": "My Favorites",

@@ -3,6 +3,7 @@ import { Footer } from "@/components/footer";
 import { Navigation } from "@/components/navigation";
 import { getCategories } from "@/services/api/categories";
 import { getLocaleFromRequest } from "@/lib/dictionaries";
+import { MyLayoutClient } from "./my-layout-client";
 
 export default async function MyLayout({
   children
@@ -14,11 +15,13 @@ export default async function MyLayout({
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation categories={categories} />
-      <main className="py-8 container mx-auto px-4 flex-grow">
-        <Suspense fallback={null}>
-          {children}
-        </Suspense>
-      </main>
+      <MyLayoutClient>
+        <main className="py-8 container mx-auto px-4 flex-grow">
+          <Suspense fallback={null}>
+            {children}
+          </Suspense>
+        </main>
+      </MyLayoutClient>
       <Footer />
     </div>
   );

@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Response, status
 from requests import Session
 from app.services import category_service
 from app.schemas import category as category_schema
@@ -11,6 +11,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[category_schema.CategoryUI])
 def read_categories(
+    response: Response,
     parentKey: Optional[str] = Query(
         None,
         description="Fetch sub-categories of this parent key. If null, fetches top-level categories.",
@@ -26,6 +27,9 @@ def read_categories(
     categories = category_service.get_all_categories(
         db, parent_category_key=parentKey, locale=locale
     )
+
+    response.headers["Cache-Control"] = "public, max-age=3600"
+
     return categories
 
 
