@@ -266,8 +266,12 @@
       "editTitle": "Edit Ad",
       "adUpdated": "Ad Updated!",
       "adUpdatedDescription": "Your ad has been successfully updated.",
+      "adDeleted": "Ad Deleted!",
+      "adDeletedDescription": "Your ad has been successfully deleted.",
       "errorUpdatingAd": "Error updating ad.",
-      "errorUpdatingAdDescription": "There was an issue updating your ad. Please check the form for errors and try again."
+      "errorUpdatingAdDescription": "There was an issue updating your ad. Please check the form for errors and try again.",
+      "errorDeletingAd": "Error deleting ad.",
+      "errorDeletingAdDescription": "There was an issue deleting your ad. Please try again."
     },
     "dashboardTitle": "Manage Your Ads",
     "dashboardDescription": "This is your personal dashboard where you can create, edit, and manage all your listings. Please sign in to access your ads and start selling."

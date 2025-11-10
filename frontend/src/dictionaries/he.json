@@ -263,8 +263,12 @@
       "editTitle": "עריכת מודעה",
       "adUpdated": "מודעה עודכנה!",
       "adUpdatedDescription": "המודעה שלך עודכנה בהצלחה.",
+      "adDeleted": "מודעה נמחקה!",
+      "adDeletedDescription": "המודעה שלך נמחקה בהצלחה.",
       "errorUpdatingAd": "אירעה שגיאה בעדכון המודעה.",
-      "errorUpdatingAdDescription": "הייתה בעיה בעדכון המודעה שלך. אנא בדוק את הטופס לתקלות ונסה שוב."
+      "errorUpdatingAdDescription": "הייתה בעיה בעדכון המודעה שלך. אנא בדוק את הטופס לתקלות ונסה שוב.",
+      "errorDeletingAd": "שגיאה במחיקת המודעה.",
+      "errorDeletingAdDescription": "הייתה בעיה במחיקת המודעה שלך. אנא נסה שוב."
     },
     "dashboardTitle": "ניהול המודעות שלך",
     "dashboardDescription": "זהו לוח הבקרה האישי שלך בו תוכל ליצור, לערוך ולנהל את כל המודעות שלך. אנא התחבר כדי לגשת למודעות שלך ולהתחיל למכור."
