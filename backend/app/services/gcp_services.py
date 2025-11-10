@@ -10,6 +10,7 @@ from app.core.config import settings
 from app.services import category_service
 from app.db.models import ProductConditionEnum
 from app.services.langchain.gemini import invoke_llm, invoke_gemini_with_image
+from app.lib.image_optimizer import optimize_image
 
 
 TEMP_UPLOAD_PREFIX = "temp-uploads/"
@@ -49,7 +50,8 @@ async def upload_image_to_gcs_temp(
     filename: str,
 ) -> Tuple[Optional[str], Optional[str]]:
     """
-    Uploads an image, analyzes it, and returns (key, url).
+    Uploads an optimized image, analyzes it, and returns (key, url).
+    The image is automatically resized and compressed before upload.
     """
     if not storage_client:
         print("GCP clients not initialized.")
@@ -60,14 +62,19 @@ async def upload_image_to_gcs_temp(
 
     blob = None
     try:
+        # Optimize the image before uploading
+        print(f"Optimizing image: {filename}")
+        optimized_buffer, optimized_content_type = optimize_image(file)
+
         bucket_name = settings.GCS_BUCKET_NAME
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(gcs_object_name_key)
 
-        blob.upload_from_file(file.file, content_type=file.content_type)
+        # Upload the optimized image
+        blob.upload_from_file(optimized_buffer, content_type=optimized_content_type)
 
         print(
-            f"Image uploaded to GCS temp: {gcs_object_name_key}, URL: {blob.public_url}"
+            f"Optimized image uploaded to GCS temp: {gcs_object_name_key}, URL: {blob.public_url}"
         )
 
         return gcs_object_name_key, blob.public_url
