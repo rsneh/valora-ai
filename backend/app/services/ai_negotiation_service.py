@@ -173,7 +173,6 @@ Respond ONLY with the JSON object, nothing else."""
 
     print(f"DEBUG: AI Generated Text:\n{ai_generated_text}\n--------------------")
 
-    # Parse the JSON response
     if not ai_generated_text:
         # Fallback response if generation fails
         return {

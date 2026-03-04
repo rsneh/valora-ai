@@ -4,7 +4,7 @@ from functools import lru_cache
 from dotenv import load_dotenv
 
 project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..")
+    os.path.join(os.path.dirname(__file__), "../..")
 )  # Adjust '..' as needed
 dotenv_path = os.path.join(project_root, ".env")
 

@@ -12,8 +12,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://valora_user:valora_password@db:5432/valora_db
       - GOOGLE_APPLICATION_CREDENTIALS=/app/secrets/gcp-service-account-key.json
-      - FIREBASE_PROJECT_ID=aidsell-platform
-      - GCS_BUCKET_NAME=aidsell-poc-product-images-a3ljgkntce
+      - GCS_BUCKET_NAME=valora-ai-product-images
     depends_on:
       - db # Ensures the 'db' service is started before the 'backend' service
     restart: unless-stopped

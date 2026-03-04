@@ -144,7 +144,7 @@ async def sales_agent_with_conversation(
         # Invoke the LLM
         response = await llm_with_tools.ainvoke(messages)
 
-        return parse_output(response)
+        return response.content
 
     except Exception as e:
         print(f"Error in sales agent: {e}")

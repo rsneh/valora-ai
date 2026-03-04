@@ -250,7 +250,7 @@ async def process_buyer_message_and_get_ai_response(
         sender_id=buyer_id,
         sender_type=models.MessageSenderType.BUYER,
         message_text=buyer_message_text,
-        message_type=models.MessageType.GENERAL,  # Default buyer message type to GENERAL, could add AI classification later
+        message_type=models.MessageType.GENERAL,
     )
 
     recent_messages_db = (
@@ -278,7 +278,7 @@ async def process_buyer_message_and_get_ai_response(
     ai_message_type = ai_response_data.get(
         "message_type",
         models.MessageType.GENERAL.value,
-    )  # Default to GENERAL if AI doesn't provide type
+    )
 
     # Ensure message_type is a valid enum member
     try:
@@ -323,7 +323,7 @@ async def process_buyer_message_and_get_ai_response(
                 not ai_message_for_buyer.strip()
             ):  # If AI returned empty text but CLOSED_DEAL type
                 close_deal_message_for_buyer = (
-                    f"Great! We've agreed on ${agreed_price:.2f}. "
+                    f"Great! We've agreed on {agreed_price:.2f}. "
                 )
             elif "DEAL_AGREED:" in ai_message_for_buyer:
                 # Remove the signal from the final message shown to the user
@@ -331,12 +331,12 @@ async def process_buyer_message_and_get_ai_response(
                     "DEAL_AGREED:"
                 )[0].strip()
                 close_deal_message_for_buyer += (
-                    f"\n\nDeal agreed at ${agreed_price:.2f}. "
+                    f"\n\nDeal agreed at {agreed_price:.2f}. "
                 )
             else:
                 # If AI didn't include the signal but returned CLOSED_DEAL type, just add confirmation
                 close_deal_message_for_buyer += (
-                    f"\n\nDeal agreed at ${agreed_price:.2f}. "
+                    f"\n\nDeal agreed at {agreed_price:.2f}. "
                 )
 
             if seller_contact_info_to_return and seller_contact_info_to_return.phone:
